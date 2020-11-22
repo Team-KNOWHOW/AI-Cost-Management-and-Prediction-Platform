@@ -6,7 +6,7 @@ Purpose of project
 
 
 
-How to execute _ For Screen works
+# How to execute _ For Screen works
 1. 깃허브 팀 원격저장소를 개인 원격저장소로 포크한다.
 
 
@@ -31,7 +31,7 @@ How to execute _ For Screen works
 
 
 
-*추가*
+# 추가 공지
 -config/templates/register 안에 있는건 로그인 만들어놓앗던 폼들인데  그 바깥에 있는 것들과 병합될 예정
 
 -작업하고 깃데스크탑으로 개인 원격저장소에 올릴 것.
