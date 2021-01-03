@@ -69,7 +69,7 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user', 'permission'),)
 
 
-class BBizarea(models.Model):
+class BBizarea(models.Model):  # 사업장
     id = models.IntegerField(primary_key=True)
     bizarea_cd = models.CharField(max_length=50, blank=True, null=True)
     co_id = models.IntegerField()
@@ -91,7 +91,7 @@ class BBizarea(models.Model):
         db_table = 'b_bizarea'
 
 
-class BBizpartner(models.Model):
+class BBizpartner(models.Model):  # 거래처
     id = models.IntegerField(primary_key=True)
     bizpartner_cd = models.CharField(max_length=50)
     co_id = models.IntegerField(blank=True, null=True)
@@ -112,7 +112,7 @@ class BBizpartner(models.Model):
         db_table = 'b_bizpartner'
 
 
-class BBizunit(models.Model):
+class BBizunit(models.Model):  # 사업부
     bizunit_cd = models.CharField(max_length=50)
     bizunit_nm = models.CharField(max_length=50, blank=True, null=True)
     bizunit_rmrk = models.CharField(max_length=50, blank=True, null=True)
@@ -127,7 +127,7 @@ class BBizunit(models.Model):
         db_table = 'b_bizunit'
 
 
-class BCo(models.Model):
+class BCo(models.Model):  # 법인
     co_cd = models.CharField(max_length=50, blank=True, null=True)
     co_nm = models.CharField(max_length=50, blank=True, null=True)
     co_shnm = models.CharField(max_length=50, blank=True, null=True)
@@ -150,7 +150,7 @@ class BCo(models.Model):
         db_table = 'b_co'
 
 
-class BFactory(models.Model):
+class BFactory(models.Model):  # 공장
     factory_cd = models.CharField(max_length=20, blank=True, null=True)
     factory_nm = models.CharField(max_length=50, blank=True, null=True)
     factory_rmrk = models.CharField(max_length=50, blank=True, null=True)
@@ -165,7 +165,7 @@ class BFactory(models.Model):
         db_table = 'b_factory'
 
 
-class BItem(models.Model):
+class BItem(models.Model):  # 품목마스터
     itemaccnt_id = models.IntegerField(blank=True, null=True)
     factory_id = models.IntegerField(blank=True, null=True)
     itemgrp_id = models.IntegerField(blank=True, null=True)
@@ -185,7 +185,7 @@ class BItem(models.Model):
         db_table = 'b_item'
 
 
-class BItemaccnt(models.Model):
+class BItemaccnt(models.Model):  # 품목계정
     id = models.IntegerField(primary_key=True)
     itemaccnt_cd = models.CharField(max_length=50)
     itemaccnt_nm = models.CharField(max_length=50, blank=True, null=True)
@@ -200,7 +200,7 @@ class BItemaccnt(models.Model):
         db_table = 'b_itemaccnt'
 
 
-class BItemgrp(models.Model):
+class BItemgrp(models.Model):  # 품목그룹
     itemgrp_cd = models.CharField(max_length=50, blank=True, null=True)
     itemgrp_nm = models.CharField(max_length=50, blank=True, null=True)
     insrt_id = models.CharField(max_length=50, blank=True, null=True)
@@ -214,7 +214,7 @@ class BItemgrp(models.Model):
         db_table = 'b_itemgrp'
 
 
-class BUser(models.Model):
+class BUser(models.Model):  # 사용자관리
     user_id = models.CharField(max_length=50, blank=True, null=True)
     user_nm = models.CharField(max_length=50, blank=True, null=True)
     psswd = models.CharField(max_length=20, blank=True, null=True)
@@ -231,7 +231,7 @@ class BUser(models.Model):
         db_table = 'b_user'
 
 
-class BWorkcenter(models.Model):
+class BWorkcenter(models.Model):  # 작업장
     workcenter_cd = models.CharField(max_length=50, blank=True, null=True)
     workcenter_nm = models.CharField(max_length=50, blank=True, null=True)
     cc_id = models.CharField(max_length=50, blank=True, null=True)
@@ -246,7 +246,7 @@ class BWorkcenter(models.Model):
         db_table = 'b_workcenter'
 
 
-class BomDtl(models.Model):
+class BomDtl(models.Model):  # BOM 디테일
     invt_asset = models.CharField(max_length=20, blank=True, null=True)
     item_div1 = models.CharField(max_length=50, blank=True, null=True)
     revision = models.CharField(max_length=20, blank=True, null=True)
@@ -268,7 +268,7 @@ class BomDtl(models.Model):
         db_table = 'bom_dtl'
 
 
-class BomHdr(models.Model):
+class BomHdr(models.Model):  # BOM 헤더
     item_nm = models.CharField(max_length=50, blank=True, null=True)
     standard = models.CharField(max_length=50, blank=True, null=True)
     invt_asset = models.IntegerField(blank=True, null=True)
@@ -287,7 +287,7 @@ class BomHdr(models.Model):
         db_table = 'bom_hdr'
 
 
-class CbCodeDtl(models.Model):
+class CbCodeDtl(models.Model):  # 코드 디테일
     type_cd = models.CharField(max_length=20, blank=True, null=True)
     code_cd = models.CharField(max_length=20, blank=True, null=True)
     cd_nm = models.CharField(max_length=50, blank=True, null=True)
@@ -302,7 +302,7 @@ class CbCodeDtl(models.Model):
         db_table = 'cb_code_dtl'
 
 
-class CbCodeHdr(models.Model):
+class CbCodeHdr(models.Model):  # 코드 헤더
     type_cd = models.CharField(max_length=20, blank=True, null=True)
     type_nm = models.CharField(max_length=50, blank=True, null=True)
     type_nmen = models.CharField(max_length=50, blank=True, null=True)
@@ -367,4 +367,3 @@ class DjangoMigrations(models.Model):
     class Meta:
         managed = False
         db_table = 'django_migrations'
-
