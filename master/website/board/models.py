@@ -30,7 +30,48 @@ class AuthPermission(models.Model):
         managed = False
         db_table = 'auth_permission'
         unique_together = (('content_type', 'codename'),)
+class BCo(models.Model):  # 법인
+    co_cd = models.CharField(max_length=50, blank=True, null=True)
+    co_nm = models.CharField(max_length=50, blank=True, null=True)
+    co_shnm = models.CharField(max_length=50, blank=True, null=True)
+    rpr = models.CharField(max_length=20, blank=True, null=True)
+    co_type = models.CharField(max_length=20, blank=True, null=True)
+    co_div = models.CharField(max_length=20, blank=True, null=True)
+    co_estdt = models.DateTimeField(blank=True, null=True)
+    co_strdt = models.DateTimeField(blank=True, null=True)
+    sttl_dt = models.IntegerField(blank=True, null=True)
+    cn_cd = models.CharField(max_length=20, blank=True, null=True)
+    cur_cd = models.CharField(max_length=20, blank=True, null=True)
+    insrt_id = models.CharField(max_length=50, blank=True, null=True)
+    insrt_dt = models.DateTimeField(blank=True, null=True)
+    updt_user = models.CharField(max_length=50, blank=True, null=True)
+    updt_dt = models.DateTimeField(blank=True, null=True)
+    usage_fg = models.CharField(max_length=1, blank=True, null=True)
 
+    class Meta:
+        managed = False
+        db_table = 'b_co'
+
+class BBizarea(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    bizarea_cd = models.CharField(max_length=50, blank=True, null=True)
+    co_id = models.ForeignKey(BCo,on_delete=models.CASCADE)
+    bizarea_nm = models.CharField(max_length=50, blank=True, null=True)
+    bizarea_shnm = models.CharField(max_length=20, blank=True, null=True)
+    biz_no = models.CharField(max_length=50, blank=True, null=True)
+    biz_rpr = models.CharField(max_length=50, blank=True, null=True)
+    str_dt = models.DateTimeField(blank=True, null=True)
+    cn_cd = models.CharField(max_length=20, blank=True, null=True)
+    cur_cd = models.CharField(max_length=20, blank=True, null=True)
+    insrt_id = models.IntegerField(blank=True, null=True)
+    insrt_dt = models.DateTimeField(blank=True, null=True)
+    updt_user = models.CharField(max_length=50, blank=True, null=True)
+    updt_dt = models.DateTimeField(blank=True, null=True)
+    usage_fg = models.CharField(max_length=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'b_bizarea'
 
 class AuthUser(models.Model):
     password = models.CharField(max_length=128)
@@ -69,26 +110,6 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user', 'permission'),)
 
 
-class BBizarea(models.Model):  # 사업장
-    id = models.IntegerField(primary_key=True)
-    bizarea_cd = models.CharField(max_length=50, blank=True, null=True)
-    co_id = models.IntegerField()
-    bizarea_nm = models.CharField(max_length=50, blank=True, null=True)
-    bizarea_shnm = models.CharField(max_length=20, blank=True, null=True)
-    biz_no = models.CharField(max_length=50, blank=True, null=True)
-    rpr = models.CharField(max_length=50, blank=True, null=True)
-    str_dt = models.DateTimeField(blank=True, null=True)
-    cn = models.CharField(max_length=20, blank=True, null=True)
-    cur = models.CharField(max_length=20, blank=True, null=True)
-    insrt_id = models.IntegerField(blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    updt_user = models.CharField(max_length=50, blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
-    usage_fg = models.CharField(max_length=1, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'b_bizarea'
 
 
 class BBizpartner(models.Model):  # 거래처
@@ -127,27 +148,6 @@ class BBizunit(models.Model):  # 사업부
         db_table = 'b_bizunit'
 
 
-class BCo(models.Model):  # 법인
-    co_cd = models.CharField(max_length=50, blank=True, null=True)
-    co_nm = models.CharField(max_length=50, blank=True, null=True)
-    co_shnm = models.CharField(max_length=50, blank=True, null=True)
-    rpr = models.CharField(max_length=20, blank=True, null=True)
-    co_type = models.CharField(max_length=20, blank=True, null=True)
-    co_div = models.CharField(max_length=20, blank=True, null=True)
-    co_estdt = models.DateTimeField(blank=True, null=True)
-    co_strdt = models.DateTimeField(blank=True, null=True)
-    sttl_dt = models.IntegerField(blank=True, null=True)
-    cn_cd = models.CharField(max_length=20, blank=True, null=True)
-    cur_cd = models.CharField(max_length=20, blank=True, null=True)
-    insrt_id = models.CharField(max_length=50, blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    updt_user = models.CharField(max_length=50, blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
-    usage_fg = models.CharField(max_length=1, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'b_co'
 
 
 class BFactory(models.Model):  # 공장
@@ -367,3 +367,86 @@ class DjangoMigrations(models.Model):
     class Meta:
         managed = False
         db_table = 'django_migrations'
+
+
+# Create your models here.
+
+# class Corporation(models.Model):
+#     name = models.CharField(verbose_name='NAME', max_length=50)
+#     description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#     content = models.TextField('CONTENT')
+#     create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#     modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class Establishment(models.Model):
+#         name = models.CharField(verbose_name='NAME', max_length=50)
+#         description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#         content = models.TextField('CONTENT')
+#         create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#         modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class Department(models.Model):
+#         name = models.CharField(verbose_name='NAME', max_length=50)
+#         description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#         content = models.TextField('CONTENT')
+#         create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#         modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class Factory(models.Model):
+#         name = models.CharField(verbose_name='NAME', max_length=50)
+#         description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#         content = models.TextField('CONTENT')
+#         create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#         modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class Workshop(models.Model):
+#         name = models.CharField(verbose_name='NAME', max_length=50)
+#         description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#         content = models.TextField('CONTENT')
+#         create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#         modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class Item(models.Model):
+#         name = models.CharField(verbose_name='NAME', max_length=50)
+#         description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#         content = models.TextField('CONTENT')
+#         create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#         modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class CostCenter(models.Model):
+#         name = models.CharField(verbose_name='NAME', max_length=50)
+#         description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#         content = models.TextField('CONTENT')
+#         create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#         modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class CostElementAccount(models.Model):
+#         name = models.CharField(verbose_name='NAME', max_length=50)
+#         description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#         content = models.TextField('CONTENT')
+#         create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#         modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class Client(models.Model):
+#         name = models.CharField(verbose_name='NAME', max_length=50)
+#         description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#         content = models.TextField('CONTENT')
+#         create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#         modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class BOM(models.Model):
+#         name = models.CharField(verbose_name='NAME', max_length=50)
+#         description = models.CharField('DESCRIPTION', max_length=100, blank=True, help_text='simple description text.')
+#         content = models.TextField('CONTENT')
+#         create_dt = models.DateTimeField('CREATE DATE', auto_now_add=True)
+#         modify_dt = models.DateTimeField('MODIFY DATE', auto_now=True)
+#
+#     class Meta:
+#         ordering = ('create_dt',)
+#
+#     def __str__(self):
+#         return self.title
+
+
+#####
+
