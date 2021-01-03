@@ -3,15 +3,17 @@ from . import views
 
 app_name = 'board'
 urlpatterns = [
-    path('', views.HomeView.as_view(), name='main'),
-    path('corporation/', views.CorporationLV.as_view(), name='corporation_list'),
-    path('establishment/', views.EstablishmentLV.as_view(), name='establishment_list'),
-    path('department/', views.DepartmentLV.as_view(), name='department_list'),
-    path('factory/', views.FactoryLV.as_view(), name='factory_list'),
-    path('workshop/', views.WorkshopLV.as_view(), name='workshop_list'),
-    path('item/', views.ItemLV.as_view(), name='item_list'),
-    path('cost_center/', views.CostCenterLV.as_view(), name='cost_center_list'),
-    path('cost_element_account/', views.CostElementAccountLV.as_view(), name='cost_element_account_list'),
-    path('client/', views.ClientLV.as_view(), name='client_list'),
-    path('bom/', views.BomLV.as_view(), name='bom_list'),
+    path('', views.home, name='home'),
+    path('b_bizarea/', views.b_bizarea, name='b_bizarea_list'),
+    path('b_bizpartner/', views.b_bizpartner, name='b_bizpartner_list'),
+    path('b_bizunit/', views.b_bizunit, name='b_bizunit_list'),
+    path('b_co/', views.b_co, name='b_co_list'),
+    path('b_factory/', views.b_factory, name='b_factory_list'),
+    path('b_item/', views.b_item, name='b_item_list'),
+    path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt_list'),
+    path('b_itemgrp/', views.b_itemgrp, name='b_itemgrp_list'),
+    path('b_user/', views.b_user, name='b_user_list'),
+    path('bom_hdr/', views.bom_hdr, name='bom_hdr_list'),
+    path('cb_code_hdr/', views.cb_code_hdr, name='cb_code_hdr_list'),
+    path('cb_cost_center/', views.cb_cost_center, name='cb_cost_center_list'),
 ]
