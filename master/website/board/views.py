@@ -1,70 +1,66 @@
 from django.shortcuts import render
-from django.views.generic import ListView, TemplateView
-from .models import Corporation, Establishment, Department, Factory, Workshop, Item, CostCenter, CostElementAccount, \
-    Client, BOM
 
 
 # Create your views here.
-class HomeView(TemplateView):
-    template_name = 'home.html'
+def home(request):
+    return render(request, 'home.html')
 
 
-# List view
-class CorporationLV(ListView):
-    model = Corporation
-    template_name = 'board/corporation.html'
-    context_object_name = 'corporations'
+def b_bizarea(request):
+    return render(request, 'b_bizarea.html')
 
 
-class EstablishmentLV(ListView):
-    model = Establishment
-    template_name = 'board/establishment.html'
-    context_object_name = 'establishments'
+def b_bizpartner(request):
+    return render(request, 'b_bizpartner.html')
 
 
-class DepartmentLV(ListView):
-    model = Department
-    template_name = 'board/department.html'
-    context_object_name = 'departments'
+def b_bizunit(request):
+    return render(request, 'b_bizunit.html')
 
 
-class FactoryLV(ListView):
-    model = Factory
-    template_name = 'board/factory.html'
-    context_object_name = 'factories'
+def b_co(request):
+    return render(request, 'b_co.html')
 
 
-class WorkshopLV(ListView):
-    model = Workshop
-    template_name = 'board/workshop.html'
-    context_object_name = 'workshops'
+def b_factory(request):
+    return render(request, 'b_factory.html')
 
 
-class ItemLV(ListView):
-    model = Item
-    template_name = 'board/item.html'
-    context_object_name = 'items'
+def b_item(request):
+    return render(request, 'b_item.html')
 
 
-class CostCenterLV(ListView):
-    model = CostCenter
-    template_name = 'board/cost_center.html'
-    context_object_name = 'cost_centers'
+def b_itemaccnt(request):
+    return render(request, 'b_itemaccnt.html')
 
 
-class CostElementAccountLV(ListView):
-    model = CostElementAccount
-    template_name = 'board/cost_element_account.html'
-    context_object_name = 'cost_element_accounts'
+def b_itemgrp(request):
+    return render(request, 'b_itemgrp.html')
 
 
-class ClientLV(ListView):
-    model = Client
-    template_name = 'board/client.html'
-    context_object_name = 'clients'
+def b_user(request):
+    return render(request, 'b_user.html')
 
 
-class BomLV(ListView):
-    model = BOM
-    template_name = 'board/bom.html'
-    context_object_name = 'boms'
+def b_workcenter(request):
+    return render(request, 'b_workcenter.html')
+
+
+def bom_hdr(request):
+    return render(request, 'b_bizarea.html')
+
+
+def bom_dtl(request):
+    return render(request, 'b_bizarea.html')
+
+
+def cb_code_hdr(request):
+    return render(request, 'cb_code_hdr.html')
+
+
+def cb_code_dtl(request):
+    return render(request, 'cb_code_dtl.html')
+
+
+def cb_cost_center(request):
+    return render(request, 'cb_cost_center.html')
