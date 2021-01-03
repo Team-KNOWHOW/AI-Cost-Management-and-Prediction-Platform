@@ -13,6 +13,7 @@ urlpatterns = [
     path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt_list'),
     path('b_itemgrp/', views.b_itemgrp, name='b_itemgrp_list'),
     path('b_user/', views.b_user, name='b_user_list'),
+    path('b_workcenter/', views.b_workcenter, name='b_workcenter_list'),
     path('bom_hdr/', views.bom_hdr, name='bom_hdr_list'),
     path('cb_code_hdr/', views.cb_code_hdr, name='cb_code_hdr_list'),
     path('cb_cost_center/', views.cb_cost_center, name='cb_cost_center_list'),
