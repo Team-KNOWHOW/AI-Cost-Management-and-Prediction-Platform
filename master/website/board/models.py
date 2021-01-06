@@ -115,18 +115,18 @@ class BBizarea(models.Model):  # 사업장
 
 
 class BBizpartner(models.Model):  # 거래처
-    id = models.AutoField(db_column='id',primary_key=True)
-    bizpartner_cd = models.CharField(db_column='bizpartner_cd',max_length=50)
+    id = models.AutoField(db_column='id', primary_key=True)
+    bizpartner_cd = models.CharField(db_column='bizpartner_cd', max_length=50)
     #foreignkey연결 필요.
-    co_id = models.IntegerField(db_column='co_id',max_length=50)
+    co_id = models.IntegerField(db_column='co_id', max_length=50)
     bizpartner_type = models.CharField(db_column='bizpartner_type',max_length=20, blank=True, null=True)
-    biz_nm = models.CharField(db_column='biz_nm',max_length=50, blank=True, null=True)
+    biz_nm = models.CharField(db_column='biz_nm', max_length=50, blank=True, null=True)
     bizpartner_nm = models.CharField(db_column='bizpartner_nm',max_length=50, blank=True, null=True)
-    cn_cd = models.CharField(db_column='cn_cd',max_length=20, blank=True, null=True)
-    cur_cd = models.CharField(db_column='cur_cd',max_length=20, blank=True, null=True)
-    bizpartner_stat = models.CharField(db_column='bizpartner_stat',max_length=20, blank=True, null=True)
+    cn_cd = models.CharField(db_column='cn_cd', max_length=20, blank=True, null=True)
+    cur_cd = models.CharField(db_column='cur_cd', max_length=20, blank=True, null=True)
+    bizpartner_stat = models.CharField(db_column='bizpartner_stat', max_length=20, blank=True, null=True)
     insrt_id = models.IntegerField(db_column='insrt_id', max_length=50, blank=True, null=True)
-    insrt_dt = models.DateTimeField(db_column='insrt_dt', blank=True, null=True, auto_now=True)
+    insrt_dt = models.DateTimeField(db_column='insrt_dt', blank=True, null=True, auto_now_add=True)
     updt_id = models.IntegerField(db_column='updt_id', max_length=50, blank=True, null=True)
     updt_dt = models.DateTimeField(db_column='updt_dt', blank=True, null=True, auto_now=True)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, blank=True, null=True)
@@ -218,16 +218,17 @@ class BItemgrp(models.Model):  # 품목그룹
 
 
 class BUser(models.Model):  # 사용자관리
-    user_id = models.CharField(max_length=50, blank=True, null=True)
-    user_nm = models.CharField(max_length=50, blank=True, null=True)
-    psswd = models.CharField(max_length=20, blank=True, null=True)
-    email = models.CharField(max_length=50, blank=True, null=True)
-    phoneno = models.IntegerField(blank=True, null=True)
-    insrt_id = models.CharField(max_length=50, blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    updt_user = models.CharField(max_length=50, blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
-    usage_fg = models.CharField(max_length=1, blank=True, null=True)
+    id = models.AutoField(db_column='id', primary_key=True)
+    user_id = models.CharField(db_column='user_id', max_length=50)
+    user_nm = models.CharField(db_column='user_nm', max_length=50, blank=True, null=True)
+    psswd = models.CharField(db_column='psswd', max_length=255)
+    email = models.CharField(db_column='email', max_length=255, blank=True, null=True)
+    phoneno = models.IntegerField(db_column='phoneno', max_length=20, blank=True, null=True)
+    insrt_id = models.IntegerField(db_column='insrt_id', max_length=11, blank=True, null=True)
+    insrt_dt = models.DateTimeField(db_column='insrt_dt', blank=True, null=True, auto_now_add=True)
+    updt_id = models.IntegerField(db_column='updt_id', max_length=11, blank=True, null=True)
+    updt_dt = models.DateTimeField(db_column='updt_dt', blank=True, null=True, auto_now=True)
+    usage_fg = models.CharField(db_column='usage_fg', max_length=1, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -319,7 +320,7 @@ class CbCodeHdr(models.Model):  # 코드 헤더
         db_table = 'cb_code_hdr'
 
 
-class CbCostCenter(models.Model):
+class CbCostCenter(models.Model):  # 코스트센터
     id = models.IntegerField(primary_key=True)
     cstctr_cd = models.CharField(max_length=50, blank=True, null=True)
     cstctr_nm = models.CharField(max_length=50, blank=True, null=True)
