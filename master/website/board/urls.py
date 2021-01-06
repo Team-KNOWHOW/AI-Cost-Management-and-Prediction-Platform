@@ -3,6 +3,7 @@ from . import views
 
 app_name = 'board'
 urlpatterns = [
+    # Basic urls 항목
     path('', views.home, name='home'),
     path('b_bizarea/', views.b_bizarea, name='b_bizarea_list'),
     path('b_bizpartner/', views.b_bizpartner, name='b_bizpartner_list'),
@@ -17,4 +18,16 @@ urlpatterns = [
     path('bom_hdr/', views.bom_hdr, name='bom_hdr_list'),
     path('cb_code_hdr/', views.cb_code_hdr, name='cb_code_hdr_list'),
     path('cb_cost_center/', views.cb_cost_center, name='cb_cost_center_list'),
+
+    # 공장 기능 항목
+    path('b_factory/factory_element_insert', views.factory_element_insert, name="factory_element_insert"),
+    path('b_factory/factory_element_update', views.factory_element_update, name="factory_element_update"),
+    path('b_factory/factory_element_delete', views.factory_element_delete, name="factory_element_delete"),
+
+    # 거래처 기능 항목
+    path('b_bizpartner/bizpartner_element_insert', views.bizpartner_element_insert, name="bizpartner_element_insert"),
+    path('b_bizpartner/bizpartner_element_update', views.bizpartner_element_update, name="bizpartner_element_update"),
+    path('b_bizpartner/bizpartner_element_delete', views.bizpartner_element_delete, name="bizpartner_element_delete"),
+
+
 ]
