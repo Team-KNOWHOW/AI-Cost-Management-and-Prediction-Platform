@@ -2,24 +2,27 @@ from django.shortcuts import render
 
 
 # Create your views here.
+# from .models import BBizunit,BUser,BCo,BBizarea
+from .models import BBizunit, BBizarea, BUser,BCo
+
 def home(request):
     return render(request, 'home.html')
-
-
-def b_bizarea(request):
-    return render(request, 'b_bizarea.html')
-
-
-def b_bizpartner(request):
-    return render(request, 'b_bizpartner.html')
-
-
-def b_bizunit(request):
-    return render(request, 'b_bizunit.html')
-
-
 def b_co(request):
     return render(request, 'b_co.html')
+
+def b_bizarea(request):#사업장
+    return render(request, 'b_bizarea.html')
+
+def b_bizunit(request):#사업부
+    context={}
+    rsbizunit=BBizunit.objects.filter()
+    rsuserid=BUser.objects.filter()
+    context["rsbizunit"]=rsbizunit
+    context["rsuserid"]=rsuserid
+    return render(request, 'bizunit.html',context)
+
+
+
 
 
 def b_factory(request):
@@ -64,3 +67,7 @@ def cb_code_dtl(request):
 
 def cb_cost_center(request):
     return render(request, 'cb_cost_center.html')
+
+def b_bizpartner(request):
+    return render(request, 'b_bizpartner.html')
+

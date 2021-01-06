@@ -25,15 +25,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7dd797c3-853e-41ca-9701-88310c777147" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/AI-Cost-Management-and-Prediction-Platform.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AI-Cost-Management-and-Prediction-Platform.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/aws.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/master/website/board/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/master/website/board/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/master/website/config/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/config/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/templates/board/corporation.html" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/templates/board/b_co.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/templates/board/department.html" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/templates/board/bizunit.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +51,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/PycharmProjects/costpro" />
+    <property name="last_opened_file_path" value="$USER_HOME$/PycharmProjects/pythonPractie" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -69,6 +66,9 @@
       <workItem from="1609077489541" duration="29000" />
       <workItem from="1609587085277" duration="1580000" />
       <workItem from="1609589468683" duration="4752000" />
+      <workItem from="1609670720930" duration="1348000" />
+      <workItem from="1609759346124" duration="10391000" />
+      <workItem from="1609837619408" duration="616000" />
     </task>
     <servers />
   </component>
@@ -85,12 +85,13 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="405" y="173" key="FileChooserDialogImpl" timestamp="1609594538194">
+    <state x="405" y="173" key="FileChooserDialogImpl" timestamp="1609837632953">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="405" y="173" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1609594538194" />
+    <state x="405" y="173" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1609837632953" />
     <state x="10" y="66" width="981" height="758" key="SettingsEditor" timestamp="1609594660971">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
