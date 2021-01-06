@@ -1,7 +1,13 @@
 from django.contrib import admin
+<<<<<<< Updated upstream
+=======
+# from .models import Corporation, Establishment, Department, Factory, Workshop, Item, CostCenter, CostElementAccount, \
+#     Client, BOM
+>>>>>>> Stashed changes
 
 from .models import *
 
+<<<<<<< Updated upstream
 # from .models import Corporation, Establishment, Department, Factory, Workshop, Item, CostCenter, CostElementAccount, \
 #     Client, BOM
 
@@ -117,6 +123,10 @@ class CbCostCenterAdmin(admin.ModelAdmin):
     #list_filter = ('updt_dt',)
     # search_fields = ('name', 'content')
 
+=======
+# Register your models here.
+
+>>>>>>> Stashed changes
 # @admin.register(Corporation)
 # @admin.register(Establishment)
 # @admin.register(Department)
