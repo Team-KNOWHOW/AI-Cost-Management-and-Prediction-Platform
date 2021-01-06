@@ -18,6 +18,7 @@ urlpatterns = [
     path('bom_hdr/', views.bom_hdr, name='bom_hdr_list'),
     path('cb_code_hdr/', views.cb_code_hdr, name='cb_code_hdr_list'),
     path('cb_cost_center/', views.cb_cost_center, name='cb_cost_center_list'),
+    path('codemanage/', views.codemanage, name='codemanage'),
 
     # 공장 기능 항목
     path('b_factory/factory_element_insert', views.factory_element_insert, name="factory_element_insert"),
@@ -29,5 +30,16 @@ urlpatterns = [
     path('b_bizpartner/bizpartner_element_update', views.bizpartner_element_update, name="bizpartner_element_update"),
     path('b_bizpartner/bizpartner_element_delete', views.bizpartner_element_delete, name="bizpartner_element_delete"),
 
+
+    #통합코드 헤더 기능 항목
+    path('codemanage/codetype_insert', views.codetype_insert, name="codetype_insert"),
+    path('codemanage/codetype_update', views.codetype_update, name="codetype_update"),
+    path('codemanage/codetype_delete', views.codetype_delete, name="codetype_delete"),
+
+    #통합코드 디테일 기능 항목
+    path('codemanage/code_insert', views.code_insert, name='code_insert'),
+    path('codemanage/code_update', views.code_update, name='code_update'),
+    path('codemanage/code_delete', views.code_delete, name='code_delete'),
+    path('codemanage/code_view', views.code_view, name='code_view'),
 
 ]

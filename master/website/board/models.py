@@ -290,34 +290,36 @@ class BomHdr(models.Model):  # BOM 헤더
         managed = False
         db_table = 'bom_hdr'
 
-
-class CbCodeDtl(models.Model):  # 코드 디테일
-    type_cd = models.CharField(max_length=20, blank=True, null=True)
-    code_cd = models.CharField(max_length=20, blank=True, null=True)
-    cd_nm = models.CharField(max_length=50, blank=True, null=True)
-    cd_nmen = models.CharField(max_length=50, blank=True, null=True)
-    insrt_id = models.IntegerField(blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    usage_fg = models.CharField(max_length=1, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'cb_code_dtl'
-
-
-class CbCodeHdr(models.Model):  # 코드 헤더
-    type_cd = models.CharField(max_length=20, blank=True, null=True)
-    type_nm = models.CharField(max_length=50, blank=True, null=True)
-    type_nmen = models.CharField(max_length=50, blank=True, null=True)
-    insrt_id = models.IntegerField(blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    usage_fg = models.CharField(max_length=1, blank=True, null=True)
+class CbCodeHdr(models.Model):  #코드 헤더
+    id = models.AutoField(db_column='id', primary_key=True)
+    type_cd = models.CharField(db_column='type_cd', max_length=20)
+    type_nm = models.CharField(db_column='type_nm', max_length=50)
+    type_nmen = models.CharField(db_column='type_nmen', max_length=50)
+    updt_dt = models.DateTimeField(db_column='updt_dt', auto_now=True)
+    insrt_dt = models.DateTimeField(db_column='insrt_dt', auto_now_add=True)
+    usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
+    insrt_id = models.IntegerField(db_column='insrt_id')
+    updt_id = models.IntegerField(db_column='updt_id')
 
     class Meta:
         managed = False
         db_table = 'cb_code_hdr'
+
+class CbCodeDtl(models.Model): #코드 detail
+    id = models.AutoField(db_column='id', primary_key=True)
+    type_cd = models.CharField(db_column='type_cd', max_length=20)
+    code_cd = models.CharField(db_column='code_cd', max_length=20)
+    cd_nm = models.CharField(db_column='cd_nm', max_length=50)
+    cd_nmen = models.CharField(db_column='cd_nmen', max_length=50)
+    updt_dt = models.DateTimeField(db_column='updt_dt', auto_now=True)
+    insrt_dt = models.DateTimeField(db_column='insrt_dt', auto_now_add=True)
+    usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
+    insrt_id = models.IntegerField(db_column='insrt_id')
+    updt_id = models.IntegerField(db_column='updt_id')
+
+    class Meta:
+        managed = False
+        db_table = 'cb_code_dtl'
 
 
 class CbCostCenter(models.Model):  # 코스트센터
