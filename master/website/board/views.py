@@ -243,6 +243,174 @@ def factory_element_delete(request):
 # 공장 코드 끝
 # *********************************************************************************************************************
 
+# *********************************************************************************************************************
+# 통합코드관리 코드 시작
+# *********************************************************************************************************************
+
+def codemanage(request):
+    context = {}
+
+    if 'type_cd' in request.GET:
+        typecd = request.GET['type_cd']
+        rsCode = CbCodeDtl.objects.filter(type_cd=typecd, usage_fg='Y')
+    else:
+        typecd = None
+        rsCode = None
+
+    context["type_cd"] = typecd
+
+    rsHeader = CbCodeHdr.objects.filter(usage_fg='Y')
+    context["rsHeader"] = rsHeader
+    context["rsCode"] = rsCode
+
+    return render(request, "board/codemanage.html", context)
+
+
+@csrf_exempt
+def codetype_insert(request):
+    context = {}
+
+    typecd = request.GET['typecd']
+    typename = request.GET['typename']
+
+    if CbCodeHdr.objects.filter(type_cd=typecd).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Type code exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    if CbCodeHdr.objects.filter(type_nm=typename).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Type name exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    CbCodeHdr.objects.create(type_cd=typecd,
+                             type_nm=typename,
+                             )
+
+    context["flag"] = "0"
+    context["result_msg"] = "Type insert success..."
+    return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def codetype_update(request):
+    context = {}
+
+    typeid = request.GET['typeid']
+    tvalue = request.GET['tvalue']
+
+    if CbCodeHdr.objects.filter(type_nm=tvalue).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Type name exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    rsHeader = CbCodeHdr.objects.get(id=typeid)
+    rsHeader.type_nm = tvalue
+    rsHeader.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "Type update success..."
+    return JsonResponse(context, content_type="application/json")
+
+@csrf_exempt
+def codetype_delete(request):
+    context = {}
+
+    typeid = request.GET['typeid']
+    rsHeader = CbCodeHdr.objects.get(id=typeid)
+    typecd = rsHeader.type_cd
+
+    if CbCodeDtl.objects.filter(type_cd=typecd).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "하위 코드가 있어 삭제 불가..."
+        return JsonResponse(context, content_type="application/json")
+    else:
+        rsHeader.usage_fg = 'N'
+        rsHeader.save()
+
+        context["flag"] = "0"
+        context["result_msg"] = "Type delete success..."
+        return JsonResponse(context, content_type="application/json")
+
+@csrf_exempt
+def code_insert(request):
+    context = {}
+
+    typecd = request.GET['typecd']
+    codecd = request.GET['codecd']
+    codename = request.GET['codename']
+
+    if CbCodeDtl.objects.filter(type_cd=typecd, code_cd=codecd).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Code 중복..."
+        return JsonResponse(context, content_type="application/json")
+    else:
+        CbCodeDtl.objects.create(type_cd=typecd,
+                                 code_cd=codecd,
+                                 cd_nm=codename)
+
+        context["flag"] = "0"
+        context["result_msg"] = "Code 등록 성공..."
+        return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def code_update(request):
+    context = {}
+
+    codeid = request.GET['codeid']
+    codename = request.GET['codename']
+
+    if CbCodeDtl.objects.filter(cd_nm=codename).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Code name exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    else:
+        rs = CbCodeDtl.objects.get(id=codeid)
+        rs.cd_nm = codename
+        rs.save()
+
+        context["flag"] = "0"
+        context["result_msg"] = "Code update success..."
+        return JsonResponse(context, content_type="application/json")
+
+@csrf_exempt
+def code_delete(request):
+    context = {}
+
+    codeid = request.GET['codeid']
+
+    if CbCodeDtl.objects.get(id=codeid):
+        rs = CbCodeDtl.objects.get(id=codeid)
+        rs.usage_fg = 'N'
+        rs.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "Code deleted... "
+    return JsonResponse(context, content_type="application/json")
+
+#상세정보 html 만들어야함 일단 보류
+def code_view(request):
+    context = {}
+
+    codeid = request.GET['codeid']
+    rsCode = CbCodeDtl.objects.get(id=codeid)
+
+    print(rsCode)
+
+    context["type_cd"] = rsCode.type_cd
+    context["code_cd"] = rsCode.code_cd
+    context["code_name"] = rsCode.cd_nm
+
+    context["result_msg"] = "Code detail"
+    return render(request, "board/codeview.html", context)
+
+
+
+# *********************************************************************************************************************
+# 통합코드관리 코드 끝
+# *********************************************************************************************************************
 
 def b_item(request):
     return render(request, 'b_item.html')

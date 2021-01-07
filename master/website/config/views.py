@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.views.generic import TemplateView
 
 from django.views.generic import CreateView
@@ -19,3 +20,7 @@ class UserCreateView(CreateView):
 
 class UserCreateDoneTV(TemplateView):
     template_name = 'registration/register_done.html'
+
+def member_register(request):
+    return render(request, "member_register.html")
+
