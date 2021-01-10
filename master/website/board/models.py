@@ -68,50 +68,97 @@ class AuthUserUserPermissions(models.Model):
         db_table = 'auth_user_user_permissions'
         unique_together = (('user', 'permission'),)
 
+
+class CbCodeHdr(models.Model):  #코드 헤더
+    id = models.AutoField(db_column='id', primary_key=True)
+    type_cd = models.CharField(db_column='type_cd', max_length=20)
+    type_nm = models.CharField(db_column='type_nm', max_length=50)
+    type_nmen = models.CharField(db_column='type_nmen', max_length=50)
+    updt_dt = models.DateTimeField(db_column='updt_dt', auto_now=True)
+    insrt_dt = models.DateTimeField(db_column='insrt_dt', auto_now_add=True)
+    usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
+    insrt_id = models.IntegerField(db_column='insrt_id')
+    updt_id = models.IntegerField(db_column='updt_id')
+
+    class Meta:
+        managed = False
+        db_table = 'cb_code_hdr'
+
+class CbCodeDtl(models.Model): #코드 detail
+    id = models.AutoField(db_column='id', primary_key=True)
+    type_cd = models.CharField(db_column='type_cd', max_length=20)
+    code_cd = models.CharField(db_column='code_cd', max_length=20)
+    cd_nm = models.CharField(db_column='cd_nm', max_length=50)
+    cd_nmen = models.CharField(db_column='cd_nmen', max_length=50)
+    updt_dt = models.DateTimeField(db_column='updt_dt', auto_now=True)
+    insrt_dt = models.DateTimeField(db_column='insrt_dt', auto_now_add=True)
+    usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
+    insrt_id = models.IntegerField(db_column='insrt_id')
+    updt_id = models.IntegerField(db_column='updt_id')
+
+    class Meta:
+        managed = False
+        db_table = 'cb_code_dtl'
+
+
 class BCo(models.Model):  # 법인
+    id=models.IntegerField(primary_key=True)
     co_cd = models.CharField(max_length=50, blank=True, null=True)
     co_nm = models.CharField(max_length=50, blank=True, null=True)
     co_shnm = models.CharField(max_length=50, blank=True, null=True)
-    rpr = models.CharField(max_length=20, blank=True, null=True)
+    co_rpr = models.CharField(max_length=20, blank=True, null=True)
     co_type = models.CharField(max_length=20, blank=True, null=True)
     co_div = models.CharField(max_length=20, blank=True, null=True)
     co_estdt = models.DateTimeField(blank=True, null=True)
     co_strdt = models.DateTimeField(blank=True, null=True)
     sttl_dt = models.IntegerField(blank=True, null=True)
-    cn_cd = models.CharField(max_length=20, blank=True, null=True)
-    cur_cd = models.CharField(max_length=20, blank=True, null=True)
-    insrt_id = models.CharField(max_length=50, blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    updt_user = models.CharField(max_length=50, blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
+    # cn_cd = models.CharField(max_length=20, blank=True, null=True)
+    # cur_cd = models.CharField(max_length=20, blank=True, null=True)
+    # insrt_id = models.CharField(max_length=50, blank=True, null=True)
+    # insrt_dt = models.DateTimeField(blank=True, null=True)
+    # updt_user = models.CharField(max_length=50, blank=True, null=True)
+    # updt_dt = models.DateTimeField(blank=True, null=True)
     usage_fg = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'b_co'
 
-
-
-class BBizarea(models.Model):  # 사업장
-    id = models.IntegerField(primary_key=True)
-    bizarea_cd = models.CharField(max_length=50, blank=True, null=True)
-    co_id = models.IntegerField()
-    bizarea_nm = models.CharField(max_length=50, blank=True, null=True)
-    bizarea_shnm = models.CharField(max_length=20, blank=True, null=True)
-    biz_no = models.CharField(max_length=50, blank=True, null=True)
-    rpr = models.CharField(max_length=50, blank=True, null=True)
-    str_dt = models.DateTimeField(blank=True, null=True)
-    cn = models.CharField(max_length=20, blank=True, null=True)
-    cur = models.CharField(max_length=20, blank=True, null=True)
-    insrt_id = models.IntegerField(blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    updt_user = models.CharField(max_length=50, blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
-    usage_fg = models.CharField(max_length=1, blank=True, null=True)
+class BBizarea(models.Model):#사업장 현준
+    id = models.AutoField(db_column='id', primary_key=True)
+    bizarea_cd = models.CharField(db_column='bizarea_cd', max_length=50, blank=True, null=True)
+    co = models.ForeignKey(BCo,on_delete=models.CASCADE)
+    bizarea_nm = models.CharField(db_column='bizarea_nm', max_length=50, blank=True, null=True)
+    bizarea_shnm = models.CharField(db_column='bizarea_shnm', max_length=20, blank=True, null=True)
+    biz_no = models.CharField(db_column='biz_no', max_length=50, blank=True, null=True)
+    biz_rpr = models.CharField(db_column='biz_rpr', max_length=50, blank=True, null=True)
+    str_dt = models.DateTimeField(db_column='str_dt', blank=True, null=True)
+    # cn_cd = models.CharField(db_column='cn_cd', max_length=20, blank=True, null=True)
+    # cur_cd = models.CharField(db_column='cur_cd', max_length=20, blank=True, null=True)
+    # insrt_id = models.IntegerField(db_column='insrt_id', blank=True, null=True)
+    # insrt_dt = models.DateTimeField(db_column='insrt_dt', auto_now_add=True, blank=True, null=True)
+    # updt_id = models.IntegerField(db_column='updt_id', max_length=50, blank=True, null=True)
+    # updt_dt = models.DateTimeField(db_column='updt_dt',auto_now=True,blank=True, null=True)
+    usage_fg = models.CharField(db_column='usage_fg',max_length=1, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'b_bizarea'
+
+class BBizunit(models.Model):  # 사업부 현준
+    id=models.AutoField(db_column='id', primary_key=True)
+    bizunit_cd = models.CharField(db_column='bizunit_cd', max_length=50)
+    bizunit_nm = models.CharField(db_column='bizunit_nm',max_length=50, blank=True, null=True)
+    bizunit_rmrk = models.CharField(db_column='bizunit_rmrk',max_length=50, blank=True, null=True)
+    insrt_id = models.IntegerField(db_column='insrt_id', max_length=50, blank=True, null=True)
+    insrt_dt = models.DateTimeField(db_column='insrt_dt',auto_now_add=True, blank=True, null=True)
+    updt_id = models.IntegerField(db_column='updt_id',  max_length=50, blank=True, null=True)
+    updt_dt = models.DateTimeField(db_column='updt_dt', auto_now=True, blank=True, null=True)
+    usage_fg = models.CharField(db_column='usage_fg', max_length=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'b_bizunit'
 
 
 class BBizpartner(models.Model):  # 거래처
@@ -134,21 +181,6 @@ class BBizpartner(models.Model):  # 거래처
     class Meta:
         managed = False
         db_table = 'b_bizpartner'
-
-
-class BBizunit(models.Model):  # 사업부
-    bizunit_cd = models.CharField(max_length=50)
-    bizunit_nm = models.CharField(max_length=50, blank=True, null=True)
-    bizunit_rmrk = models.CharField(max_length=50, blank=True, null=True)
-    insrt_id = models.CharField(max_length=50, blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    updt_user = models.CharField(max_length=50, blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
-    usage_fg = models.CharField(max_length=1, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'b_bizunit'
 
 
 
@@ -286,36 +318,7 @@ class BomHdr(models.Model):  # BOM 헤더
         managed = False
         db_table = 'bom_hdr'
 
-class CbCodeHdr(models.Model):  #코드 헤더
-    id = models.AutoField(db_column='id', primary_key=True)
-    type_cd = models.CharField(db_column='type_cd', max_length=20)
-    type_nm = models.CharField(db_column='type_nm', max_length=50)
-    type_nmen = models.CharField(db_column='type_nmen', max_length=50)
-    updt_dt = models.DateTimeField(db_column='updt_dt', auto_now=True)
-    insrt_dt = models.DateTimeField(db_column='insrt_dt', auto_now_add=True)
-    usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
-    insrt_id = models.IntegerField(db_column='insrt_id')
-    updt_id = models.IntegerField(db_column='updt_id')
 
-    class Meta:
-        managed = False
-        db_table = 'cb_code_hdr'
-
-class CbCodeDtl(models.Model): #코드 detail
-    id = models.AutoField(db_column='id', primary_key=True)
-    type_cd = models.CharField(db_column='type_cd', max_length=20)
-    code_cd = models.CharField(db_column='code_cd', max_length=20)
-    cd_nm = models.CharField(db_column='cd_nm', max_length=50)
-    cd_nmen = models.CharField(db_column='cd_nmen', max_length=50)
-    updt_dt = models.DateTimeField(db_column='updt_dt', auto_now=True)
-    insrt_dt = models.DateTimeField(db_column='insrt_dt', auto_now_add=True)
-    usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
-    insrt_id = models.IntegerField(db_column='insrt_id')
-    updt_id = models.IntegerField(db_column='updt_id')
-
-    class Meta:
-        managed = False
-        db_table = 'cb_code_dtl'
 
 
 class CbCostCenter(models.Model):  # 코스트센터
