@@ -413,7 +413,35 @@ def code_view(request):
 # *********************************************************************************************************************
 
 def b_item(request):
-    return render(request, 'b_item.html')
+
+    context = {}
+
+    context['flag'] = '0'
+    context['result_msg'] = '품목코드 관리'
+
+    #rsItem = BItem.objects.filter(usage_fg='Y')
+
+    strSql = "SELECT b.*, c.*, d.*, e.*, a.* " +\
+             "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y') a " +\
+             "LEFT JOIN b_factory b ON a.factory_id = b.id " +\
+             "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " +\
+             "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " +\
+             "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
+
+    rsItem = BItem.objects.raw(strSql)
+
+    rsFactory = BFactory.objects.filter()
+    rsUnit = CbCodeDtl.objects.filter(type_cd='unit')
+    rsItemgrp = BItemgrp.objects.filter()
+    rsItemaccnt = BItemaccnt.objects.filter()
+
+    context["rsItem"] = rsItem
+    context["rsItemgrp"] = rsItemgrp
+    context["rsItemaccnt"] = rsItemaccnt
+    context["rsFactory"] = rsFactory
+    context["rsUnit"] = rsUnit
+
+    return render(request, 'board/b_item.html', context)
 
 
 def b_itemaccnt(request):
