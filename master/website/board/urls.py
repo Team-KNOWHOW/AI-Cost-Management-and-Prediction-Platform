@@ -11,14 +11,15 @@ urlpatterns = [
     path('b_co/', views.b_co, name='b_co_list'),
     path('b_factory/', views.b_factory, name='b_factory_list'),
     path('b_item/', views.b_item, name='b_item_list'),
-    path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt_list'),
-    path('b_itemgrp/', views.b_itemgrp, name='b_itemgrp_list'),
     path('b_user/', views.b_user, name='b_user_list'),
     path('b_workcenter/', views.b_workcenter, name='b_workcenter_list'),
     path('bom_hdr/', views.bom_hdr, name='bom_hdr_list'),
     path('cb_code_hdr/', views.cb_code_hdr, name='cb_code_hdr_list'),
     path('cb_cost_center/', views.cb_cost_center, name='cb_cost_center_list'),
     path('codemanage/', views.codemanage, name='codemanage'),
+    path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt'),
+    path('b_itemgrp/', views.b_itemgrp, name='b_itemgrp'),
+
     #사업장
     path('b_bizarea/bizarea_element_insert', views.bizarea_element_insert, name="bizarea_element_insert"),
     path('b_bizarea/bizarea_element_update', views.bizarea_element_update, name="bizarea_element_update"),
@@ -49,5 +50,13 @@ urlpatterns = [
     path('codemanage/code_update', views.code_update, name='code_update'),
     path('codemanage/code_delete', views.code_delete, name='code_delete'),
     path('codemanage/code_view', views.code_view, name='code_view'),
+
+    # 품목계정 기능 항목
+    path('b_itemaccnt/itemaccnt_insert', views.itemaccnt_insert, name='itemaccnt_insert'),
+    path('b_itemaccnt/itemaccnt_delete', views.itemaccnt_delete, name='itemaccnt_delete'),
+
+    # 품목그룹 기능 항목
+    path('b_itemgrp/itemgrp_insert', views.itemgrp_insert, name='itemgrp_insert'),
+    path('b_itemgrp/itemgrp_delete', views.itemgrp_delete, name='itemgrp_delete'),
 
 ]

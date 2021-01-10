@@ -216,14 +216,15 @@ class BItemgrp(models.Model):  # 품목그룹
     id = models.IntegerField(db_column='id', primary_key=True)
     itemgrp_cd = models.CharField(db_column='itemgrp_cd', max_length=50, blank=True, null=True)
     itemgrp_nm = models.CharField(db_column='itemgrp_nm', max_length=50, blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
+    insrt_dt = models.DateTimeField(db_column='insrt_dt', blank=True, null=True, auto_now_add=True)
+    updt_dt = models.DateTimeField(db_column='updt_dt', blank=True, null=True, auto_now=True)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
     user_id = models.IntegerField(db_column='user_id')
 
     class Meta:
         managed = False
         db_table = 'b_itemgrp'
+
 
 class BItem(models.Model):  # 품목마스터
     id = models.AutoField(db_column='id', primary_key=True)

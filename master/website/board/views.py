@@ -613,6 +613,10 @@ def code_view(request):
 # 통합코드관리 코드 끝
 # *********************************************************************************************************************
 
+# *********************************************************************************************************************
+# 품목마스터 코드 시작
+# *********************************************************************************************************************
+
 def b_item(request):
 
     context = {}
@@ -645,13 +649,134 @@ def b_item(request):
     return render(request, 'board/b_item.html', context)
 
 
+# *********************************************************************************************************************
+# 품목마스터 코드 끝
+# *********************************************************************************************************************
+
+
+# *********************************************************************************************************************
+# 품목 계정 코드 시작
+# *********************************************************************************************************************
+
+
 def b_itemaccnt(request):
-    return render(request, 'b_itemaccnt.html')
+    context = {}
+
+    rsItemaccnt = BItemaccnt.objects.filter(usage_fg='Y')
+
+    context["rsItemaccnt"] = rsItemaccnt
+
+    context["flag"] = "0"
+    context["result_msg"] = "품목계정"
+
+    return render(request, 'board/b_itemaccnt.html', context)
+
+@csrf_exempt
+def itemaccnt_insert(request):
+    context = {}
+
+    itemaccntcd = request.GET['itemaccntcd']
+    itemaccntnm = request.GET['itemaccntnm']
+
+    if BItemaccnt.objects.filter(itemaccnt_cd=itemaccntcd).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Item account code exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    if BItemaccnt.objects.filter(itemaccnt_nm=itemaccntnm).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Item account name exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    BItemaccnt.objects.create(itemaccnt_cd=itemaccntcd,
+                             itemaccnt_nm=itemaccntnm,
+                             )
+
+    context["flag"] = "0"
+    context["result_msg"] = "Insert success..."
+    return JsonResponse(context, content_type="application/json")
+
+@csrf_exempt
+def itemaccnt_delete(request):
+    context = {}
+
+    id = request.GET['id']
+
+    if BItemaccnt.objects.get(id=id):
+        rs = BItemaccnt.objects.get(id=id)
+        rs.usage_fg = 'N'
+        rs.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "Delete success..."
+    return JsonResponse(context, content_type="application/json")
+# *********************************************************************************************************************
+# 품목 계정 코드 끝
+# *********************************************************************************************************************
+
+# *********************************************************************************************************************
+# 품목 그룹 코드 시작
+# *********************************************************************************************************************
 
 
 def b_itemgrp(request):
-    return render(request, 'b_itemgrp.html')
 
+    context = {}
+
+    rsItemgrp = BItemgrp.objects.filter(usage_fg='Y')
+
+    context["rsItemgrp"] = rsItemgrp
+
+    context["flag"] = "0"
+    context["result_msg"] = "품목그룹"
+
+
+    return render(request, 'board/b_itemgrp.html', context)
+
+
+@csrf_exempt
+def itemgrp_insert(request):
+    context = {}
+
+    itemgrpcd = request.GET['itemgrpcd']
+    itemgrpnm = request.GET['itemgrpnm']
+
+    if BItemgrp.objects.filter(itemgrp_cd=itemgrpcd).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Item group code exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    if BItemgrp.objects.filter(itemgrp_nm=itemgrpnm).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Item account name exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    BItemgrp.objects.create(itemgrp_cd=itemgrpcd,
+                             itemgrp_nm=itemgrpnm,
+                             )
+
+    context["flag"] = "0"
+    context["result_msg"] = "Insert success..."
+    return JsonResponse(context, content_type="application/json")
+
+@csrf_exempt
+def itemgrp_delete(request):
+    context = {}
+
+    id = request.GET['id']
+
+    if BItemgrp.objects.get(id=id):
+        rs = BItemgrp.objects.get(id=id)
+        rs.usage_fg = 'N'
+        rs.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "Delete success..."
+    return JsonResponse(context, content_type="application/json")
+
+# *********************************************************************************************************************
+# 품목 그룹 코드 끝
+# *********************************************************************************************************************
 
 def b_user(request):
     return render(request, 'b_user.html')
