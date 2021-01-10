@@ -1,26 +1,33 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView
-
-from django.views.generic import CreateView
-from django.contrib.auth.forms import UserCreationForm
-from django.urls import reverse_lazy
+#from ..board.models import BUser
+import json
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Main View
-class MainView(TemplateView):
-    template_name = 'login.html'
+def main_view(request):
+    return render(request, "login.html")
 
 
-# User Creation
-class UserCreateView(CreateView):
-    template_name = 'registration/register.html'
-    form_class = UserCreationForm
-    success_url = reverse_lazy('register_done')
-
-
-class UserCreateDoneTV(TemplateView):
-    template_name = 'registration/register_done.html'
+# User Register
 
 def member_register(request):
     return render(request, "member_register.html")
 
+
+"""@csrf_exempt
+def member_id_check(request):
+    context = {}
+
+    member_id = request.GET['user_id']
+    rs = BUser.objects.filter(user_id=member_id)
+    if(len(rs))>0:
+        context['flag'] = '1'
+        context['result_msg'] = '이미 존재하는 아이디입니다.'
+    else:
+        context['flag'] = '0'
+        context['result_msg'] = '사용가능한 아이디입니다.'
+
+    return JsonResponse(context, content_type="application/json")
+"""
