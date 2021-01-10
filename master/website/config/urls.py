@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import MainView
 from .views import UserCreateView, UserCreateDoneTV
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +28,5 @@ urlpatterns = [
 
     path('', MainView.as_view(), name='main'),
     path('board/', include('board.urls')),
+    path('member_register', views.member_register, name="member_register"),
 ]
