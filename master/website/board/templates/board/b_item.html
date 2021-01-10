@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    {% include "navbar.html" %}
+    {% include "sidebar.html" %}
+
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="page-header"><i class="fa fa-table"></i>품목</h3>
+                </div>
+            </div>
+            <div>
+                <table width="100%">
+                    <tr>
+                        <td width="50%">
+                            <h5>조회 영역</h5>
+                        </td>
+                        <td width="50%" align="right">
+                            <a class="btn btn-primary btn-sm" href="" title="Bootstrap 3 themes generator">Template 다운로드</a>
+                            <a class="btn btn-primary btn-sm" href="" title="Bootstrap 3 themes generator">액셀 업로드</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                <section class="panel">
+                  <div class="table-responsive">
+
+                      {% if rsItem %}
+                          <table class="table">
+                              <thead>
+                                <tr>
+                                    <th width="8%">공장코드</th>
+                                    <th width="12%">공장명</th>
+                                    <th width="8%">품목코드</th>
+                                    <th width="12%">품목명</th>
+                                    <th width="12%">규격</th>
+                                    <th width="12%">단위</th>
+                                    <th width="8%">품목그룹</th>
+                                    <th width="12%">품목그룹명</th>
+                                    <th width="12%">품목계정</th>
+                                    <th width="8%"></th>
+                                </tr>
+                              </thead>
+                        {% for i in rsItem %}
+                              <tbody id="typebox_{{ i.id }}">
+                              <tr>
+                                  <td width="8%">
+                                      {{ i.factory_cd }}
+                                  </td>
+                                  <td width="12%">
+                                      <select>
+                                          {% for ii in rsFactory %}
+                                          {% if i.factory_id == ii.id %}
+                                          <option selected> {{ ii.factory_nm }} </option>
+                                          {% else %}
+                                          <option> {{ ii.factory_nm }} </option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="8%">{{ i.item_cd }}</td>
+                                  <td width="12%">{{ i.item_nm }}</td>
+                                  <td width="12%">{{ i.item_spec }}</td>
+                                  <td width="12%">
+                                      <select>
+                                          {% for ii in rsUnit %}
+                                          {% if i.unit_id == ii.id %}
+                                          <option selected> {{ ii.cd_nm }} </option>
+                                          {% else %}
+                                          <option> {{ ii.cd_nm }} </option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="8%">{{ i.itemgrp_cd }}</td>
+                                  <td width="12%">
+                                      <select>
+                                          {% for ii in rsItemgrp %}
+                                          {% if i.itemgrp_id == ii.id %}
+                                          <option selected> {{ ii.itemgrp_nm }} </option>
+                                          {% else %}
+                                          <option> {{ ii.itemgrp_nm }} </option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="12%">
+                                      <select>
+                                          {% for ii in rsItemaccnt %}
+                                          {% if i.itemaccnt_id == ii.id %}
+                                          <option selected> {{ ii.itemaccnt_nm }} </option>
+                                          {% else %}
+                                          <option> {{ ii.itemaccnt_nm }} </option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="8%"><a class="btn btn-default btn-sm" href="" title="Bootstrap 3 themes generator">수정</a></td>
+                              </tr>
+                              </tbody>
+                        {% endfor %}
+                              <tbody>
+                              <tr>
+                                  <td width="8%"></td>
+                                  <td width="12%">
+                                      <select>
+                                          {% for ii in rsFactory %}
+                                          {% if i.factory_id == ii.id %}
+                                          <option selected> {{ ii.factory_nm }} </option>
+                                          {% else %}
+                                          <option> {{ ii.factory_nm }} </option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="8%"> <input type="text" class="form-control"></td>
+                                  <td width="12%"> <input type="text" class="form-control"></td>
+                                  <td width="12%"> <input type="text" class="form-control"></td>
+                                  <td width="12%">
+                                      <select>
+                                          {% for ii in rsUnit %}
+                                          {% if i.unit_id == ii.id %}
+                                          <option selected> {{ ii.cd_nm }} </option>
+                                          {% else %}
+                                          <option> {{ ii.cd_nm }} </option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="8%"></td>
+                                  <td width="12%">
+                                      <select>
+                                          {% for ii in rsItemgrp %}
+                                          {% if i.itemgrp_id == ii.id %}
+                                          <option selected> {{ ii.itemgrp_nm }} </option>
+                                          {% else %}
+                                          <option> {{ ii.itemgrp_nm }} </option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="12%">
+                                      <select>
+                                          {% for ii in rsItemaccnt %}
+                                          {% if i.itemaccnt_id == ii.id %}
+                                          <option selected> {{ ii.itemaccnt_nm }} </option>
+                                          {% else %}
+                                          <option> {{ ii.itemaccnt_nm }} </option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="8%"><a class="btn btn-default btn-sm" href="" title="Bootstrap 3 themes generator">등록</a></td>
+                              </tr>
+                              </tbody>
+
+                              </table>
+                      {% else %}
+                            <span>Itme이 없습니다.</span>
+                      {% endif %}
+                  </div>
+
+                </section>
+              </div>
+            </div>
+
+             <div class="row">
+                <div class="col-lg-12">
+                <section class="panel">
+                  <div class="table-responsive">
+                      <table class="table" border="2">
+                          <tr>
+                              <td width="25%">
+                                  {% for i in rsFactory %}
+                                    <div>{{ i.id }}.{{ i.factory_cd }} - {{ i.factory_nm }}</div>
+                                  {% endfor %}
+                              </td>
+                              <td width="25%">
+                                  {% for i in rsUnit %}
+                                    <div>{{ i.id }}.{{ i.code_cd }} - {{ i.cd_nm }}</div>
+                                  {% endfor %}
+                              </td>
+                              <td width="25%">
+                                  {% for i in rsItemgrp %}
+                                    <div>{{ i.id }}.{{ i.itemgrp_cd }} - {{ i.itemgrp_nm }}</div>
+                                  {% endfor %}
+                              </td>
+                              <td width="25%">
+                                  {% for i in rsItemaccnt %}
+                                    <div>{{ i.id }}.{{ i.itmeaccnt_cd }} - {{ i.itemaccnt_nm }}</div>
+                                  {% endfor %}
+                              </td>
+                          </tr>
+                      </table>
+                  </div>
+
+                </section>
+              </div>
+            </div>
+        </section>
+        <!--main content end-->
+    </section>
+    <!-- container section start -->
+
+{% endblock %}
