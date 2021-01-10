@@ -5,6 +5,8 @@ from django.http import HttpResponse, JsonResponse
 
 #
 board_path = "board/"
+
+
 #
 # Create your views here.
 def home(request):
@@ -13,6 +15,7 @@ def home(request):
 
 def b_bizarea(request):
     return render(request, 'b_bizarea.html')
+
 
 # *********************************************************************************************************************
 # 거래처 코드 시작
@@ -27,15 +30,15 @@ def b_bizpartner(request):
 
     context["rsHeader"] = rsHeader
 
-
     context["title"] = "거래처"
     context["result_msg"] = "거래처"
 
-    return render(request, board_path+"b_bizpartner.html", context)
+    return render(request, board_path + "b_bizpartner.html", context)
+
 
 @csrf_exempt
 def bizpartner_element_insert(request):
-    #print("실행완료")
+    # print("실행완료")
     context = {}
 
     bizpartnercd = request.GET['bizpartnercd']
@@ -47,7 +50,6 @@ def bizpartner_element_insert(request):
     curcd = request.GET['curcd']
     bizpartnerstat = request.GET['bizpartnerstat']
     usagefg = 'Y'
-
 
     if BBizpartner.objects.filter(bizpartner_cd=bizpartnercd).exists():
         context["flag"] = "1"
@@ -98,11 +100,12 @@ def bizpartner_element_insert(request):
                                cur_cd=curcd,
                                bizpartner_stat=bizpartnerstat,
                                usage_fg=usagefg
-                             )
+                               )
 
     context["flag"] = "0"
     context["result_msg"] = "bizpartner insert success..."
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def bizpartner_element_update(request):
@@ -123,6 +126,7 @@ def bizpartner_element_update(request):
     context["flag"] = "0"
     context["result_msg"] = "Type update success..."
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def bizpartner_element_delete(request):
@@ -148,7 +152,7 @@ def b_bizunit(request):
 
 
 def b_co(request):
-    return render(request, board_path+"b_co.html")
+    return render(request, board_path + "b_co.html")
 
 
 # *********************************************************************************************************************
@@ -163,11 +167,11 @@ def b_factory(request):
 
     context["rsHeader"] = rsHeader
 
-
     context["title"] = "공장"
     context["result_msg"] = "공장"
 
-    return render(request, board_path+"b_factory.html", context)
+    return render(request, board_path + "b_factory.html", context)
+
 
 @csrf_exempt
 def factory_element_insert(request):
@@ -177,7 +181,6 @@ def factory_element_insert(request):
     factorynm = request.GET['factorynm']
     factoryrmrk = request.GET['factoryrmrk']
     usagefg = 'Y'
-
 
     if BFactory.objects.filter(factory_cd=factorycd).exists():
         context["flag"] = "1"
@@ -196,14 +199,15 @@ def factory_element_insert(request):
 
     # 생성 부분
     BFactory.objects.create(factory_cd=factorycd,
-                               factory_nm=factorynm,
-                               factory_rmrk=factoryrmrk,
-                               usage_fg=usagefg
-                             )
+                            factory_nm=factorynm,
+                            factory_rmrk=factoryrmrk,
+                            usage_fg=usagefg
+                            )
 
     context["flag"] = "0"
     context["result_msg"] = "factory insert success..."
     return JsonResponse(context, content_type="application/json")
+
 
 # Update기능 미완성 -> 회의 후 항목 설정 예정.
 @csrf_exempt
@@ -226,6 +230,7 @@ def factory_element_update(request):
     context["result_msg"] = "BFactory update success..."
     return JsonResponse(context, content_type="application/json")
 
+
 @csrf_exempt
 def factory_element_delete(request):
     context = {}
@@ -239,6 +244,8 @@ def factory_element_delete(request):
     context["flag"] = "0"
     context["result_msg"] = "BFactory elements delete success..."
     return JsonResponse(context, content_type="application/json")
+
+
 # *********************************************************************************************************************
 # 공장 코드 끝
 # *********************************************************************************************************************
@@ -312,6 +319,7 @@ def codetype_update(request):
     context["result_msg"] = "Type update success..."
     return JsonResponse(context, content_type="application/json")
 
+
 @csrf_exempt
 def codetype_delete(request):
     context = {}
@@ -331,6 +339,7 @@ def codetype_delete(request):
         context["flag"] = "0"
         context["result_msg"] = "Type delete success..."
         return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def code_insert(request):
@@ -375,6 +384,7 @@ def code_update(request):
         context["result_msg"] = "Code update success..."
         return JsonResponse(context, content_type="application/json")
 
+
 @csrf_exempt
 def code_delete(request):
     context = {}
@@ -390,7 +400,8 @@ def code_delete(request):
     context["result_msg"] = "Code deleted... "
     return JsonResponse(context, content_type="application/json")
 
-#상세정보 html 만들어야함 일단 보류
+
+# 상세정보 html 만들어야함 일단 보류
 def code_view(request):
     context = {}
 
@@ -405,7 +416,6 @@ def code_view(request):
 
     context["result_msg"] = "Code detail"
     return render(request, "board/codeview.html", context)
-
 
 
 # *********************************************************************************************************************
