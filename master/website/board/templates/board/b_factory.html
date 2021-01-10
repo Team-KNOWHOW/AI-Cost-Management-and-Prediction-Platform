@@ -18,29 +18,20 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h3 class="page-header"><i class="fa fa-table"></i> 공장</h3>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-home"></i><a href="/">Home</a></li>
-                        <li><i class="fa fa-table"></i>Table</li>
-                        <li><i class="fa fa-th-list"></i>Basic Table</li>
-                    </ol>
                 </div>
             </div>
-            <div style="height:30px;"></div>
 
-<div style="margin:20px 0 ;">
-    Adder
+<div>
     {% if not rsHeader %}
         <p class="text-center">내용이 없습니다! </p>
     {% else %}
-        <div style="margin:20px 0;">
-<!--        <div style="border-top:solid 2px #888;">-->
+        <div>
         <table>
             <tr>
-                <td width="" align="center"  bgcolor="#E8E8E8">공장코드</td>
-                <td width="" align="center"  bgcolor="#E8E8E8">공장명</td>
-                <td width="" align="center"  bgcolor="#E8E8E8">비고</td>
-                <td width="" align="center"  bgcolor="#E8E8E8">등록</td>
-                <td width="" align="center" style="padding-right:10px ;"  bgcolor="#E8E8E8">
+                <td width="" align="center"  >공장코드</td>
+                <td width="" align="center"  >공장명</td>
+                <td width="" align="center"  >비고</td>
+                <td width="" align="center"  >등록</td>
                 </td>
             </tr>
                                   <tbody >
@@ -66,14 +57,12 @@
         </table>
         </div>
     </div>
+            <br>
     {% endif %}
-</div>
-            <div class="row" style="margin:2px 0;">
-              <div class="col-lg-12" style="margin-top:15px">
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
                 <section class="panel">
-                  <header class="panel-heading">
-                    공장 테이블
-                  </header>
                   <div class="table-responsive">
                     {% if rsHeader %}
                           <table class="table">
@@ -83,10 +72,10 @@
                                     <th>공장코드</th>
                                     <th>공장명</th>
                                     <th>비고</th>
-                                    <th>생성자</th>
                                     <th>생성일자</th>
-                                    <th>수정자</th>
                                     <th>수정일자</th>
+                                    <th>수정자</th>
+                                    <th width="5%"></th>
 <!--                                    <th>사용구분</th>-->
                                 </tr>
                               </thead>
@@ -107,17 +96,14 @@
                                           {{ i.factory_rmrk }}
                                       </td>
                                         <td>
-                                          {{ i.insrt_id }}
-                                      </td>
-                                        <td>
                                           {{ i.insrt_dt }}
-                                      </td>
-                                        <td>
-                                          {{ i.updt_id }}
                                       </td>
                                         <td>
                                           {{ i.updt_dt }}
                                       </td>
+                                        <td>
+                                            {{ i.user_id }}
+                                        </td>
                                         <td width="5%" align="center" style="padding:5px 0;" >
                     <span id="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
                 </td>
