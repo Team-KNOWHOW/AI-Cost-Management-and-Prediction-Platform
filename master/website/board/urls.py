@@ -19,6 +19,14 @@ urlpatterns = [
     path('cb_code_hdr/', views.cb_code_hdr, name='cb_code_hdr_list'),
     path('cb_cost_center/', views.cb_cost_center, name='cb_cost_center_list'),
     path('codemanage/', views.codemanage, name='codemanage'),
+    #사업장
+    path('b_bizarea/bizarea_element_insert', views.bizarea_element_insert, name="bizarea_element_insert"),
+    path('b_bizarea/bizarea_element_update', views.bizarea_element_update, name="bizarea_element_update"),
+    path('b_bizarea/bizarea_element_delete', views.bizarea_element_delete, name="bizarea_element_delete"),
+    #사업부
+    path('b_bizunit/bizunit_element_insert', views.bizunit_element_insert, name="bizunit_element_insert"),
+    path('b_bizunit/bizunit_element_update', views.bizunit_element_update, name="bizunit_element_update"),
+    path('b_bizunit/bizunit_element_delete', views.bizunit_element_delete, name="bizunit_element_delete"),
 
     # 공장 기능 항목
     path('b_factory/factory_element_insert', views.factory_element_insert, name="factory_element_insert"),

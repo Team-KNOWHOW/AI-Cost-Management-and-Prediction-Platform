@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+    {{ block.super }}
+
+
+{% endblock %}
+
+{% block body %}
+
+    {% include "navbar.html" %}
+    {% include "sidebar.html" %}
+
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="page-header"><i class="fa fa-table"></i> 사업부</h3>
+                </div>
+            </div>
+
+<div>
+    {% if not rsHeader %}
+        <p class="text-center">내용이 없습니다! </p>
+    {% else %}
+        <div>
+<!--        <div style="border-top:solid 2px #888;">-->
+        <table>
+            <tr>
+                <td width="" align="center">사업부코드</td>
+                <td width="" align="center">사업부명</td>
+                <td width="" align="center">비고</td>
+                <td width="" align="center">등록</td>
+                </td>
+            </tr>
+                                  <tbody >
+                                    <tr>
+                                        <td>
+                                          <input type="text" id="bizunit_cd" value="" style="width:100px;" >
+
+                                      </td>
+                                        <td>
+                                          <input type="text" id="bizunit_nm" value="" >
+
+                                      </td>
+                                        <td>
+                                          <input type="text" id="bizunit_rmrk" value="" >
+
+                                      </td>
+                                        <td>
+                                            <button onclick="insert_element();" style="width: 50px">저장</button>
+                                        </td>
+                                    </tr>
+                                  </tbody>
+
+        </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+            <div class="row">
+              <div class="col-lg-12" style="margin-top:15px">
+                <section class="panel">
+                  <div class="table-responsive">
+                    {% if rsHeader %}
+                          <table class="table">
+                              <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>사업부코드</th>
+                                    <th>사업부명</th>
+                                    <th>비고</th>
+                                    <th>생성자</th>
+                                    <th>생성일자</th>
+                                    <th>수정자</th>
+                                    <th>수정일자</th>
+<!--                                    <th>사용구분</th>-->
+                                </tr>
+                              </thead>
+                        {% for i in rsHeader %}
+                                  <tbody >
+                                    <tr>
+                                      <td>
+<!--                                          <a href="b_bizpartner?id={{ i.id }}">-->
+                                          {{ i.id }}
+                                      </td>
+                                        <td>
+                                          {{ i.bizunit_cd }}
+                                      </td>
+                                        <td>
+                                          {{ i.bizunit_nm }}
+                                      </td>
+                                        <td>
+                                          {{ i.bizunit_rmrk }}
+                                      </td>
+                                        <td>
+                                          {{ i.insrt_id }}
+                                      </td>
+                                        <td>
+                                          {{ i.insrt_dt }}
+                                      </td>
+                                        <td>
+                                          {{ i.updt_id }}
+                                      </td>
+                                        <td>
+                                          {{ i.updt_dt }}
+                                      </td>
+                                        <td width="5%" align="center" style="padding:5px 0;" >
+                    <span id="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
+                </td>
+
+                                    </tr>
+                                  </tbody>
+                              {% endfor %}
+                              </table>
+                      {% else %}
+                      <span>내용이 없습니다.</span>
+                      {% endif %}
+                  </div>
+
+                </section>
+              </div>
+            </div>
+            <script>
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+        var xhr;
+
+        function insert_element() {
+//변수 리스트
+            var bizunitcd = document.getElementById("bizunit_cd").value;
+            var bizunitnm = document.getElementById("bizunit_nm").value;
+            var bizunitrmrk = document.getElementById("bizunit_rmrk").value;
+
+//예외 처리
+            // 사업부 코드 항목
+            if(bizunitcd == '') {
+                alert('사업부 코드가 비었습니다.');
+                document.getElementById("bizunit_cd").focus();
+                return false;
+            }
+            // 사업부명 항목
+            if(bizunitnm == '') {
+                alert('사업부명이 비었습니다.');
+                document.getElementById("bizunit_nm").focus();
+                return false;
+            }
+            // 비고 항목
+            if(bizunitrmrk == '') {
+                alert('사업부 비고가 비었습니다.');
+                document.getElementById("bizunit_rmrk").focus();
+                return false;
+            }
+
+//예외 처리 끝
+
+            var strurl = "bizunit_element_insert?bizunitcd=" + bizunitcd + "&bizunitnm=" + bizunitnm+ "&bizunitrmrk=" + bizunitrmrk;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    alert(obj.result_msg);
+
+                    if(obj.flag =='0') {
+                        location.reload();
+                    }
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+
+        function update_element(elem) {
+            var id = elem.getAttribute('id');
+            var e_value = elem.value;
+            if(e_value == ''){
+                alert('Value empty');
+                elem.focus();
+                return false;
+            }
+
+            var strurl = "bizunit_element_update?id=" + id + "&e_value=" + e_value;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    alert(obj.result_msg);
+                    // if(obj.flag =='1') {
+                    //     document.getElementById('typebox_' + id).ontimeupdate();
+                    // }
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+
+        function delete_element(elem) {
+
+            var id = elem.getAttribute('id');
+
+            var strurl = "bizunit_element_delete?id=" + id;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    alert(obj.result_msg);
+
+                    if(obj.flag =='1') {
+                        document.getElementById('typebox_' + id).remove();
+                    }
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+    </script>
+
+        </section>
+        <!--main content end-->
+    </section>
+    <!-- container section start -->
+{% endblock %}
