@@ -17,7 +17,7 @@
         <section class="wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-table"></i> 거래처</h3>
+                    <h3 class="page-header"><i class="fa fa-table"></i> 사업부</h3>
                 </div>
             </div>
 
@@ -26,54 +26,28 @@
         <p class="text-center">내용이 없습니다! </p>
     {% else %}
         <div>
-        <div style="border-top:solid 2px #888;">
+<!--        <div style="border-top:solid 2px #888;">-->
         <table>
             <tr>
-                <td width="3%" align="center"  bgcolor="#E8E8E8">법인명</td>
-                <td width="3%" align="center"  bgcolor="#E8E8E8">거래처코드</td>
-                <td width="3%" align="center"  bgcolor="#E8E8E8">거래처형태</td>
-                <td width="3%" align="center"  bgcolor="#E8E8E8">상호명</td>
-                <td width="3%" align="center"  bgcolor="#E8E8E8">거래처명</td>
-                <td width="3%" align="center"  bgcolor="#E8E8E8">국가코드</td>
-                <td width="3%" align="center"  bgcolor="#E8E8E8">통화코드</td>
-                <td width="3%" align="center"  bgcolor="#E8E8E8">거래처상태</td>
-
-                <td width="3%" align="center"  bgcolor="#E8E8E8">등록</td>
-                <td width="3%" align="center" style="padding-right:10px ;"  bgcolor="#E8E8E8">
+                <td width="" align="center">사업부코드</td>
+                <td width="" align="center">사업부명</td>
+                <td width="" align="center">비고</td>
+                <td width="" align="center">등록</td>
                 </td>
             </tr>
                                   <tbody >
                                     <tr>
                                         <td>
-                                          <input type="text" id="co_id" value="" style="width:100px;" >
+                                          <input type="text" id="bizunit_cd" value="" style="width:100px;" >
 
                                       </td>
                                         <td>
-                                          <input type="text" id="bizpartner_cd" value="" >
+                                          <input type="text" id="bizunit_nm" value="" >
 
                                       </td>
                                         <td>
-                                          <input type="text" id="bizpartner_type" value="" >
+                                          <input type="text" id="bizunit_rmrk" value="" >
 
-                                      </td>
-                                        <td>
-                                          <input type="text" id="biz_nm" value="" >
-
-                                      </td>
-                                        <td>
-                                          <input type="text" id="bizpartner_nm" value="" >
-
-                                      </td>
-                                        <td>
-                                          <input type="text" id="cn_cd" value="" >
-
-                                      </td>
-                                        <td>
-                                          <input type="text" id="cur_cd" value="" >
-
-                                      </td>
-                                        <td>
-                                          <input type="text" id="bizpartner_stat" value="" style="width:100px;" >
                                       </td>
                                         <td>
                                             <button onclick="insert_element();" style="width: 50px">저장</button>
@@ -86,27 +60,18 @@
     </div>
     {% endif %}
 </div>
-
-            <div class="row" style="border-top:solid 2px #888;">
-              <div class="col-lg-12" style="margin-top:20px">
+            <div class="row">
+              <div class="col-lg-12" style="margin-top:15px">
                 <section class="panel">
-                  <header class="panel-heading">
-                    Bizpartner tables
-                  </header>
                   <div class="table-responsive">
                     {% if rsHeader %}
                           <table class="table">
                               <thead>
                                 <tr>
-                                    <th width="5%">ID</th>
-                                    <th>법인</th>
-                                    <th>거래처코드</th>
-                                    <th>거래처형태</th>
-                                    <th>상호명</th>
-                                    <th>거래처명</th>
-                                    <th>국가코드</th>
-                                    <th>통화코드</th>
-                                    <th>거래처상태</th>
+                                    <th>ID</th>
+                                    <th>사업부코드</th>
+                                    <th>사업부명</th>
+                                    <th>비고</th>
                                     <th>생성자</th>
                                     <th>생성일자</th>
                                     <th>수정자</th>
@@ -122,28 +87,13 @@
                                           {{ i.id }}
                                       </td>
                                         <td>
-                                          {{ i.co_id }}
+                                          {{ i.bizunit_cd }}
                                       </td>
                                         <td>
-                                          {{ i.bizpartner_cd }}
+                                          {{ i.bizunit_nm }}
                                       </td>
                                         <td>
-                                          {{ i.bizpartner_type }}
-                                      </td>
-                                        <td>
-                                          {{ i.biz_nm }}
-                                      </td>
-                                        <td>
-                                          {{ i.bizpartner_nm }}
-                                      </td>
-                                        <td>
-                                          {{ i.cn_cd }}
-                                      </td>
-                                        <td>
-                                          {{ i.cur_cd }}
-                                      </td>
-                                        <td>
-                                          {{ i.bizpartner_stat }}
+                                          {{ i.bizunit_rmrk }}
                                       </td>
                                         <td>
                                           {{ i.insrt_id }}
@@ -163,10 +113,10 @@
 
                                     </tr>
                                   </tbody>
-                        {% endfor %}
+                              {% endfor %}
                               </table>
                       {% else %}
-                            <span>Type이 없습니다.</span>
+                      <span>내용이 없습니다.</span>
                       {% endif %}
                   </div>
 
@@ -193,71 +143,36 @@
 
         var xhr;
 
-
         function insert_element() {
+//변수 리스트
+            var bizunitcd = document.getElementById("bizunit_cd").value;
+            var bizunitnm = document.getElementById("bizunit_nm").value;
+            var bizunitrmrk = document.getElementById("bizunit_rmrk").value;
 
-            var bizpartnercd = document.getElementById("bizpartner_cd").value;
-            var coid = document.getElementById("co_id").value;
-            var bizpartnertype = document.getElementById("bizpartner_type").value;
-            var biznm = document.getElementById("biz_nm").value;
-            var bizpartnernm = document.getElementById("bizpartner_nm").value;
-            var cncd = document.getElementById("cn_cd").value;
-            var curcd = document.getElementById("cur_cd").value;
-            var bizpartnerstat = document.getElementById("bizpartner_stat").value;
 //예외 처리
-            // 거래처 코드 항목
-            if(bizpartnercd == '') {
-                alert('거래처 코드가 비었습니다.');
-                document.getElementById("bizpartner_cd").focus();
+            // 사업부 코드 항목
+            if(bizunitcd == '') {
+                alert('사업부 코드가 비었습니다.');
+                document.getElementById("bizunit_cd").focus();
                 return false;
             }
-            // 법인 항목
-            if(coid == '') {
-                alert('법인명이 비었습니다.');
-                document.getElementById("co_id").focus();
+            // 사업부명 항목
+            if(bizunitnm == '') {
+                alert('사업부명이 비었습니다.');
+                document.getElementById("bizunit_nm").focus();
                 return false;
             }
-            // 거래처형태 항목
-            if(bizpartnertype == '') {
-                alert('거래처형태가 비었습니다.');
-                document.getElementById("bizpartner_type").focus();
+            // 비고 항목
+            if(bizunitrmrk == '') {
+                alert('사업부 비고가 비었습니다.');
+                document.getElementById("bizunit_rmrk").focus();
                 return false;
             }
-            // 거래처형태 항목
-            if(biznm == '') {
-                alert('상호명이 비었습니다.');
-                document.getElementById("biz_nm").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(bizpartnernm == '') {
-                alert('거래처명이 비었습니다.');
-                document.getElementById("bizpartner_nm").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(cncd == '') {
-                alert('국가코드가 비었습니다.');
-                document.getElementById("cn_cd").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(curcd == '') {
-                alert('통화코드가 비었습니다.');
-                document.getElementById("cur_cd").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(bizpartnerstat == '') {
-                alert('거래처 상태가 비었습니다.');
-                document.getElementById("bizpartner_stat").focus();
-                return false;
-            }
+
 //예외 처리 끝
 
-            var strurl = "bizpartner_element_insert?bizpartnercd=" + bizpartnercd + "&coid=" + coid+ "&bizpartnertype=" +
-                bizpartnertype+ "&biznm=" + biznm+ "&bizpartnernm=" + bizpartnernm+ "&cncd=" + cncd+ "&curcd=" + curcd+"&bizpartnerstat=" + bizpartnerstat;
-            alert(strurl);
+            var strurl = "bizunit_element_insert?bizunitcd=" + bizunitcd + "&bizunitnm=" + bizunitnm+ "&bizunitrmrk=" + bizunitrmrk;
+            //alert(strurl);
             //return false;
 
             xhr = new XMLHttpRequest();
@@ -287,7 +202,7 @@
                 return false;
             }
 
-            var strurl = "bizpartner_element_update?id=" + id + "&e_value=" + e_value;
+            var strurl = "bizunit_element_update?id=" + id + "&e_value=" + e_value;
             //alert(strurl);
             //return false;
 
@@ -298,7 +213,9 @@
 
                     var obj = JSON.parse(data);
                     alert(obj.result_msg);
-
+                    // if(obj.flag =='1') {
+                    //     document.getElementById('typebox_' + id).ontimeupdate();
+                    // }
                 }
             };
             xhr.open("POST", strurl);
@@ -310,7 +227,7 @@
 
             var id = elem.getAttribute('id');
 
-            var strurl = "bizpartner_element_delete?id=" + id;
+            var strurl = "bizunit_element_delete?id=" + id;
             //alert(strurl);
             //return false;
 
