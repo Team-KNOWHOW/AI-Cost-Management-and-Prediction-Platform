@@ -19,13 +19,13 @@ def member_register(request):
     return render(request, "registration/member_register.html")
 
 
-"""@csrf_exempt
-def member_id_check(request):
+@csrf_exempt
+def member_id_check(request):  # 아이디 중복체크
     context = {}
 
     member_id = request.GET['user_id']
     rs = BUser.objects.filter(user_id=member_id)
-    if(len(rs))>0:
+    if (len(rs)) > 0:
         context['flag'] = '1'
         context['result_msg'] = '이미 존재하는 아이디입니다.'
     else:
@@ -33,7 +33,28 @@ def member_id_check(request):
         context['result_msg'] = '사용가능한 아이디입니다.'
 
     return JsonResponse(context, content_type="application/json")
-"""
+
+
+@csrf_exempt
+def member_insert(request):  # 회원등록
+    context = {}
+
+    member_id = request.GET['user_id']
+    member_pwd = request.GET['psswd']
+    member_name = request.GET['user_nm']
+    member_phone_num = request.GET['phoneno']
+    member_email = request.GET['email']
+
+    rs = BUser.objects.create(user_id=member_id,
+                              psswd=member_pwd,
+                              user_nm=member_name,
+                              email=member_email,
+                              phoneno=member_phone_num,
+                              usage_fg='1', )
+
+    context['result_msg'] = '회원가입이 완료되었습니다.'
+
+    return JsonResponse(context, content_type="application/json")
 
 
 # *********************************************************************************************************************
