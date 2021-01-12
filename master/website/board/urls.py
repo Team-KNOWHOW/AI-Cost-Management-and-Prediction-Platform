@@ -20,6 +20,9 @@ urlpatterns = [
     path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt'),
     path('b_itemgrp/', views.b_itemgrp, name='b_itemgrp'),
 
+    # 회원가입
+    path('member_register', views.member_register, name="member_register"),
+
     #사업장
     path('b_bizarea/bizarea_element_insert', views.bizarea_element_insert, name="bizarea_element_insert"),
     path('b_bizarea/bizarea_element_update', views.bizarea_element_update, name="bizarea_element_update"),
