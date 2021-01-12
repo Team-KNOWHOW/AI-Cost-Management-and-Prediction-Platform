@@ -22,12 +22,14 @@ urlpatterns = [
 
     # 회원가입
     path('member_register', views.member_register, name="member_register"),
+    path('member_id_check', views.member_id_check, name="member_id_check"),
+    path('member_insert', views.member_insert, name="member_insert"),
 
-    #사업장
+    # 사업장
     path('b_bizarea/bizarea_element_insert', views.bizarea_element_insert, name="bizarea_element_insert"),
     path('b_bizarea/bizarea_element_update', views.bizarea_element_update, name="bizarea_element_update"),
     path('b_bizarea/bizarea_element_delete', views.bizarea_element_delete, name="bizarea_element_delete"),
-    #사업부
+    # 사업부
     path('b_bizunit/bizunit_element_insert', views.bizunit_element_insert, name="bizunit_element_insert"),
     path('b_bizunit/bizunit_element_update', views.bizunit_element_update, name="bizunit_element_update"),
     path('b_bizunit/bizunit_element_delete', views.bizunit_element_delete, name="bizunit_element_delete"),
@@ -42,13 +44,12 @@ urlpatterns = [
     path('b_bizpartner/bizpartner_element_update', views.bizpartner_element_update, name="bizpartner_element_update"),
     path('b_bizpartner/bizpartner_element_delete', views.bizpartner_element_delete, name="bizpartner_element_delete"),
 
-
-    #통합코드 헤더 기능 항목
+    # 통합코드 헤더 기능 항목
     path('codemanage/codetype_insert', views.codetype_insert, name="codetype_insert"),
     path('codemanage/codetype_update', views.codetype_update, name="codetype_update"),
     path('codemanage/codetype_delete', views.codetype_delete, name="codetype_delete"),
 
-    #통합코드 디테일 기능 항목
+    # 통합코드 디테일 기능 항목
     path('codemanage/code_insert', views.code_insert, name='code_insert'),
     path('codemanage/code_update', views.code_update, name='code_update'),
     path('codemanage/code_delete', views.code_delete, name='code_delete'),
