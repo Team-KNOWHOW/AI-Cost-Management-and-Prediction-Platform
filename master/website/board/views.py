@@ -8,12 +8,32 @@ board_path = "board/"
 
 
 #
-# Create your views here.
+# Basic views
 def home(request):
     return render(request, 'home.html')
 
 
+# User Register
 
+def member_register(request):
+    return render(request, "registration/member_register.html")
+
+
+"""@csrf_exempt
+def member_id_check(request):
+    context = {}
+
+    member_id = request.GET['user_id']
+    rs = BUser.objects.filter(user_id=member_id)
+    if(len(rs))>0:
+        context['flag'] = '1'
+        context['result_msg'] = '이미 존재하는 아이디입니다.'
+    else:
+        context['flag'] = '0'
+        context['result_msg'] = '사용가능한 아이디입니다.'
+
+    return JsonResponse(context, content_type="application/json")
+"""
 
 
 # *********************************************************************************************************************
@@ -147,36 +167,37 @@ def bizpartner_element_delete(request):
 # *********************************************************************************************************************
 
 
-
-
 def b_co(request):
     return render(request, board_path + "b_co.html")
 
-#**********************************************************************************************************************
-#사업장 코드 시작
-#**********************************************************************************************************************
+
+# **********************************************************************************************************************
+# 사업장 코드 시작
+# **********************************************************************************************************************
 
 def b_bizarea(request):
-    context ={}
-    rsHeader=BBizarea.objects.filter(usage_fg='Y')
+    context = {}
+    rsHeader = BBizarea.objects.filter(usage_fg='Y')
 
-    strsql="SELECT b.*,a.*,c.* "+\
-           "FROM b_bizarea a " +\
-           "LEFT JOIN b_co b ON a.co_id=b.id "+\
-           "LEFT JOIN cb_code_dtl c ON a.unit_id=c.id "
-    rsBizarea =BBizarea.objects.raw(strsql)
-    context["rsBizarea"]=rsBizarea[:100]
+    strsql = "SELECT b.*,a.*,c.* " + \
+             "FROM b_bizarea a " + \
+             "LEFT JOIN b_co b ON a.co_id=b.id " + \
+             "LEFT JOIN cb_code_dtl c ON a.unit_id=c.id "
+    rsBizarea = BBizarea.objects.raw(strsql)
+    context["rsBizarea"] = rsBizarea[:100]
 
-    rsCo=BCo.objects.filter()
-    rsUnitCur= CbCodeDtl.objects.filter(type_cd='currency', usage_fg='Y')
+    rsCo = BCo.objects.filter()
+    rsUnitCur = CbCodeDtl.objects.filter(type_cd='currency', usage_fg='Y')
     rsUnitCn = CbCodeDtl.objects.filter(type_cd='country', usage_fg='Y')
-    context["rsCo"]=rsCo
-    context["rsUnitCur"]=rsUnitCur
+    context["rsCo"] = rsCo
+    context["rsUnitCur"] = rsUnitCur
     context["rsUnitCn"] = rsUnitCn
-    context["rsHeader"]=rsHeader
+    context["rsHeader"] = rsHeader
     context["title"] = "사업장"
     context["result_msg"] = "사업장"
-    return render(request, board_path+"b_bizarea.html", context)
+    return render(request, board_path + "b_bizarea.html", context)
+
+
 @csrf_exempt
 def bizarea_element_insert(request):
     context = {}
@@ -185,7 +206,6 @@ def bizarea_element_insert(request):
     bizareanm = request.GET['bizareanm']
     bizrpr = request.GET['bizrpr']
     usagefg = 'Y'
-
 
     if BBizarea.objects.filter(bizarea_cd=bizareacd).exists():
         context["flag"] = "1"
@@ -208,14 +228,15 @@ def bizarea_element_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     BBizarea.objects.create(bizarea_cd=bizareacd,
-                               bizarea_nm=bizareanm,
-                               biz_rpr=bizrpr,
-                               usage_fg=usagefg
-                             )
+                            bizarea_nm=bizareanm,
+                            biz_rpr=bizrpr,
+                            usage_fg=usagefg
+                            )
 
     context["flag"] = "0"
     context["result_msg"] = "bizarea insert success..."
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def bizarea_element_update(request):
@@ -237,6 +258,7 @@ def bizarea_element_update(request):
     context["result_msg"] = "Type update success..."
     return JsonResponse(context, content_type="application/json")
 
+
 @csrf_exempt
 def bizarea_element_delete(request):
     context = {}
@@ -252,25 +274,27 @@ def bizarea_element_delete(request):
     return JsonResponse(context, content_type="application/json")
 
 
-#**********************************************************************************************************************
-#사업장 코드 끝
-#****************************************************************************************************
+# **********************************************************************************************************************
+# 사업장 코드 끝
+# ****************************************************************************************************
 
-#*****************************************************************************************
-#사업부 코드 시작
-#****************************************************************************************
-def b_bizunit(request):#사업부
-    context={}
-    rsHeader=BBizunit.objects.filter(usage_fg='Y')
-    rsuserid=BUser.objects.filter()#user_id때문에
+# *****************************************************************************************
+# 사업부 코드 시작
+# ****************************************************************************************
+def b_bizunit(request):  # 사업부
+    context = {}
+    rsHeader = BBizunit.objects.filter(usage_fg='Y')
+    rsuserid = BUser.objects.filter()  # user_id때문에
 
     context["title"] = "사업부"
     context["result_msg"] = "사업부"
-    context["rsHeader"]=rsHeader
-    context["rsuserid"]=rsuserid#user_id
+    context["rsHeader"] = rsHeader
+    context["rsuserid"] = rsuserid  # user_id
 
-    return render(request, board_path+"b_bizunit.html",context)
-#정보삽입
+    return render(request, board_path + "b_bizunit.html", context)
+
+
+# 정보삽입
 @csrf_exempt
 def bizunit_element_insert(request):
     context = {}
@@ -279,7 +303,6 @@ def bizunit_element_insert(request):
     bizunitnm = request.GET['bizunitnm']
     bizunitrmrk = request.GET['bizunitrmrk']
     usagefg = 'Y'
-
 
     if BBizunit.objects.filter(bizunit_cd=bizunitcd).exists():
         context["flag"] = "1"
@@ -298,14 +321,15 @@ def bizunit_element_insert(request):
 
     # 생성 부분
     BBizunit.objects.create(bizunit_cd=bizunitcd,
-                               bizunit_nm=bizunitnm,
-                               bizunit_rmrk=bizunitrmrk,
-                               usage_fg=usagefg
-                             )
+                            bizunit_nm=bizunitnm,
+                            bizunit_rmrk=bizunitrmrk,
+                            usage_fg=usagefg
+                            )
 
     context["flag"] = "0"
     context["result_msg"] = "bizunit insert success..."
     return JsonResponse(context, content_type="application/json")
+
 
 # Update기능 미완성 -> 회의 후 항목 설정 예정.
 @csrf_exempt
@@ -328,6 +352,7 @@ def bizunit_element_update(request):
     context["result_msg"] = "BFactory update success..."
     return JsonResponse(context, content_type="application/json")
 
+
 @csrf_exempt
 def bizunit_element_delete(request):
     context = {}
@@ -342,9 +367,10 @@ def bizunit_element_delete(request):
     context["result_msg"] = "BBizunit elements delete success..."
     return JsonResponse(context, content_type="application/json")
 
-#**********************************************************************************************************************
-#사업부 코드 끝
-#***********************************************************************************************************************
+
+# **********************************************************************************************************************
+# 사업부 코드 끝
+# ***********************************************************************************************************************
 
 # *********************************************************************************************************************
 # 공장 코드 시작
@@ -618,19 +644,18 @@ def code_view(request):
 # *********************************************************************************************************************
 
 def b_item(request):
-
     context = {}
 
     context['flag'] = '0'
     context['result_msg'] = '품목코드 관리'
 
-    #rsItem = BItem.objects.filter(usage_fg='Y')
+    # rsItem = BItem.objects.filter(usage_fg='Y')
 
-    strSql = "SELECT b.*, c.*, d.*, e.*, a.* " +\
-             "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y') a " +\
-             "LEFT JOIN b_factory b ON a.factory_id = b.id " +\
-             "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " +\
-             "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " +\
+    strSql = "SELECT b.*, c.*, d.*, e.*, a.* " + \
+             "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y') a " + \
+             "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+             "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+             "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
              "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
 
     rsItem = BItem.objects.raw(strSql)
@@ -671,6 +696,7 @@ def b_itemaccnt(request):
 
     return render(request, 'board/b_itemaccnt.html', context)
 
+
 @csrf_exempt
 def itemaccnt_insert(request):
     context = {}
@@ -689,12 +715,13 @@ def itemaccnt_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     BItemaccnt.objects.create(itemaccnt_cd=itemaccntcd,
-                             itemaccnt_nm=itemaccntnm,
-                             )
+                              itemaccnt_nm=itemaccntnm,
+                              )
 
     context["flag"] = "0"
     context["result_msg"] = "Insert success..."
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def itemaccnt_delete(request):
@@ -710,6 +737,8 @@ def itemaccnt_delete(request):
     context["flag"] = "0"
     context["result_msg"] = "Delete success..."
     return JsonResponse(context, content_type="application/json")
+
+
 # *********************************************************************************************************************
 # 품목 계정 코드 끝
 # *********************************************************************************************************************
@@ -720,7 +749,6 @@ def itemaccnt_delete(request):
 
 
 def b_itemgrp(request):
-
     context = {}
 
     rsItemgrp = BItemgrp.objects.filter(usage_fg='Y')
@@ -729,7 +757,6 @@ def b_itemgrp(request):
 
     context["flag"] = "0"
     context["result_msg"] = "품목그룹"
-
 
     return render(request, 'board/b_itemgrp.html', context)
 
@@ -752,12 +779,13 @@ def itemgrp_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     BItemgrp.objects.create(itemgrp_cd=itemgrpcd,
-                             itemgrp_nm=itemgrpnm,
-                             )
+                            itemgrp_nm=itemgrpnm,
+                            )
 
     context["flag"] = "0"
     context["result_msg"] = "Insert success..."
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def itemgrp_delete(request):
@@ -773,6 +801,7 @@ def itemgrp_delete(request):
     context["flag"] = "0"
     context["result_msg"] = "Delete success..."
     return JsonResponse(context, content_type="application/json")
+
 
 # *********************************************************************************************************************
 # 품목 그룹 코드 끝
