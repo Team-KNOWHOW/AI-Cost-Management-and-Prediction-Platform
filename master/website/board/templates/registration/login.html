@@ -33,32 +33,44 @@
   <!--[if lt IE 9]>
     <script src="{% static 'js/html5shiv.js' %}"></script>
     <script src="{% static 'js/respond.min.js' %}"></script>
+
     <![endif]-->
+  <script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
 </head>
 
 <body class="login-img-body">
 
   <div class="container">
-
-    <form class="login-form" action="board">
+    {% if id == None %}
+    <form class="login-form">
       <div class="login-wrap">
         <p class="login-img"><i class="icon_lock_alt"></i></p>
         <div class="input-group">
           <span class="input-group-addon"><i class="icon_profile"></i></span>
-          <input type="text" class="form-control" placeholder="Username" autofocus>
+          <input type="text" class="form-control" id="user_id" placeholder="아이디" autofocus>
         </div>
         <div class="input-group">
           <span class="input-group-addon"><i class="icon_key_alt"></i></span>
-          <input type="password" class="form-control" placeholder="Password">
+          <input type="password" class="form-control" id="password" placeholder="비밀번호">
         </div>
         <label class="checkbox">
-                <input type="checkbox" value="remember-me"> Remember me
-                <span class="pull-right"> <a href="#"> Forgot Password?</a></span>
-            </label>
-        <button class="btn btn-primary btn-lg btn-block" type="submit">Login </button>
-        <button class="btn btn-info btn-lg btn-block" type="button"onclick="location.href='board/member_register'">Signup</button>
+                <input type="checkbox" value="remember-me"> 자동 로그인
+                <span class="pull-right"> <a href="#"> 비밀번호 찾기</a></span>
+        </label>
+        <button class="btn btn-primary btn-lg btn-block" type="button" onclick="memberLogin()">로그인 </button>
+        <button class="btn btn-info btn-lg btn-block" type="button" onclick="location.href='board/member_register'">회원가입</button>
       </div>
     </form>
+    {% else %}
+    <form class="login-form">
+      <div class="login-wrap">
+        <p class="login-img"><i class="icon_lock_alt"></i></p>
+        <p>{{user_id}} 님으로 계속 하시겠습니까?</p>
+        <button class="btn btn-primary btn-lg btn-block" type="button" onclick="location.href='/board'">계속하기 </button>
+        <button class="btn btn-info btn-lg btn-block" type="button" onclick="location.href='board/member_logout'">로그아웃</button>
+      </div>
+    </form>
+    {% endif %}
     <div class="text-right">
       <div class="credits">
           <!--
@@ -71,8 +83,67 @@
         </div>
     </div>
   </div>
+  <script src="{% static 'js/sha1.js' %}"></script>
+  <script>
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
 
+        var xhr;
 
+        function memberLogin() { //로그인
+
+          user_id = document.getElementById("user_id").value;
+          if(user_id == "") {
+            alert("아이디를 입력해주세요.");
+            document.getElementById("user_id").focus();
+            return false;
+          }
+
+          password = document.getElementById("password").value;
+          if(password == "") {
+            alert("비밀번호를 입력해주세요.");
+            document.getElementById("password").focus();
+            return false;
+          }
+
+          encpwd = hex_sha1(password); //비밀번호 암호화
+
+          var strurl = "board/member_login?user_id=" + user_id + "&psswd=" + encpwd;
+
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if(xhr.readyState == 4) {
+              var data = xhr.responseText;
+
+              var obj = JSON.parse(data);
+
+              if(obj.flag == '1') {
+                alert(obj.result_msg);
+              }
+              else {
+                alert(obj.result_msg);
+                location.href = '/board';
+              }
+            }
+          };
+          xhr.open("POST", strurl);
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          xhr.send(null);
+        }
+    </script>
 </body>
-
 </html>
