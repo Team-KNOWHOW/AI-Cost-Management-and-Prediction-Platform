@@ -34,6 +34,7 @@
     <script src="{% static 'js/html5shiv.js' %}"></script>
     <script src="{% static 'js/respond.min.js' %}"></script>
     <![endif]-->
+  <script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
 </head>
 <body class="login-img-body">
 <input type="hidden" id="idcheck" value="0"/>
@@ -136,12 +137,14 @@
 
           password = document.getElementById("password").value;
           if(password == "") {
+            alert("비밀번호를 입력해주세요.");
             document.getElementById("password").focus();
             return false;
           }
 
           confirm_password = document.getElementById("confirm_password").value;
           if(confirm_password == "") {
+            alert("비밀번호가 일치하지 않습니다.");
             document.getElementById("confirm_password").focus();
             return false;
           }

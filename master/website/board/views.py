@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from django.http import HttpResponse, JsonResponse
@@ -10,7 +10,19 @@ board_path = "board/"
 #
 # Basic views
 def home(request):
-    return render(request, 'home.html')
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+    return render(request, 'home.html', context)
 
 
 # User Register
@@ -25,7 +37,8 @@ def member_id_check(request):  # 아이디 중복체크
 
     member_id = request.GET['user_id']
     rs = BUser.objects.filter(user_id=member_id)
-    if (len(rs)) > 0:
+
+    if rs:
         context['flag'] = '1'
         context['result_msg'] = '이미 존재하는 아이디입니다.'
     else:
@@ -55,6 +68,45 @@ def member_insert(request):  # 회원등록
     context['result_msg'] = '회원가입이 완료되었습니다.'
 
     return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def member_login(request):  # 로그인
+    context = {}
+
+    member_id = request.GET['user_id']
+    member_pwd = request.GET['psswd']
+
+    if 'id' in request.session:
+        context['flag'] = "1"
+        context['result_msg'] = '이미 로그인 되어있는 아이디가 있습니다.'
+    else:
+        rs = BUser.objects.filter(user_id=member_id, psswd=member_pwd)
+
+        if rs:
+            member = BUser.objects.get(user_id=member_id, psswd=member_pwd)
+            member_no = member.id
+            member.save()
+
+            request.session['id'] = member_no
+            request.session['user_id'] = member_id
+
+            context['flag'] = "0"
+            context['result_msg'] = '로그인이 완료되었습니다.'
+        else:
+            context['flag'] = "1"
+            context['result_msg'] = '아이디 혹은 비밀번호가 일치하지 않습니다.'
+
+    return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def member_logout(request):  # 로그아웃
+    context = {}
+
+    request.session.flush()
+
+    return redirect('main')
 
 
 # *********************************************************************************************************************
