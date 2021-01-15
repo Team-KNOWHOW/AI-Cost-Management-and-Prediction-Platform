@@ -1052,38 +1052,6 @@ def b_user(request):
     return render(request, 'b_user.html')
 
 
-def b_workcenter(request):
-    context = {}
-
-    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
-        member_no = request.session['id']
-        member_id = request.session['user_id']
-    else:
-        member_no = None
-        member_id = None
-
-    context["id"] = member_no
-    context["user_id"] = member_id
-
-    return render(request, 'b_workcenter.html')
-
-
-def cb_cost_center(request):
-    context = {}
-
-    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
-        member_no = request.session['id']
-        member_id = request.session['user_id']
-    else:
-        member_no = None
-        member_id = None
-
-    context["id"] = member_no
-    context["user_id"] = member_id
-
-    return render(request, 'cb_cost_center.html')
-
-
 # *********************************************************************************************************************
 # BOM 코드 시작
 # *********************************************************************************************************************
@@ -1350,4 +1318,199 @@ def bom_update(request):
 
 # *********************************************************************************************************************
 # BOM 코드 끝
+# *********************************************************************************************************************
+
+# *********************************************************************************************************************
+# 작업장 코드 시작
+# *********************************************************************************************************************
+
+def b_workcenter(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+    wc_query = "SELECT a.*, b.* " + \
+               "FROM (SELECT * FROM b_workcenter WHERE usage_fg='Y') a " + \
+               "LEFT JOIN cb_cost_center b ON a.cstctr_id=b.id"
+
+    rsWorkcenter = BWorkcenter.objects.raw(wc_query)
+
+    context["title"] = "작업장"
+    context["result_msg"] = "작업장"
+    context['rsWorkcenter'] = rsWorkcenter
+
+    return render(request, board_path + 'b_workcenter.html', context)
+
+@csrf_exempt
+def workcenter_element_insert(request):
+    context = {}
+
+    workcentercd = request.GET['workcentercd']
+    workcenternm = request.GET['workcenternm']
+    cstctrid = request.GET['cstctrid']
+    usagefg = 'Y'
+
+    if BWorkcenter.objects.filter(workcenter_cd=workcentercd).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "workcenter_cd exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    if BWorkcenter.objects.filter(workcenter_nm=workcenternm).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "workcenter_nm exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    if BWorkcenter.objects.filter(cstctr_id=cstctrid).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "cstctr_id exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    # 생성 부분
+    BWorkcenter.objects.create(workcenter_cd=workcentercd,
+                            workcenter_nm=workcenternm,
+                            cstctr_id=cstctrid,
+                            usage_fg=usagefg)
+
+    context["flag"] = "0"
+    context["result_msg"] = "factory insert success..."
+    return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def workcenter_element_delete(request):
+    context = {}
+
+    id = request.GET['id']
+
+    rsWorkcenter = BWorkcenter.objects.get(id=id)
+    rsWorkcenter.usage_fg = 'N'
+    rsWorkcenter.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "BFactory elements delete success..."
+    return JsonResponse(context, content_type="application/json")
+
+# *********************************************************************************************************************
+# 작업장 코드 끝
+# *********************************************************************************************************************
+
+# *********************************************************************************************************************
+# 코스트센터 코드 시작
+# *********************************************************************************************************************
+
+def cb_cost_center(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+    # print(typecd)
+
+    cc_query = "SELECT a.*, b.*, c.*, d.* " + \
+               "FROM (SELECT * FROM cb_cost_center WHERE usage_fg='Y') a " + \
+               "LEFT JOIN b_bizarea b ON a.bizarea_id=b.id " + \
+               "LEFT JOIN b_bizunit c ON a.bizunit_id=c.id " + \
+               "LEFT JOIN b_factory d ON a.factory_id=d.id"
+
+    rsCostcenter = CbCostCenter.objects.raw(cc_query)
+    rsBizarea = BBizarea.objects.filter()
+    rsBizunit = BBizunit.objects.filter()
+    rsFactory = BFactory.objects.filter()
+
+    context["title"] = "코스트센터"
+    context["result_msg"] = "코스트센터"
+    context["rsCostcenter"] = rsCostcenter
+    context["rsFactory"] = rsFactory
+    context["rsBizarea"] = rsBizarea
+    context["rsBizunit"] = rsBizunit
+
+    return render(request, board_path+'cb_cost_center.html', context)
+
+def costcenter_element_insert(request):
+    context = {}
+
+    cstctrcd = request.GET['cstctrcd']
+    cstctrnm = request.GET['cstctrnm']
+    bizareaid = request.GET['bizareaid']
+    bizunitid = request.GET['bizunitid']
+    factoryid = request.GET['factoryid']
+    cstctrtype = request.GET['cstctrtype']
+    cstctrdirdiv = request.GET['cstctrdirdiv']
+    usagefg='Y'
+    id=1
+
+    while CbCostCenter.objects.filter(id=id).exists():
+        id+=1
+
+    if CbCostCenter.objects.filter(cstctr_cd=cstctrcd).exists():
+        context["flag"] = "1"
+        context["result_msg"] = "cstctr_cd exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    if CbCostCenter.objects.filter(cstctr_nm=cstctrnm).exists():
+        context['flag'] = "1"
+        context['result_msg'] = "cstctr_nm exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    if CbCostCenter.objects.filter(bizarea_id=bizareaid).exists():
+        context['flag'] = "1"
+        context['result_msg'] = "bizarea_id exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    if CbCostCenter.objects.filter(bizunit_id=bizunitid).exists():
+        context['flag'] = "1"
+        context['result_msg'] = "bizunit_id exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    if CbCostCenter.objects.filter(factory_id=factoryid).exists():
+        context['flag'] = "1"
+        context['result_msg'] = "factory_id exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    # 생성 부분
+    CbCostCenter.objects.create(id=id,
+                                cstctr_cd=cstctrcd,
+                                cstctr_nm=cstctrnm,
+                                bizarea_id=bizareaid,
+                                bizunit_id=bizunitid,
+                                factory_id=factoryid,
+                                cstctr_type=cstctrtype,
+                                cstctr_dir_div=cstctrdirdiv,
+                                usage_fg=usagefg)
+
+    context["flag"] = "0"
+    context["result_msg"] = "costcenter insert success..."
+    return JsonResponse(context, content_type="application/json")
+
+def costcenter_element_delete(request):
+    context = {}
+
+    id = request.GET['id']
+
+    rsCostcenter = CbCostCenter.objects.get(id=id)
+    rsCostcenter.usage_fg = 'N'
+    rsCostcenter.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "costcenter elements delete success..."
+    return JsonResponse(context, content_type="application/json")
+
+
+# *********************************************************************************************************************
+# 코스트센터 코드 끝
 # *********************************************************************************************************************
