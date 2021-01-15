@@ -15,7 +15,7 @@ from .models import *
 @admin.register(BUser)
 @admin.register(BWorkcenter)
 @admin.register(BomDtl)
-@admin.register(BomHdr)
+@admin.register(BBom)
 @admin.register(CbCodeDtl)
 @admin.register(CbCodeHdr)
 @admin.register(CbCostCenter)
