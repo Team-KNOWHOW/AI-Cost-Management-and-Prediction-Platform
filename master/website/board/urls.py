@@ -3,7 +3,7 @@ from . import views
 
 app_name = 'board'
 urlpatterns = [
-    # Basic urls 항목
+    # 화면 urls 항목
     path('', views.home, name='home'),
     path('b_bizarea/', views.b_bizarea, name='b_bizarea_list'),
     path('b_bizpartner/', views.b_bizpartner, name='b_bizpartner_list'),
@@ -20,10 +20,12 @@ urlpatterns = [
     path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt'),
     path('b_itemgrp/', views.b_itemgrp, name='b_itemgrp'),
 
-    # 회원가입
+    # 사용자 관리
     path('member_register', views.member_register, name="member_register"),
     path('member_id_check', views.member_id_check, name="member_id_check"),
     path('member_insert', views.member_insert, name="member_insert"),
+    path('member_login', views.member_login, name="member_login"),
+    path('member_logout', views.member_logout, name="member_logout"),
 
     # 사업장
     path('b_bizarea/bizarea_element_insert', views.bizarea_element_insert, name="bizarea_element_insert"),
