@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6e10781a-5be3-4e02-91a2-1f442a0acc48" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/AI-Cost-Management-and-Prediction-Platform.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AI-Cost-Management-and-Prediction-Platform.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/aws.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/templates/board/b_workcenter.html" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/templates/board/b_workcenter.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/templates/board/cb_cost_center.html" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/templates/board/cb_cost_center.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/website/board/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/views.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1n6vcfu75WOrcwTGctTadAxAw1D" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6e10781a-5be3-4e02-91a2-1f442a0acc48" name="Default Changelist" comment="" />
+      <created>1610723436394</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1610723436394</updated>
+      <workItem from="1610723461302" duration="781000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
