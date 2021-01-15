@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from django.http import HttpResponse, JsonResponse
@@ -38,7 +38,7 @@ def member_id_check(request):  # 아이디 중복체크
     context = {}
 
     member_id = request.GET['user_id']
-    rs = BUser.objects.filter(user_id=member_id)
+    rs = BUser.objects.filter(user_id=member_id).exists()
 
     if rs:
         context['flag'] = '1'
@@ -83,7 +83,7 @@ def member_login(request):  # 로그인
         context['flag'] = "1"
         context['result_msg'] = '이미 로그인 되어있는 아이디가 있습니다.'
     else:
-        rs = BUser.objects.filter(user_id=member_id, psswd=member_pwd)
+        rs = BUser.objects.filter(user_id=member_id, psswd=member_pwd).exists()
 
         if rs:
             member = BUser.objects.get(user_id=member_id, psswd=member_pwd)
@@ -117,6 +117,16 @@ def member_logout(request):  # 로그아웃
 
 def b_bizpartner(request):
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
 
     # print(typecd)
 
@@ -243,6 +253,17 @@ def bizpartner_element_delete(request):
 
 
 def b_co(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
     return render(request, board_path + "b_co.html")
 
 
@@ -252,6 +273,17 @@ def b_co(request):
 
 def b_bizarea(request):
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
     rsHeader = BBizarea.objects.filter(usage_fg='Y')
 
     strsql = "SELECT b.*,a.*,c.* " + \
@@ -358,6 +390,17 @@ def bizarea_element_delete(request):
 # ****************************************************************************************
 def b_bizunit(request):  # 사업부
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
     rsHeader = BBizunit.objects.filter(usage_fg='Y')
     rsuserid = BUser.objects.filter()  # user_id때문에
 
@@ -452,6 +495,16 @@ def bizunit_element_delete(request):
 # *********************************************************************************************************************
 def b_factory(request):
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
 
     # print(typecd)
 
@@ -548,6 +601,16 @@ def factory_element_delete(request):
 
 def codemanage(request):
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
 
     if 'type_cd' in request.GET:
         typecd = request.GET['type_cd']
@@ -697,6 +760,16 @@ def code_delete(request):
 def code_view(request):
     context = {}
 
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
     codeid = request.GET['codeid']
     rsCode = CbCodeDtl.objects.get(id=codeid)
 
@@ -719,19 +792,28 @@ def code_view(request):
 # *********************************************************************************************************************
 
 def b_item(request):
-
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
 
     context['flag'] = '0'
     context['result_msg'] = '품목코드 관리'
 
-    #rsItem = BItem.objects.filter(usage_fg='Y')
+    # rsItem = BItem.objects.filter(usage_fg='Y')
 
-    strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " +\
-             "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y') a " +\
-             "LEFT JOIN b_factory b ON a.factory_id = b.id " +\
-             "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " +\
-             "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " +\
+    strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
+             "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y') a " + \
+             "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+             "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+             "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
              "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
 
     rsItem = BItem.objects.raw(strSql)
@@ -748,6 +830,7 @@ def b_item(request):
     context["rsUnit"] = rsUnit
 
     return render(request, 'board/b_item.html', context)
+
 
 @csrf_exempt
 def item_insert(request):
@@ -767,12 +850,12 @@ def item_insert(request):
                          item_spec=itemspec,
                          unit_id=unitid,
                          itemgrp_id=itemgrpid,
-                         itemaccnt_id=itemaccntid,)
+                         itemaccnt_id=itemaccntid, )
     context["flag"] = "0"
     context["result_msg"] = "Insert success..."
 
-
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def item_update(request):
@@ -795,6 +878,7 @@ def item_update(request):
     context["result_msg"] = "update success..."
     return JsonResponse(context, content_type="application/json")
 
+
 @csrf_exempt
 def item_delete(request):
     context = {}
@@ -810,6 +894,7 @@ def item_delete(request):
     context["result_msg"] = "Delete success..."
     return JsonResponse(context, content_type="application/json")
 
+
 # *********************************************************************************************************************
 # 품목마스터 코드 끝
 # *********************************************************************************************************************
@@ -823,6 +908,16 @@ def item_delete(request):
 def b_itemaccnt(request):
     context = {}
 
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
     rsItemaccnt = BItemaccnt.objects.filter(usage_fg='Y')
 
     context["rsItemaccnt"] = rsItemaccnt
@@ -831,6 +926,7 @@ def b_itemaccnt(request):
     context["result_msg"] = "품목계정"
 
     return render(request, 'board/b_itemaccnt.html', context)
+
 
 @csrf_exempt
 def itemaccnt_insert(request):
@@ -850,12 +946,13 @@ def itemaccnt_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     BItemaccnt.objects.create(itemaccnt_cd=itemaccntcd,
-                             itemaccnt_nm=itemaccntnm,
-                             )
+                              itemaccnt_nm=itemaccntnm,
+                              )
 
     context["flag"] = "0"
     context["result_msg"] = "Insert success..."
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def itemaccnt_delete(request):
@@ -871,6 +968,8 @@ def itemaccnt_delete(request):
     context["flag"] = "0"
     context["result_msg"] = "Delete success..."
     return JsonResponse(context, content_type="application/json")
+
+
 # *********************************************************************************************************************
 # 품목 계정 코드 끝
 # *********************************************************************************************************************
@@ -881,8 +980,17 @@ def itemaccnt_delete(request):
 
 
 def b_itemgrp(request):
-
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
 
     rsItemgrp = BItemgrp.objects.filter(usage_fg='Y')
 
@@ -890,7 +998,6 @@ def b_itemgrp(request):
 
     context["flag"] = "0"
     context["result_msg"] = "품목그룹"
-
 
     return render(request, 'board/b_itemgrp.html', context)
 
@@ -913,12 +1020,13 @@ def itemgrp_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     BItemgrp.objects.create(itemgrp_cd=itemgrpcd,
-                             itemgrp_nm=itemgrpnm,
-                             )
+                            itemgrp_nm=itemgrpnm,
+                            )
 
     context["flag"] = "0"
     context["result_msg"] = "Insert success..."
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def itemgrp_delete(request):
@@ -935,6 +1043,7 @@ def itemgrp_delete(request):
     context["result_msg"] = "Delete success..."
     return JsonResponse(context, content_type="application/json")
 
+
 # *********************************************************************************************************************
 # 품목 그룹 코드 끝
 # *********************************************************************************************************************
@@ -944,40 +1053,58 @@ def b_user(request):
 
 
 def b_workcenter(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
     return render(request, 'b_workcenter.html')
 
 
-def bom_hdr(request):
-    return render(request, 'b_bizarea.html')
-
-
-def bom_dtl(request):
-    return render(request, 'b_bizarea.html')
-
-
-def cb_code_hdr(request):
-    return render(request, 'cb_code_hdr.html')
-
-
-def cb_code_dtl(request):
-    return render(request, 'cb_code_dtl.html')
-
-
 def cb_cost_center(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
     return render(request, 'cb_cost_center.html')
 
 
 # *********************************************************************************************************************
 # BOM 코드 시작
 # *********************************************************************************************************************
-#from django.db.models import Q
-#from datetime import datetime
+# from django.db.models import Q
+# from datetime import datetime
 
 
 def b_bom(request):
     context = {}
 
-    #컨택스트 변수 초기화해주고
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+    # 컨택스트 변수 초기화해주고
     context['itemid'] = 0
     context['itemcd'] = ""
     context['itemname'] = ""
@@ -985,11 +1112,11 @@ def b_bom(request):
     context['registerdate'] = ""
     itemid = "0"
 
-    #request안에 품폭id 가 있다면
+    # request안에 품폭id 가 있다면
     if 'itemid' in request.GET:
         itemid = request.GET['itemid']
         context['itemid'] = itemid
-        #필터로 걸러서 rsTmp로 담아주고 rsTmp객체의 속성들을 context변수에 넣어준다.
+        # 필터로 걸러서 rsTmp로 담아주고 rsTmp객체의 속성들을 context변수에 넣어준다.
         if BItem.objects.filter(id=itemid).exists():
             rsTmp = BItem.objects.get(id=itemid)
             context['itemcd'] = rsTmp.item_cd
@@ -999,7 +1126,7 @@ def b_bom(request):
         else:
             print("nothing ")
 
-    #두번째 항목들 초기화.
+    # 두번째 항목들 초기화.
     bomid = "0"
     context['moitembase'] = 0.0
     context['jaitembase'] = 0.0
@@ -1009,7 +1136,7 @@ def b_bom(request):
     context['startdate'] = ''
     context['enddate'] = ''
 
-    #두번째, request안에 bomid인 객체를 찾아서
+    # 두번째, request안에 bomid인 객체를 찾아서
     if 'bomid' in request.GET:
         bomid = request.GET['bomid']
         if BBom.objects.filter(id=bomid).exist():
@@ -1035,7 +1162,7 @@ def b_bom(request):
     if 'itemspec' in request.GET:
         searchspec = request.GET['itemspec']
 
-    #like문 Q
+    # like문 Q
     if searchcode != "":
         rsItem = BItem.objects.filter(Q(item_cd__contains=searchcode))[:100]
     elif searchspec != "":
@@ -1062,7 +1189,8 @@ def b_bom(request):
     context["title"] = "BOM"
     context["result_msg"] = "BOM "
 
-    return render(request, board_path + "b_bom.html",context)
+    return render(request, board_path + "b_bom.html", context)
+
 
 @csrf_exempt
 def bom_create(request):
@@ -1070,30 +1198,30 @@ def bom_create(request):
 
     itemid = request.GET['itemid']
 
-    if BBom.objects.filter(item_id=itemid,parent_id=0).exists():
+    if BBom.objects.filter(item_id=itemid, parent_id=0).exists():
         print("already existed")
         context["flag"] = "1"
         context["result_msg"] = "already existed"
         return JsonResponse(context, content_type="application/json")
     else:
         BBom.objects.create(bom_type='MBOM',
-                             item_id=itemid,
-                             parent_id=0,
-                             top_id=itemid,
-                             bom_order=1,
-                             bom_level=0,
-                             leaf_fg='0',
-                             moitem_base=0.0,
-                             jaitem_base=0.0,
-                             unit_product='',
-                             demand_amt=0.0,
-                             free_fg='0',
-                             loss_product=0.0,
-                             start_dt='',
-                             end_dt='',
-                             register_dt=datetime.now(),
-                             usage_fg='Y')
-       #rsItem에 아이디에 해당하는 품목을 저장하고 bomflag를 1로 바꿔주고 저장
+                            item_id=itemid,
+                            parent_id=0,
+                            top_id=itemid,
+                            bom_order=1,
+                            bom_level=0,
+                            leaf_fg='0',
+                            moitem_base=0.0,
+                            jaitem_base=0.0,
+                            unit_product='',
+                            demand_amt=0.0,
+                            free_fg='0',
+                            loss_product=0.0,
+                            start_dt='',
+                            end_dt='',
+                            register_dt=datetime.now(),
+                            usage_fg='Y')
+        # rsItem에 아이디에 해당하는 품목을 저장하고 bomflag를 1로 바꿔주고 저장
         rsItem = BItem.objects.get(id=itemid)
         rsItem.bom_fg = '1'
         rsItem.save()
@@ -1101,6 +1229,7 @@ def bom_create(request):
         context["flag"] = "0"
         context["result_msg"] = "Top level 등록 성공..."
         return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def bomitem_read(request):
@@ -1117,14 +1246,15 @@ def bomitem_read(request):
     itmstr = ""
     if rsItem:
         for i in rsItem:
-            itmstr += f"<div><i class='icofont-plus-square' style='margin-right:20px;' itemid='{i.id}' bomid='{bomid}' flag='add' onclick='pickBOMItem(this)'></i>  " +\
-                      f"<i class='icofont-check' style='margin-right:20px;' itemid='{i.id}' bomid='{bomid}' flag='update' onclick='pickBOMItem(this)'></i> "+\
+            itmstr += f"<div><i class='icofont-plus-square' style='margin-right:20px;' itemid='{i.id}' bomid='{bomid}' flag='add' onclick='pickBOMItem(this)'></i>  " + \
+                      f"<i class='icofont-check' style='margin-right:20px;' itemid='{i.id}' bomid='{bomid}' flag='update' onclick='pickBOMItem(this)'></i> " + \
                       f"<span>{i.item_cd} - {i.item_spec} </span></div>"
     else:
         itmstr = "<div>No item searched...</div>"
 
     context["itmstr"] = itmstr
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def bomitem_pick(request):
@@ -1144,22 +1274,22 @@ def bomitem_pick(request):
         rsTmp.save()
 
         BBom.objects.create(bom_type='MBOM',
-                             item_id=itemid,
-                             parent_id=bomid,
-                             top_id=topid,
-                             bom_order=bomorder+1,
-                             bom_level=bomlevel+1,
-                             leaf_fg='1',
-                             moitem_base=0.0,
-                             jaitem_base=0.0,
-                             unit_product='',
-                             demand_amt=0.0,
-                             free_fg='1',
-                             loss_product=0.0,
-                             start_dt='',
-                             end_dt='',
-                             register_dt=datetime.now(),
-                             usage_fg='Y')
+                            item_id=itemid,
+                            parent_id=bomid,
+                            top_id=topid,
+                            bom_order=bomorder + 1,
+                            bom_level=bomlevel + 1,
+                            leaf_fg='1',
+                            moitem_base=0.0,
+                            jaitem_base=0.0,
+                            unit_product='',
+                            demand_amt=0.0,
+                            free_fg='1',
+                            loss_product=0.0,
+                            start_dt='',
+                            end_dt='',
+                            register_dt=datetime.now(),
+                            usage_fg='Y')
 
         context["flag"] = "0"
         context["result_msg"] = "BOM tree added..."
@@ -1167,7 +1297,7 @@ def bomitem_pick(request):
 
     elif flag == 'update':
         rsTmp = BBom.objects.get(id=bomid)
-        rsTmp.item_id=itemid
+        rsTmp.item_id = itemid
         rsTmp.save()
 
         context["flag"] = "0"
