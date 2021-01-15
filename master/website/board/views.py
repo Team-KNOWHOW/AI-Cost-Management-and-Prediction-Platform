@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
 from django.http import HttpResponse, JsonResponse
+from django.db.models import Q
+from datetime import datetime
 
 #
 board_path = "board/"
@@ -738,6 +740,8 @@ def b_item(request):
     rsItemgrp = BItemgrp.objects.filter()
     rsItemaccnt = BItemaccnt.objects.filter()
 
+
+
     context["rsItem"] = rsItem
     context["rsItemgrp"] = rsItemgrp
     context["rsItemaccnt"] = rsItemaccnt
@@ -906,3 +910,259 @@ def cb_code_dtl(request):
 
 def cb_cost_center(request):
     return render(request, 'cb_cost_center.html')
+
+
+# *********************************************************************************************************************
+# BOM 코드 시작
+# *********************************************************************************************************************
+#from django.db.models import Q
+#from datetime import datetime
+
+
+def b_bom(request):
+    context = {}
+
+    #컨택스트 변수 초기화해주고
+    context['itemid'] = 0
+    context['itemcd'] = ""
+    context['itemname'] = ""
+    context['itemspec'] = ""
+    context['registerdate'] = ""
+    itemid = "0"
+
+    #request안에 품폭id 가 있다면
+    if 'itemid' in request.GET:
+        itemid = request.GET['itemid']
+        context['itemid'] = itemid
+        #필터로 걸러서 rsTmp로 담아주고 rsTmp객체의 속성들을 context변수에 넣어준다.
+        if BItem.objects.filter(id=itemid).exists():
+            rsTmp = BItem.objects.get(id=itemid)
+            context['itemcd'] = rsTmp.item_cd
+            context['itemname'] = rsTmp.item_nm
+            context['itemspec'] = rsTmp.item_spec
+            context['registerdate'] = rsTmp.insrt_dt
+        else:
+            print("nothing ")
+
+    #두번째 항목들 초기화.
+    bomid = "0"
+    context['moitembase'] = 0.0
+    context['jaitembase'] = 0.0
+    context['unitproduct'] = '단위'
+    context['lossproduct'] = 0.0
+    context['demandamt'] = ''
+    context['startdate'] = ''
+    context['enddate'] = ''
+
+    #두번째, request안에 bomid인 객체를 찾아서
+    if 'bomid' in request.GET:
+        bomid = request.GET['bomid']
+        if BBom.objects.filter(id=bomid).exist():
+            rsTmp2 = BBom.objects.get(id=bomid)
+            context['moitembase'] = rsTmp2.moitem_base
+            context['jaitembase'] = rsTmp2.jaitem_base
+            context['unitproduct'] = rsTmp2.unit_product
+            context['lossproduct'] = rsTmp2.loss_product
+            context['demandamt'] = rsTmp2.demand_amt
+            context['startdate'] = rsTmp2.start_date
+            context['enddate'] = rsTmp2.end_date
+
+    # 품폭그룹 아이디, 품목코드, 품목규격가져와서 저장.
+    itemgrpid = ""
+    if 'itemgrpid' in request.GET:
+        itemgrpid = request.GET['itemgrpid']
+
+    searchcode = ""
+    if 'itemcode' in request.GET:
+        searchcode = request.GET['itemcode']
+
+    searchspec = ""
+    if 'itemspec' in request.GET:
+        searchspec = request.GET['itemspec']
+
+    #like문 Q
+    if searchcode != "":
+        rsItem = BItem.objects.filter(Q(item_cd__contains=searchcode))[:100]
+    elif searchspec != "":
+        rsItem = BItem.objects.filter(Q(item_spec__contains=searchspec))[:100]
+    elif itemgrpid != "":
+        rsItem = BItem.objects.filter(itemgrp_id=itemgrpid)[:100]
+    else:
+        strsql = "SELECT a.*, b.*, d.*" + \
+                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y') a " + \
+                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id "
+        rsItem = BItem.objects.raw(strsql)[:100]
+    context['rsItem'] = rsItem
+
+    rsBOM = BBom.objects.filter(top_id=itemid).select_related("item")
+
+    context["rsBOM"] = rsBOM
+
+    rsItemgrp = BItemgrp.objects.filter()
+    context["rsItemgrp"] = rsItemgrp
+
+    context['bomid'] = bomid
+    context["itemgrpid"] = itemgrpid
+    context["title"] = "BOM"
+    context["result_msg"] = "BOM "
+
+    return render(request, board_path + "b_bom.html",context)
+
+@csrf_exempt
+def bom_create(request):
+    context = {}
+
+    itemid = request.GET['itemid']
+
+    if BBom.objects.filter(item_id=itemid,parent_id=0).exists():
+        print("already existed")
+        context["flag"] = "1"
+        context["result_msg"] = "already existed"
+        return JsonResponse(context, content_type="application/json")
+    else:
+        BBom.objects.create(bom_type='MBOM',
+                             item_id=itemid,
+                             parent_id=0,
+                             top_id=itemid,
+                             bom_order=1,
+                             bom_level=0,
+                             leaf_fg='0',
+                             moitem_base=0.0,
+                             jaitem_base=0.0,
+                             unit_product='',
+                             demand_amt=0.0,
+                             free_fg='0',
+                             loss_product=0.0,
+                             start_dt='',
+                             end_dt='',
+                             register_dt=datetime.now(),
+                             usage_fg='Y')
+       #rsItem에 아이디에 해당하는 품목을 저장하고 bomflag를 1로 바꿔주고 저장
+        rsItem = BItem.objects.get(id=itemid)
+        rsItem.bom_fg = '1'
+        rsItem.save()
+
+        context["flag"] = "0"
+        context["result_msg"] = "Top level 등록 성공..."
+        return JsonResponse(context, content_type="application/json")
+
+@csrf_exempt
+def bomitem_read(request):
+    context = {}
+
+    bomid = request.GET['bomid']
+    itmtext = request.GET['itmtext']
+
+    if itmtext == "":
+        rsItem = BItem.objects.filter(usage_fg='Y')[:10]
+    else:
+        rsItem = BItem.objects.filter(Q(item_cd__contains=itmtext) | Q(item_spec__contains=itmtext))[:10]
+
+    itmstr = ""
+    if rsItem:
+        for i in rsItem:
+            itmstr += f"<div><i class='icofont-plus-square' style='margin-right:20px;' itemid='{i.id}' bomid='{bomid}' flag='add' onclick='pickBOMItem(this)'></i>  " +\
+                      f"<i class='icofont-check' style='margin-right:20px;' itemid='{i.id}' bomid='{bomid}' flag='update' onclick='pickBOMItem(this)'></i> "+\
+                      f"<span>{i.item_cd} - {i.item_spec} </span></div>"
+    else:
+        itmstr = "<div>No item searched...</div>"
+
+    context["itmstr"] = itmstr
+    return JsonResponse(context, content_type="application/json")
+
+@csrf_exempt
+def bomitem_pick(request):
+    context = {}
+
+    bomid = request.GET['bomid']
+    itemid = request.GET['itemid']
+    flag = request.GET['flag']
+
+    if flag == 'add':
+        print(11)
+        rsTmp = BBom.objects.get(id=bomid)
+        bomorder = rsTmp.bom_order
+        bomlevel = rsTmp.bom_level
+        topid = rsTmp.top_id
+        rsTmp.leaf_fg = '0'
+        rsTmp.save()
+
+        BBom.objects.create(bom_type='MBOM',
+                             item_id=itemid,
+                             parent_id=bomid,
+                             top_id=topid,
+                             bom_order=bomorder+1,
+                             bom_level=bomlevel+1,
+                             leaf_fg='1',
+                             moitem_base=0.0,
+                             jaitem_base=0.0,
+                             unit_product='',
+                             demand_amt=0.0,
+                             free_fg='1',
+                             loss_product=0.0,
+                             start_dt='',
+                             end_dt='',
+                             register_dt=datetime.now(),
+                             usage_fg='Y')
+
+        context["flag"] = "0"
+        context["result_msg"] = "BOM tree added..."
+        return JsonResponse(context, content_type="application/json")
+
+    elif flag == 'update':
+        rsTmp = BBom.objects.get(id=bomid)
+        rsTmp.item_id=itemid
+        rsTmp.save()
+
+        context["flag"] = "0"
+        context["result_msg"] = "BOM item updated..."
+        return JsonResponse(context, content_type="application/json")
+    else:
+        context["flag"] = "1"
+        context["result_msg"] = "Nothing..."
+        return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def bom_update(request):
+    context = {}
+
+    bomid = request.GET['bomid']
+    flag = request.GET['flag']
+    bvalue = request.GET['bvalue']
+
+    rsTmp = BBom.objects.get(id=bomid)
+    if flag == 'mobase':
+        rsTmp.moitem_base = bvalue
+        rsTmp.save()
+    elif flag == 'jabase':
+        rsTmp.jaitem_base = bvalue
+        rsTmp.save()
+    elif flag == 'unit':
+        rsTmp.unit_product = bvalue
+        rsTmp.save()
+    elif flag == 'loss':
+        rsTmp.loss_product = bvalue
+        rsTmp.save()
+    elif flag == 'demand':
+        rsTmp.demand_amt = bvalue
+        rsTmp.save()
+    elif flag == 'sdate':
+        rsTmp.start_date = bvalue
+        rsTmp.save()
+    elif flag == 'edate':
+        rsTmp.end_date = bvalue
+        rsTmp.save()
+    else:
+        context["flag"] = "1"
+        context["result_msg"] = "Nothing updated..."
+        return JsonResponse(context, content_type="application/json")
+
+    context["flag"] = "0"
+    context["result_msg"] = "BOM updated..."
+    return JsonResponse(context, content_type="application/json")
+
+# *********************************************************************************************************************
+# BOM 코드 끝
+# *********************************************************************************************************************
