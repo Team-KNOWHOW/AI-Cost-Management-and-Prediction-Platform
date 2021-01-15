@@ -14,7 +14,6 @@ urlpatterns = [
     path('b_user/', views.b_user, name='b_user_list'),
     path('b_workcenter/', views.b_workcenter, name='b_workcenter_list'),
     path('b_bom/', views.b_bom, name='b_bom_list'),
-    path('cb_code_hdr/', views.cb_code_hdr, name='cb_code_hdr_list'),
     path('cb_cost_center/', views.cb_cost_center, name='cb_cost_center_list'),
     path('codemanage/', views.codemanage, name='codemanage'),
     path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt'),
