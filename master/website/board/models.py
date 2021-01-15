@@ -244,6 +244,8 @@ class BItem(models.Model):  # 품목마스터
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
     unit_id = models.IntegerField(db_column='unit_id', default=0)
     user_id = models.IntegerField(db_column='user_id')
+    bom_fg = models.CharField(db_column='bom_fg', max_length=8, default='0')
+
 
     class Meta:
         managed = False
@@ -305,23 +307,32 @@ class BomDtl(models.Model):  # BOM 디테일
         db_table = 'bom_dtl'
 
 
-class BomHdr(models.Model):  # BOM 헤더
-    item_nm = models.CharField(max_length=50, blank=True, null=True)
-    standard = models.CharField(max_length=50, blank=True, null=True)
-    invt_asset = models.IntegerField(blank=True, null=True)
-    item_bigdiv = models.CharField(max_length=50, blank=True, null=True)
-    ip_unit = models.CharField(max_length=20, blank=True, null=True)
-    req = models.CharField(max_length=50, blank=True, null=True)
-    loss = models.FloatField(blank=True, null=True)
-    ip_div = models.CharField(max_length=50, blank=True, null=True)
-    fair = models.CharField(max_length=50, blank=True, null=True)
-    apply_strdt = models.DateTimeField(blank=True, null=True)
-    apply_enddt = models.DateTimeField(blank=True, null=True)
-    eco_no = models.IntegerField(blank=True, null=True)
+class BBom(models.Model):  # BOM 메인
+    id = models.AutoField(db_column='id', primary_key=True)
+    bom_type = models.CharField(db_column='bom_type', max_length=20)
+    item = models.ForeignKey(BItem, on_delete=models.DO_NOTHING)
+    parent_id = models.IntegerField(db_column='parent_id', default=0)
+    top_id = models.IntegerField(db_column='top_id', default=0)
+    bom_order = models.IntegerField(db_column='bom_order', default=0)
+    bom_level = models.IntegerField(db_column='bom_level', default=0)
+    leaf_fg = models.CharField(db_column='leaf_fg', max_length=10, default='1')
+    moitem_base = models.FloatField(db_column='moitem_base', default=0.0)
+    jaitem_base = models.FloatField(db_column='jaitem_base', default=0.0)
+    unit_product = models.CharField(db_column='unit_product', max_length=50)
+    free_fg = models.CharField(db_column='free_fg', max_length=10, default='1')
+    loss_product = models.FloatField(db_column='loss_product', default=0.0)
+    demand_amt = models.FloatField(db_column='demand_amt', default=0.0)
+    start_dt = models.CharField(db_column='start_dt', max_length=8)
+    end_dt = models.CharField(db_column='end_dt', max_length=8)
+    register_dt = models.DateTimeField(db_column='register_dt', )
+    usage_fg = models.CharField(db_column='usage_fg', max_length=10, default='1')
 
     class Meta:
         managed = False
-        db_table = 'bom_hdr'
+        db_table = 'b_bom'
+
+    def __str__(self):
+        return "BOM id : " + str(self.id) + " Type : " + self.bom_type
 
 
 class CbCostCenter(models.Model):  # 코스트센터
