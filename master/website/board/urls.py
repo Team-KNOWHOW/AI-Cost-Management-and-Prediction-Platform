@@ -65,6 +65,11 @@ urlpatterns = [
     path('b_itemgrp/itemgrp_insert', views.itemgrp_insert, name='itemgrp_insert'),
     path('b_itemgrp/itemgrp_delete', views.itemgrp_delete, name='itemgrp_delete'),
 
+    # 품목마스터 기능 항목
+    path('b_item/item_insert', views.item_insert, name='item_insert'),
+    path('b_item/item_update', views.item_update, name='item_update'),
+    path('b_item/item_delete', views.item_delete, name='item_delete'),
+
     #BOM 기능 항목
     path('b_bom/bom_create', views.bom_create, name="bom_create"),
     path('b_bom/bomitem_read', views.bomitem_read, name="bomitem_read"),

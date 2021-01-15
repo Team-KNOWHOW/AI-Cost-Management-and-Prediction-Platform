@@ -65,6 +65,10 @@
 
             var id = elem.getAttribute('id');
 
+            if (!confirm("삭제 하시겠습니까")) {
+                return false;
+            }
+
             var strurl = "itemgrp_delete?id=" + id;
             //alert(strurl);
             //return false;
