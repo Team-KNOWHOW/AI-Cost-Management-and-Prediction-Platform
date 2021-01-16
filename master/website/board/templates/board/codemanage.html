@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
-
-
 {% block scripts %}
-    {{ block.super }}
-    <script>
+{{ block.super }}
+
+<script>
     // https://docs.djangoproject.com/en/3.1/ref/csrf/
         function getCookie(name) {
             let cookieValue = null;
@@ -94,7 +93,11 @@
 
         function deleteType(elem) {
 
-            var typeid = elem.getAttribute('typeid');
+            var typeid = elem.getAttribute('id');
+
+            if (!confirm("삭제 하시겠습니까")) {
+                return false;
+            }
 
             var strurl = "codetype_delete?typeid=" + typeid;
             //alert(strurl);
@@ -108,9 +111,7 @@
                     var obj = JSON.parse(data);
                     alert(obj.result_msg);
 
-                    if(obj.flag =='1') {
-                        document.getElementById('typebox_' + typeid).remove();
-                    }
+                    location.reload();
                 }
             };
             xhr.open("POST", strurl);
@@ -193,7 +194,7 @@
 
         function deleteCode(elem) {
 
-            var codeid = elem.getAttribute("codeid");
+            var codeid = elem.getAttribute("id");
 
             if (!confirm("삭제 하시겠습니까")) {
                 return false;
@@ -209,175 +210,217 @@
                     var data = xhr.responseText;
 
                     var obj = JSON.parse(data);
-                    if (obj.flag == '0') {
-                        document.getElementById("codebox_"+codeid).remove();
-                    }
+                    alert(obj.result_msg);
+
+                    location.reload();
                 }
             };
             xhr.open("POST", strurl);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
             xhr.send(null);
         }
-
     </script>
 {% endblock %}
 
 {% block body %}
 
-    {% include "navbar.html" %}
-    {% include "sidebar.html" %}
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
 
-    <!--main content start-->
-    <section id="main-content">
-        <section class="wrapper">
-            <input type="hidden" value="{{ type_cd }}" id="mytype_cd" />
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-table"></i> 통합코드 관리</h3>
-                </div>
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <input type="hidden" value="{{ type_cd }}" id="mytype_cd" />
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-table"></i> 통합코드 관리</h3>
             </div>
+        </div>
+        <div>
+
+            <table>
+                <tr>
+                    <td width="" align="center">타입코드</td>
+                    <td width="" align="center">타입명</td>
+                    <td width="" align="center">등록</td>
+                    </td>
+                </tr>
+                <tbody>
+                <tr>
+                    <td>
+                        <input type="text" id="type_cd" class="form-control" placeholder="Type Code">
+
+                    </td>
+                    <td>
+                        <input type="text" id="type_name" class="form-control" placeholder="Type Name">
+
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="insertType();" title="Bootstrap 3 themes generator">저장</a>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <div class="table-responsive">
+                        {% if rsHeader %}
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th width="15%">TYPE CD</th>
+                                <th width="15%">TYPE NAME</th>
+                                <th width="10%">등록자</th>
+                                <th width="15%">등록일</th>
+                                <th width="10%">수정자</th>
+                                <th width="15%">수정일</th>
+                                <th width="10%">삭제</th>
+                            </tr>
+                            </thead>
+                            {% for i in rsHeader %}
+                            <tbody id="typebox_{{ i.id }}">
+                            <tr>
+                                <td width="15%">
+                                    <a href="?type_cd={{ i.type_cd }}">{{ i.type_cd }}</a>
+                                </td>
+                                <td width="15%">
+                                    <input type="text" typeid="{{ i.id }}" class="form-control" value="{{ i.type_nm }}" onchange="updateType(this)" />
+                                </td>
+                                <td width="10%">
+                                    {{ i.insrt_id }}
+                                </td>
+                                <td width="15%">
+                                    {{ i.insrt_dt }}
+                                </td>
+                                <td width="10%">
+                                    {{ i.updt_id }}
+                                </td>
+                                <td width="15%">
+                                    {{ i.updt_dt }}
+                                </td>
+                                <td width="10%">
+                                    <a class="btn btn-primary btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="deleteType(this);" title="Bootstrap 3 themes generator">삭제</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
+                        {% else %}
+                        <span>Type이 없습니다.</span>
+                        {% endif %}
+                    </div>
+
+                </section>
+            </div>
+        </div>
+
+        <div>
             <div>
-                TYPE&nbsp;&nbsp;
-                <input type="text" id="type_cd" value="" placeholder="Type Code" />
-                <input type="text" id="type_name" value="" placeholder="Type Name" />
-                <button onclick="insertType();">저장</button>
+                TYPE : <span style="color:#FF6600;">{{ type_cd }}</span>
+            </div>
+            <br>
+            {% if type_cd == None %}
+            <div>
+                Type을 선택하세요.
+            </div>
+            {% else %}
+            <div>
+
+                <table>
+                    <tr>
+                        <td width="" align="center">코드</td>
+                        <td width="" align="center">코드명</td>
+                        <td width="" align="center">등록</td>
+                        </td>
+                    </tr>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" id="code_cd" class="form-control" placeholder="Code">
+
+                        </td>
+                        <td>
+                            <input type="text" id="code_name" class="form-control" placeholder="Code Name">
+
+                        </td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="insertCode();" title="Bootstrap 3 themes generator">저장</a>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
             </div>
             <br>
             <div class="row">
-              <div class="col-lg-12">
-                <section class="panel">
-                  <div class="table-responsive">
-                      {% if rsHeader %}
-                          <table class="table">
-                              <thead>
+                <div class="col-lg-12">
+                    <section class="panel">
+                        <div class="table-responsive">
+                            {% if rsCode %}
+                            <table class="table">
+                                <thead>
                                 <tr>
-                                  <th width="15%">TYPE CD</th>
-                                  <th width="15%">TYPE NAME</th>
+                                    <th width="15%">TYPE CD</th>
+                                    <th width="10%">CODE</th>
+                                    <th width="15%">CODE NAME</th>
                                     <th width="10%">등록자</th>
                                     <th width="15%">등록일</th>
                                     <th width="10%">수정자</th>
                                     <th width="15%">수정일</th>
-                                  <th width="10%">삭제</th>
+                                    <th width="10%">삭제</th>
                                 </tr>
-                              </thead>
-                        {% for i in rsHeader %}
-                                  <tbody id="typebox_{{ i.id }}">
-                                    <tr>
-                                      <td width="15%">
-                                          <a href="?type_cd={{ i.type_cd }}">{{ i.type_cd }}</a>
-                                      </td>
-                                      <td width="15%">
-                                          <input type="text" typeid="{{ i.id }}" value="{{ i.type_nm }}" onchange="updateType(this)" />
-                                      </td>
-                                      <td width="10%">
-                                          {{ i.insrt_id }}
-                                      </td>
-                                      <td width="15%">
-                                          {{ i.insrt_dt }}
-                                      </td>
-                                        <td width="10%">
-                                          {{ i.updt_id }}
-                                      </td>
-                                        <td width="15%">
-                                          {{ i.updt_dt }}
-                                      </td>
-                                      <td width="10%">
-                                            <a href="codetype_delete?typeid={{ i.id }}">x</a>
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                        {% endfor %}
-                              </table>
-                      {% else %}
+                                </thead>
+                                {% for j in rsCode %}
+                                <tbody id="codebox_{{ j.id }}">
+                                <tr>
+                                    <td width="15%">
+                                        {{ j.type_cd }}
+                                    </td>
+                                    <td width="15%">
+                                        <a href="code_view?codeid={{ j.id }}"> {{ j.code_cd }}</a>
+                                    </td>
+                                    <td width="15%">
+                                        <input type="text" class="form-control" codeid="{{ j.id }}" value="{{ j.cd_nm }}" onchange="updateCode(this)" />
+                                    </td>
+                                    <td width="10%">
+                                        {{ j.insrt_id }}
+                                    </td>
+                                    <td width="15%">
+                                        {{ j.insrt_dt }}
+                                    </td>
+                                    <td width="10%">
+                                        {{ j.updt_id }}
+                                    </td>
+                                    <td width="15%">
+                                        {{ j.updt_dt }}
+                                    </td>
+                                    <td width="10%">
+                                        <a class="btn btn-primary btn-sm" id="{{j.id}}" href="javascript:void(0);" onclick="deleteCode(this);" title="Bootstrap 3 themes generator">삭제</a>
+
+                                    </td>
+                                </tr>
+                                </tbody>
+                                {% endfor %}
+                            </table>
+                            {% else %}
                             <span>Type이 없습니다.</span>
-                      {% endif %}
-                  </div>
+                            {% endif %}
+                        </div>
 
-                </section>
-              </div>
-            </div>
-
-                        <div>
-                <div>
-                    TYPE : <span style="color:#FF6600;">{{ type_cd }}</span>
+                    </section>
                 </div>
-                <br>
-                {% if type_cd == None %}
-                    <div>
-                    Type을 선택하세요.
-                    </div>
-                {% else %}
-                    <div>
-                        CODE&nbsp;&nbsp;
-                        <input type="text" id="code_cd" value="" placeholder="Code" />
-                        <input type="text" id="code_name" value="" placeholder="Code Name" />
-                        <button onclick="insertCode();">저장</button>
-                    </div>
-                    <br>
-                    <div class="row">
-                      <div class="col-lg-12">
-                        <section class="panel">
-                          <div class="table-responsive">
-                              {% if rsCode %}
-                                  <table class="table">
-                                      <thead>
-                                        <tr>
-                                          <th width="15%">TYPE CD</th>
-                                          <th width="10%">CODE</th>
-                                            <th width="15%">CODE NAME</th>
-                                            <th width="10%">등록자</th>
-                                            <th width="15%">등록일</th>
-                                            <th width="10%">수정자</th>
-                                            <th width="15%">수정일</th>
-                                            <th width="10%">삭제</th>
-                                        </tr>
-                                      </thead>
-                                      {% for j in rsCode %}
-                                          <tbody id="codebox_{{ j.id }}">
-                                            <tr>
-                                              <td width="15%">
-                                                 {{ j.type_cd }}
-                                              </td>
-                                              <td width="15%">
-                                                 <a href="code_view?codeid={{ j.id }}"> {{ j.code_cd }}</a>
-                                              </td>
-                                              <td width="15%">
-                                                  <input type="text" codeid="{{ j.id }}" value="{{ j.cd_nm }}" onchange="updateCode(this)" />
-                                              </td>
-                                                <td width="10%">
-                                                      {{ j.insrt_id }}
-                                                  </td>
-                                                  <td width="15%">
-                                                      {{ j.insrt_dt }}
-                                                  </td>
-                                                    <td width="10%">
-                                                      {{ j.updt_id }}
-                                                  </td>
-                                                    <td width="15%">
-                                                      {{ j.updt_dt }}
-                                                  </td>
-                                                <td width="10%">
-                                                      <a href="code_delete?codeid={{ j.id }}">x</a>
-                                                  </td>
-                                            </tr>
-                                          </tbody>
-                                     {% endfor %}
-                                  </table>
-                              {% else %}
-                                    <span>Type이 없습니다.</span>
-                              {% endif %}
-                          </div>
-
-                        </section>
-                      </div>
-                    </div>
-
-                {% endif %}
             </div>
 
-        </section>
-        <!--main content end-->
+            {% endif %}
+        </div>
+
     </section>
-    <!-- container section start -->
+    <!--main content end-->
+</section>
+<!-- container section start -->
 
 {% endblock %}

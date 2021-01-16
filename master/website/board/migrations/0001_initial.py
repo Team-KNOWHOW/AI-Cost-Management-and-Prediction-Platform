@@ -303,7 +303,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('workcenter_cd', models.CharField(blank=True, max_length=50, null=True)),
                 ('workcenter_nm', models.CharField(blank=True, max_length=50, null=True)),
-                ('cc_id', models.CharField(blank=True, max_length=50, null=True)),
+                ('cstctr_id', models.CharField(blank=True, max_length=50, null=True)),
                 ('insrt_id', models.CharField(blank=True, max_length=50, null=True)),
                 ('insrt_dt', models.DateTimeField(blank=True, null=True)),
                 ('updt_user', models.CharField(blank=True, max_length=50, null=True)),
