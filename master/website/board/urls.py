@@ -13,8 +13,7 @@ urlpatterns = [
     path('b_item/', views.b_item, name='b_item_list'),
     path('b_user/', views.b_user, name='b_user_list'),
     path('b_workcenter/', views.b_workcenter, name='b_workcenter_list'),
-    path('bom_hdr/', views.bom_hdr, name='bom_hdr_list'),
-    path('cb_code_hdr/', views.cb_code_hdr, name='cb_code_hdr_list'),
+    path('b_bom/', views.b_bom, name='b_bom_list'),
     path('cb_cost_center/', views.cb_cost_center, name='cb_cost_center_list'),
     path('codemanage/', views.codemanage, name='codemanage'),
     path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt'),
@@ -65,4 +64,22 @@ urlpatterns = [
     path('b_itemgrp/itemgrp_insert', views.itemgrp_insert, name='itemgrp_insert'),
     path('b_itemgrp/itemgrp_delete', views.itemgrp_delete, name='itemgrp_delete'),
 
+    # 품목마스터 기능 항목
+    path('b_item/item_insert', views.item_insert, name='item_insert'),
+    path('b_item/item_update', views.item_update, name='item_update'),
+    path('b_item/item_delete', views.item_delete, name='item_delete'),
+
+    #BOM 기능 항목
+    path('b_bom/bom_create', views.bom_create, name="bom_create"),
+    path('b_bom/bomitem_read', views.bomitem_read, name="bomitem_read"),
+    path('b_bom/bomitem_pick', views.bomitem_pick, name="bomitem_pick"),
+    path('b_bom/bom_update', views.bom_update, name="bom_update"),
+
+    # 작업장 기능 항목
+    path('b_workcenter/workcenter_element_insert', views.workcenter_element_insert, name="workcenter_element_insert"),
+    path('b_workcenter/workcenter_element_delete', views.workcenter_element_delete, name="workcenter_element_delete"),
+
+    # 코스트센터 기능 항목
+    path('cb_cost_center/costcenter_element_insert', views.costcenter_element_insert, name="costcenter_element_insert"),
+    path('cb_cost_center/costcenter_element_delete', views.costcenter_element_delete, name="costcenter_element_delete")
 ]

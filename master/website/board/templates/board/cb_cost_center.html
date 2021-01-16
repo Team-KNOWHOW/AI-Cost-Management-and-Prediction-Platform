@@ -26,6 +26,309 @@
                     </ol>
                 </div>
             </div>
+
+            <div style="margin:20px 0;">
+                Adder
+                    <div style="margin:20px 0;">
+                        <!-- <div style="border-top:solid 2px #888;"> -->
+                        <table>
+                            <tr>
+                                <td width="" align="center"  bgcolor="#E8E8E8">코스트센터 코드</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">코스트센터명</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">사업장</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">사업부</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">공장</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">코스트타입</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">직간접구분</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">등록</td>
+                                <td width="" align="center" style="padding-right:10px ;"  bgcolor="#E8E8E8">
+                                </td>
+                            </tr>
+
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" id="cstctr_cd" value="" style="width:100px;" >
+                                </td>
+                                <td>
+                                    <input type="text" id="cstctr_nm" value="" style="width:100px;" >
+                                </td>
+                                <td>
+                                    <input type="text" id="bizarea_id" value="" style="width:100px;" >
+                                </td>
+                                <td>
+                                    <input type="text" id="bizunit_id" value="" style="width:100px;" >
+                                </td>
+                                <td>
+                                    <input type="text" id="factory_id" value="" style="width:100px;" >
+                                </td>
+                                <td>
+                                    <select type="text" id="cstctr_type" value="" >
+                                        <option>
+                                            A(보조)
+                                        </option>
+                                        <option>
+                                            C(공통)
+                                        </option>
+                                        <option>
+                                            M(제조)
+                                        </option>
+                                        <option>
+                                            S(판관)
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select type="text" id="cstctr_dir_div" value="" >
+                                        <option>
+                                            I(간접)
+                                        </option>
+                                        <option>
+                                            D(직접)
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button onclick="insert_element();" style="width: 50px">저장</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                       </table>
+                   </div>
+            </div>
+
+            <div class="row" style="margin:2px 0;">
+                <div class="col-lg-12" style="margin-top:15px">
+                    <section class="panel">
+                        <header class="panel-heading">Cost Center 테이블</header>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>코스트센터 코드</th>
+                                    <th>코스트센터명</th>
+                                    <th>사업장</th>
+                                    <th>사업장명</th>
+                                    <th>사업부</th>
+                                    <th>사업부명</th>
+                                    <th>공장</th>
+                                    <th>공장명</th>
+                                    <th>코스트타입</th>
+                                    <th>직간접구분</th>
+                                    <!-- <th>사용구분</th> -->
+                                </tr>
+                                </thead>
+
+                                {% for i in rsCostcenter %}
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            {{ i.id }}
+                                        </td>
+                                        <td>
+                                            {{ i.cstctr_cd }}
+                                        </td>
+                                        <td>
+                                            {{ i.cstctr_nm }}
+                                        </td>
+                                        <td>
+                                            {{ i.bizarea_id }}
+                                        </td>
+                                        <td>
+                                            {{ i.bizarea_nm }}
+                                        </td>
+                                        <td>
+                                            {{ i.bizunit_id }}
+                                        </td>
+                                        <td>
+                                            {{ i.bizunit_nm }}
+                                        </td>
+                                        <td>
+                                            {{ i.factory_id }}
+                                        </td>
+                                        <td>
+                                            {{ i.factory_nm }}
+                                        </td>
+                                        <td>
+                                            {{ i.cstctr_type }}
+                                        </td>
+                                        <td>
+                                            {{ i.cstctr_dir_div }}
+                                        </td>
+                                        <td width="5%" align="center" style="padding:5px 0;" >
+                                            <span id="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <script>
+                function getCookie(name) {
+                    var cookieValue = null;
+
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+                var csrftoken = getCookie('csrftoken');
+                var xhr;
+
+                function insert_element() {
+                    //변수 리스트
+                    var cstctrcd = document.getElementById("cstctr_cd").value;
+                    var cstctrnm = document.getElementById("cstctr_nm").value;
+                    var bizareaid = document.getElementById("bizarea_id").value;
+                    var bizunitid = document.getElementById("bizunit_id").value;
+                    var factoryid = document.getElementById("factory_id").value;
+                    var cstctrtype = document.getElementById("cstctr_type").value;
+                    var cstctrdirdiv = document.getElementById("cstctr_dir_div").value;
+                    //예외 처리
+
+                    // 코스트센터 항목
+                    if(cstctrcd == '') {
+                        alert('코스트센터 코드가 비었습니다.');
+                        document.getElementById("cstctr_cd").focus();
+                        return false;
+                    }
+
+                    if(cstctrnm == '') {
+                        alert('코스트센터명이 비었습니다.');
+                        document.getElementById("cstctr_nm").focus();
+                        return false;
+                    }
+
+                    if(bizareaid == '') {
+                        alert('사업장 ID가 비었습니다.');
+                        document.getElementById("bizarea_id").focus();
+                        return false;
+                    }
+
+                    if(bizunitid == '') {
+                        alert('사업부 ID가 비었습니다.');
+                        document.getElementById("bizunit_id").focus();
+                        return false;
+                    }
+
+                    if(factoryid == '') {
+                        alert('공장 ID가 비었습니다.');
+                        document.getElementById("factory_id").focus();
+                        return false;
+                    }
+
+                    if(cstctrtype == '') {
+                        alert('코스트센터 타입이 비었습니다.');
+                        document.getElementById("cstctr_type").focus();
+                        return false;
+                    }
+
+                    if(cstctrdirdiv == '') {
+                        alert('직간접구분이 비었습니다.');
+                        document.getElementById("cstctr_dir_div").focus();
+                        return false;
+                    }
+                    //예외 처리 끝
+
+                    var strurl = "costcenter_element_insert?cstctrcd=" + cstctrcd
+                        + "&cstctrnm=" + cstctrnm
+                        + "&bizareaid=" + bizareaid
+                        + "&bizunitid=" + bizunitid
+                        + "&factoryid=" + factoryid
+                        + "&cstctrtype=" + cstctrtype
+                        + "&cstctrdirdiv=" + cstctrdirdiv
+
+                    //alert(strurl);
+                    //return false;
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                            var data = xhr.responseText;
+
+                            var obj = JSON.parse(data);
+                            alert(obj.result_msg);
+
+                            if(obj.flag =='0') {
+                                location.reload();
+                            }
+                        }
+                    };
+
+                    xhr.open("POST", strurl);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.send(null);
+                }
+
+                function update_element(elem) {
+                    var id = elem.getAttribute('id');
+                    var e_value = elem.value;
+                    if(e_value == ''){
+                        alert('Value empty');
+                        elem.focus();
+                        return false;
+                    }
+
+                    var strurl = "factory_element_update?id=" + id + "&e_value=" + e_value;
+                    //alert(strurl);
+                    //return false;
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                            var data = xhr.responseText;
+
+                            var obj = JSON.parse(data);
+                            alert(obj.result_msg);
+
+                        }
+                    };
+                    xhr.open("POST", strurl);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.send(null);
+                }
+
+                function delete_element(elem) {
+                    var id = elem.getAttribute('id');
+                    var strurl = "costcenter_element_delete?id=" + id;
+                    //alert(strurl);
+                    //return false;
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                            var data = xhr.responseText;
+
+                            var obj = JSON.parse(data);
+                            alert(obj.result_msg);
+
+                            if(obj.flag =='1') {
+                                document.getElementById('typebox_' + id).remove();
+                            }
+                        }
+                    };
+
+                    xhr.open("POST", strurl);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.send(null);
+                }
+            </script>
         </section>
         <!--main content end-->
     </section>
