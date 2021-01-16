@@ -74,4 +74,12 @@ urlpatterns = [
     path('b_bom/bomitem_read', views.bomitem_read, name="bomitem_read"),
     path('b_bom/bomitem_pick', views.bomitem_pick, name="bomitem_pick"),
     path('b_bom/bom_update', views.bom_update, name="bom_update"),
+
+    # 작업장 기능 항목
+    path('b_workcenter/workcenter_element_insert', views.workcenter_element_insert, name="workcenter_element_insert"),
+    path('b_workcenter/workcenter_element_delete', views.workcenter_element_delete, name="workcenter_element_delete"),
+
+    # 코스트센터 기능 항목
+    path('cb_cost_center/costcenter_element_insert', views.costcenter_element_insert, name="costcenter_element_insert"),
+    path('cb_cost_center/costcenter_element_delete', views.costcenter_element_delete, name="costcenter_element_delete")
 ]
