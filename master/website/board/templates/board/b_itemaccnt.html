@@ -88,6 +88,36 @@
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
             xhr.send(null);
         }
+
+        function updateName(elem) {
+
+            var accntid = elem.getAttribute('accntid');
+            var value = elem.value;
+            if(value == ''){
+                alert('Value empty');
+                elem.focus();
+                return false;
+            }
+
+            var strurl = "itemaccnt_update?accntid=" + accntid + "&value=" + value;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    alert(obj.result_msg);
+
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+
     </script>
 {% endblock %}
 
@@ -141,21 +171,17 @@
                         <tr>
                           <th>품목계정코드</th>
                           <th>품목계정명</th>
-                          <th>생성일</th>
-                          <th>수정일</th>
-                          <th>수정자</th>
-                            <th>삭제</th>
+                            <th></th>
                         </tr>
                       </thead>
                         {% for i in rsItemaccnt %}
                       <tbody  id="itemaccnt_{{i}}">
                         <tr>
-                          <td>{{ i.itemaccnt_cd }}</td>
-                          <td>{{ i.itemaccnt_nm }}</td>
-                          <td>{{ i.insrt_dt }}</td>
-                          <td>{{ i.updt_dt }}</td>
-                          <td>{{ i.user_id }}</td>
-                            <td>
+                          <td width="20%">{{ i.itemaccnt_cd }}</td>
+                          <td width="20%">
+                              <input type="text" class="form-control" accntid="{{ i.id }}" value="{{ i.itemaccnt_nm }}" onchange="updateName(this)"/>
+                          </td>
+                            <td align="right">
                                 <a class="btn btn-primary btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this)" title="Bootstrap 3 themes generator">삭제</a>
                             </td>
                         </tr>
