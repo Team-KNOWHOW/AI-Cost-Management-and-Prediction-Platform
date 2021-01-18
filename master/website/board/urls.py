@@ -59,10 +59,12 @@ urlpatterns = [
     # 품목계정 기능 항목
     path('b_itemaccnt/itemaccnt_insert', views.itemaccnt_insert, name='itemaccnt_insert'),
     path('b_itemaccnt/itemaccnt_delete', views.itemaccnt_delete, name='itemaccnt_delete'),
+    path('b_itemaccnt/itemaccnt_update', views.itemaccnt_update, name='itemaccnt_update'),
 
     # 품목그룹 기능 항목
     path('b_itemgrp/itemgrp_insert', views.itemgrp_insert, name='itemgrp_insert'),
     path('b_itemgrp/itemgrp_delete', views.itemgrp_delete, name='itemgrp_delete'),
+    path('b_itemgrp/itemgrp_update', views.itemgrp_update, name='itemgrp_update'),
 
     # 품목마스터 기능 항목
     path('b_item/item_insert', views.item_insert, name='item_insert'),

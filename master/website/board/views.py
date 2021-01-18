@@ -866,12 +866,17 @@ def item_update(request):
     unitid = request.GET['unitid']
     itemgrpid = request.GET['itemgrpid']
     itemaccntid = request.GET['itemaccntid']
+    itemnm = request.GET['itemname']
+    itemspec = request.GET['itemspec']
+
 
     rs = BItem.objects.get(id=id)
     rs.factory_id = factoryid
     rs.unit_id = unitid
     rs.itemgrp_id = itemgrpid
     rs.itemaccnt_id = itemaccntid
+    rs.item_nm = itemnm
+    rs.item_spec = itemspec
     rs.save()
 
     context["flag"] = "0"
@@ -970,6 +975,27 @@ def itemaccnt_delete(request):
     return JsonResponse(context, content_type="application/json")
 
 
+@csrf_exempt
+def itemaccnt_update(request):
+    context = {}
+
+    accntid = request.GET['accntid']
+    value = request.GET['value']
+
+    if BItemaccnt.objects.filter(itemaccnt_nm=value, usage_fg='Y').exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Type name exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    rs = BItemaccnt.objects.get(id=accntid)
+    rs.itemaccnt_nm = value
+    rs.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "Update success..."
+    return JsonResponse(context, content_type="application/json")
+
+
 # *********************************************************************************************************************
 # 품목 계정 코드 끝
 # *********************************************************************************************************************
@@ -1041,6 +1067,27 @@ def itemgrp_delete(request):
 
     context["flag"] = "0"
     context["result_msg"] = "Delete success..."
+    return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def itemgrp_update(request):
+    context = {}
+
+    grpid = request.GET['grpid']
+    value = request.GET['value']
+
+    if BItemgrp.objects.filter(itemgrp_nm=value, usage_fg='Y').exists():
+        context["flag"] = "1"
+        context["result_msg"] = "Type name exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    rs = BItemgrp.objects.get(id=grpid)
+    rs.itemgrp_nm = value
+    rs.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "Update success..."
     return JsonResponse(context, content_type="application/json")
 
 
