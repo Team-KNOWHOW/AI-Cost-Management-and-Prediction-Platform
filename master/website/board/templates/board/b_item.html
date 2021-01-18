@@ -86,6 +86,9 @@
         {
             var id = elem.getAttribute('id');
 
+            var itemname = $('#name' + id).val();
+            var itemspec = $('#spec' + id).val();
+
             var factorySelect = document.querySelector('.factory' + id);
             var factoryid = factorySelect.options[factorySelect.selectedIndex].value;
 
@@ -99,7 +102,7 @@
             var itemaccntid = itemaccntSelect.options[itemaccntSelect.selectedIndex].value;
 
             var strurl = "item_update?id=" + id + "&factoryid=" + factoryid + "&unitid=" + unitid +
-                            "&itemgrpid=" + itemgrpid + "&itemaccntid=" + itemaccntid;
+                            "&itemgrpid=" + itemgrpid + "&itemaccntid=" + itemaccntid +"&itemname=" + itemname + "&itemspec=" + itemspec;
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
@@ -213,8 +216,12 @@
                                       </select>
                                   </td>
                                   <td width="8%">{{ i.item_cd }}</td>
-                                  <td width="12%">{{ i.item_nm }}</td>
-                                  <td width="12%">{{ i.item_spec }}</td>
+                                  <td width="12%">
+                                       <input type="text" class="form-control" id="name{{ i.id }}" value="{{ i.item_nm }}"/>
+                                  </td>
+                                  <td width="12%">
+                                      <input type="text" class="form-control" id="spec{{ i.id }}" value="{{ i.item_spec }}"/>
+                                  </td>
                                   <td width="12%">
                                       <select class="unit{{i.id}}">
                                           {% for ii in rsUnit %}
