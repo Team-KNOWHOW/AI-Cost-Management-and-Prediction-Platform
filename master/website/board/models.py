@@ -273,7 +273,7 @@ class BUser(models.Model):  # 사용자관리
 class BWorkcenter(models.Model):  # 작업장
     workcenter_cd = models.CharField(max_length=50, blank=True, null=True)
     workcenter_nm = models.CharField(max_length=50, blank=True, null=True)
-    cc_id = models.CharField(max_length=50, blank=True, null=True)
+    cstctr_id = models.CharField(max_length=50, blank=True, null=True)
     insrt_id = models.CharField(max_length=50, blank=True, null=True)
     insrt_dt = models.DateTimeField(blank=True, null=True)
     updt_user = models.CharField(max_length=50, blank=True, null=True)

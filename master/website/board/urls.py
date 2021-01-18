@@ -14,7 +14,6 @@ urlpatterns = [
     path('b_user/', views.b_user, name='b_user_list'),
     path('b_workcenter/', views.b_workcenter, name='b_workcenter_list'),
     path('b_bom/', views.b_bom, name='b_bom_list'),
-    path('cb_code_hdr/', views.cb_code_hdr, name='cb_code_hdr_list'),
     path('cb_cost_center/', views.cb_cost_center, name='cb_cost_center_list'),
     path('codemanage/', views.codemanage, name='codemanage'),
     path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt'),
@@ -75,4 +74,12 @@ urlpatterns = [
     path('b_bom/bomitem_read', views.bomitem_read, name="bomitem_read"),
     path('b_bom/bomitem_pick', views.bomitem_pick, name="bomitem_pick"),
     path('b_bom/bom_update', views.bom_update, name="bom_update"),
+
+    # 작업장 기능 항목
+    path('b_workcenter/workcenter_element_insert', views.workcenter_element_insert, name="workcenter_element_insert"),
+    path('b_workcenter/workcenter_element_delete', views.workcenter_element_delete, name="workcenter_element_delete"),
+
+    # 코스트센터 기능 항목
+    path('cb_cost_center/costcenter_element_insert', views.costcenter_element_insert, name="costcenter_element_insert"),
+    path('cb_cost_center/costcenter_element_delete', views.costcenter_element_delete, name="costcenter_element_delete")
 ]

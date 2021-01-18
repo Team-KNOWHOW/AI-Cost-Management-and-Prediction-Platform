@@ -19,13 +19,222 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h3 class="page-header"><i class="fa fa-table"></i> 작업장</h3>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-home"></i><a href="/">Home</a></li>
-                        <li><i class="fa fa-table"></i>Table</li>
-                        <li><i class="fa fa-th-list"></i>Basic Table</li>
-                    </ol>
                 </div>
             </div>
+
+            <div style="margin:20px 0;">
+                등록
+                    <div style="margin:20px 0;">
+                        <!-- <div style="border-top:solid 2px #888;"> -->
+                        <table>
+                            <tr>
+                                <td width="" align="center"  bgcolor="#E8E8E8">작업장코드</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">작업장명</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">코스트센터</td>
+                                <td width="" align="center"  bgcolor="#E8E8E8">등록</td>
+                                <td width="" align="center" style="padding-right:10px ;"  bgcolor="#E8E8E8">
+                                </td>
+                            </tr>
+
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" id="workcenter_cd" value="" >
+                                </td>
+                                <td>
+                                    <input type="text" id="workcenter_nm" value="" >
+                                </td>
+                                <td>
+                                    <input type="text" id="cstctr_id" value="" style="width:100px;" >
+                                </td>
+                                <td>
+                                    <button onclick="insert_element();" style="width: 50px">저장</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                       </table>
+                   </div>
+            </div>
+
+            <div class="row" style="margin:2px 0;">
+                <div class="col-lg-12" style="margin-top:15px">
+                    <section class="panel">
+                        <header class="panel-heading">작업장 테이블</header>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>작업장코드</th>
+                                    <th>작업장명</th>
+                                    <th>코스트센터</th>
+                                    <th>코스트센터명</th>
+                                    <!-- <th>사용구분</th> -->
+                                </tr>
+                                </thead>
+
+                                {% for i in rsWorkcenter %}
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            {{ i.id }}
+                                        </td>
+                                        <td>
+                                            {{ i.workcenter_cd }}
+                                        </td>
+                                        <td>
+                                            {{ i.workcenter_nm }}
+                                        </td>
+                                        <td>
+                                            {{ i.cstctr_id }}
+                                        </td>
+                                        <td>
+                                            {{ i.cstctr_nm }}
+                                        </td>
+                                        <td width="5%" align="center" style="padding:5px 0;" >
+                                            <span id="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <script>
+                function getCookie(name) {
+                    var cookieValue = null;
+
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+                var csrftoken = getCookie('csrftoken');
+                var xhr;
+
+                function insert_element() {
+                    //변수 리스트
+                    var cstctrid = document.getElementById("cstctr_id").value;
+                    var workcentercd = document.getElementById("workcenter_cd").value;
+                    var workcenternm = document.getElementById("workcenter_nm").value;
+
+                    //예외 처리
+
+                    // 코스트센터 항목
+                    if(cstctrid == '') {
+                        alert('코스트센터 ID가 비었습니다.');
+                        document.getElementById("cstctr_id").focus();
+                        return false;
+                    }
+
+                    // 작업장 코드 항목
+                    if(workcentercd == '') {
+                        alert('작업장 코드가 비었습니다.');
+                        document.getElementById("workcenter_cd").focus();
+                        return false;
+                    }
+
+                    // 작업장명 항목
+                    if(workcenternm == '') {
+                        alert('작업장명이 비었습니다.');
+                        document.getElementById("workcenter_nm").focus();
+                        return false;
+                    }
+
+                    //예외 처리 끝
+
+                    var strurl = "workcenter_element_insert?cstctrid=" + cstctrid
+                        + "&workcentercd=" + workcentercd
+                        + "&workcenternm=" + workcenternm;
+                    //alert(strurl);
+                    //return false;
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                            var data = xhr.responseText;
+
+                            var obj = JSON.parse(data);
+                            alert(obj.result_msg);
+
+                            if(obj.flag =='0') {
+                                location.reload();
+                            }
+                        }
+                    };
+
+                    xhr.open("POST", strurl);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.send(null);
+                }
+
+                function update_element(elem) {
+                    var id = elem.getAttribute('id');
+                    var e_value = elem.value;
+                    if(e_value == ''){
+                        alert('Value empty');
+                        elem.focus();
+                        return false;
+                    }
+
+                    var strurl = "factory_element_update?id=" + id + "&e_value=" + e_value;
+                    //alert(strurl);
+                    //return false;
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                            var data = xhr.responseText;
+
+                            var obj = JSON.parse(data);
+                            alert(obj.result_msg);
+
+                        }
+                    };
+                    xhr.open("POST", strurl);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.send(null);
+                }
+
+                function delete_element(elem) {
+                    var id = elem.getAttribute('id');
+                    var strurl = "workcenter_element_delete?id=" + id;
+                    //alert(strurl);
+                    //return false;
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                            var data = xhr.responseText;
+
+                            var obj = JSON.parse(data);
+                            alert(obj.result_msg);
+
+                            if(obj.flag =='1') {
+                                document.getElementById('typebox_' + id).remove();
+                            }
+                        }
+                    };
+
+                    xhr.open("POST", strurl);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.send(null);
+                }
+            </script>
         </section>
         <!--main content end-->
     </section>
