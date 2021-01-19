@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6e10781a-5be3-4e02-91a2-1f442a0acc48" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/master/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/master/website/board/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/master/website/board/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,6 +34,9 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\qwe06\PycharmProjects\AI-Cost-Management-and-Prediction-Platform\master\website\board\templates\registration" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\qwe06\PycharmProjects\AI-Cost-Management-and-Prediction-Platform" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -46,7 +47,7 @@
       <option name="presentableId" value="Default" />
       <updated>1610723436394</updated>
       <workItem from="1610723461302" duration="781000" />
-      <workItem from="1611030081062" duration="4910000" />
+      <workItem from="1611030081062" duration="5140000" />
     </task>
     <servers />
   </component>
