@@ -125,7 +125,7 @@ def member_edit(request):  # 회원정보 수정
         context['flag'] = "0"
         context['result_msg'] = '회원정보 수정가능합니다.'
 
-        return render(request, "member_edit.html", context)
+        return render(request, "registration/member_edit.html", context)
 
     else:
         return redirect('/')
