@@ -111,6 +111,25 @@ def member_logout(request):  # 로그아웃
     return redirect('main')
 
 
+def member_edit(request):  # 회원정보 수정
+    context = {}
+
+    if 'id' in request.session:
+        member_no = request.session['id']
+        member = BUser.objects.get(id=member_no)
+
+        context['id'] = member.id
+        context['user_nm'] = member.user_nm
+        context['email'] = member.email
+
+        context['flag'] = "0"
+        context['result_msg'] = '회원정보 수정가능합니다.'
+
+        return render(request, "member_edit.html", context)
+
+    else:
+        return redirect('/')
+
 # *********************************************************************************************************************
 # 거래처 코드 시작
 # *********************************************************************************************************************
