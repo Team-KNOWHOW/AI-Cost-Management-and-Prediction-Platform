@@ -86,6 +86,9 @@
         {
             var id = elem.getAttribute('id');
 
+            var itemname = $('#name' + id).val();
+            var itemspec = $('#spec' + id).val();
+
             var factorySelect = document.querySelector('.factory' + id);
             var factoryid = factorySelect.options[factorySelect.selectedIndex].value;
 
@@ -99,7 +102,7 @@
             var itemaccntid = itemaccntSelect.options[itemaccntSelect.selectedIndex].value;
 
             var strurl = "item_update?id=" + id + "&factoryid=" + factoryid + "&unitid=" + unitid +
-                            "&itemgrpid=" + itemgrpid + "&itemaccntid=" + itemaccntid;
+                            "&itemgrpid=" + itemgrpid + "&itemaccntid=" + itemaccntid +"&itemname=" + itemname + "&itemspec=" + itemspec;
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
@@ -144,6 +147,17 @@
              xhr.setRequestHeader("X-CSRFToken", csrftoken);
              xhr.send(null);
         }
+        function searchItem()
+        {
+            var itemcode = document.getElementById('search_cd').value;
+            var itemname = document.getElementById('search_nm').value;
+            var itemspec = document.getElementById('search_spec').value;
+
+
+            var strurl = "?itemcode=" + itemcode + "&itemname=" + itemname + "&itemspec=" + itemspec;
+
+            location.href = strurl;
+        }
     </script>
 {% endblock %}
 
@@ -163,8 +177,17 @@
             <div>
                 <table width="100%">
                     <tr>
-                        <td width="50%">
-                            <h5>조회 영역</h5>
+                        <td width="15%">
+                            <input type="text" class="form-control" id="search_cd" placeholder="품목코드" onKeypress="javascript:if(event.keyCode==13) { searchItem() }"/>
+                        </td>
+                        <td width="15%">
+                            <input type="text" class="form-control" id="search_nm" placeholder="품목명" onKeypress="javascript:if(event.keyCode==13) { searchItem() }"/>
+                        </td>
+                        <td width="15%">
+                            <input type="text" class="form-control" id="search_spec" placeholder="규격" onKeypress="javascript:if(event.keyCode==13) { searchItem() }"/>
+                        </td>
+                        <td>
+                            <td width="5%"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="searchItem()" title="Bootstrap 3 themes generator">조회</a></td>
                         </td>
                         <td width="50%" align="right">
                             <a class="btn btn-primary btn-sm" href="" title="Bootstrap 3 themes generator">Template 다운로드</a>
@@ -173,6 +196,7 @@
                     </tr>
                 </table>
             </div>
+            <br>
             <div class="row">
                 <div class="col-lg-12">
                 <section class="panel">
@@ -195,6 +219,45 @@
                                     <th width="8%"></th>
                                 </tr>
                               </thead>
+                              <tbody>
+                              <tr bgcolor="#F7F7F7">
+                                  <td width="8%"></td>
+                                  <td width="12%">
+                                      <select class="factory">
+                                          {% for ii in rsFactory %}
+                                            <option value="{{ ii.id }}"> {{ ii.factory_nm }} </option>
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="8%"> <input type="text" id="item_cd" class="form-control" placeholder="itemcd"></td>
+                                  <td width="12%"> <input type="text" id="item_nm" class="form-control" placeholder="itemname"></td>
+                                  <td width="12%"> <input type="text" id="item_spec" class="form-control" placeholder="spec"></td>
+                                  <td width="12%">
+                                      <select class="unit">
+                                          {% for ii in rsUnit %}
+                                          <option value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="8%"></td>
+                                  <td width="12%">
+                                      <select class="itemgrp">
+                                          {% for ii in rsItemgrp %}
+                                          <option value="{{ii.id}}"> {{ ii.itemgrp_nm }} </option>
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="12%">
+                                      <select class="itemaccnt">
+                                          {% for ii in rsItemaccnt %}
+                                          <option value="{{ii.id}}"> {{ ii.itemaccnt_nm }} </option>
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td width="8%"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insertItem();" title="Bootstrap 3 themes generator">등록</a></td>
+                                  <td></td>
+                              </tr>
+                              </tbody>
                         {% for i in rsItem %}
                               <tbody>
                               <tr>
@@ -213,8 +276,12 @@
                                       </select>
                                   </td>
                                   <td width="8%">{{ i.item_cd }}</td>
-                                  <td width="12%">{{ i.item_nm }}</td>
-                                  <td width="12%">{{ i.item_spec }}</td>
+                                  <td width="12%">
+                                       <input type="text" class="form-control" id="name{{ i.id }}" value="{{ i.item_nm }}"/>
+                                  </td>
+                                  <td width="12%">
+                                      <input type="text" class="form-control" id="spec{{ i.id }}" value="{{ i.item_spec }}"/>
+                                  </td>
                                   <td width="12%">
                                       <select class="unit{{i.id}}">
                                           {% for ii in rsUnit %}
@@ -254,44 +321,6 @@
                               </tr>
                               </tbody>
                         {% endfor %}
-                              <tbody>
-                              <tr>
-                                  <td width="8%"></td>
-                                  <td width="12%">
-                                      <select class="factory">
-                                          {% for ii in rsFactory %}
-                                            <option value="{{ ii.id }}"> {{ ii.factory_nm }} </option>
-                                          {% endfor %}
-                                      </select>
-                                  </td>
-                                  <td width="8%"> <input type="text" id="item_cd" class="form-control"></td>
-                                  <td width="12%"> <input type="text" id="item_nm" class="form-control"></td>
-                                  <td width="12%"> <input type="text" id="item_spec" class="form-control"></td>
-                                  <td width="12%">
-                                      <select class="unit">
-                                          {% for ii in rsUnit %}
-                                          <option value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
-                                          {% endfor %}
-                                      </select>
-                                  </td>
-                                  <td width="8%"></td>
-                                  <td width="12%">
-                                      <select class="itemgrp">
-                                          {% for ii in rsItemgrp %}
-                                          <option value="{{ii.id}}"> {{ ii.itemgrp_nm }} </option>
-                                          {% endfor %}
-                                      </select>
-                                  </td>
-                                  <td width="12%">
-                                      <select class="itemaccnt">
-                                          {% for ii in rsItemaccnt %}
-                                          <option value="{{ii.id}}"> {{ ii.itemaccnt_nm }} </option>
-                                          {% endfor %}
-                                      </select>
-                                  </td>
-                                  <td width="8%"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insertItem();" title="Bootstrap 3 themes generator">등록</a></td>
-                              </tr>
-                              </tbody>
 
                               </table>
                       {% else %}
