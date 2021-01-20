@@ -80,9 +80,11 @@ urlpatterns = [
 
     # 작업장 기능 항목
     path('b_workcenter/workcenter_element_insert', views.workcenter_element_insert, name="workcenter_element_insert"),
+    path('b_workcenter/workcenter_element_update', views.workcenter_element_update, name="workcenter_element_update"),
     path('b_workcenter/workcenter_element_delete', views.workcenter_element_delete, name="workcenter_element_delete"),
 
     # 코스트센터 기능 항목
     path('cb_cost_center/costcenter_element_insert', views.costcenter_element_insert, name="costcenter_element_insert"),
+    path('cb_cost_center/costcenter_element_update', views.costcenter_element_update, name="costcenter_element_update"),
     path('cb_cost_center/costcenter_element_delete', views.costcenter_element_delete, name="costcenter_element_delete")
 ]

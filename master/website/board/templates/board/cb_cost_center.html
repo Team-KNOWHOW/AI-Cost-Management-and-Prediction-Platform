@@ -19,11 +19,6 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h3 class="page-header"><i class="fa fa-table"></i> Cost Center</h3>
-                    <ol class="breadcrumb">
-                        <li><i class="fa fa-home"></i><a href="/">Home</a></li>
-                        <li><i class="fa fa-table"></i>Table</li>
-                        <li><i class="fa fa-th-list"></i>Basic Table</li>
-                    </ol>
                 </div>
             </div>
 
@@ -48,22 +43,34 @@
                             <tbody>
                             <tr>
                                 <td>
-                                    <input type="text" id="cstctr_cd" value="" style="width:100px;" >
+                                    <input type="text" id="cstctr_cd" style="width:100px;" >
                                 </td>
                                 <td>
-                                    <input type="text" id="cstctr_nm" value="" style="width:100px;" >
+                                    <input type="text" id="cstctr_nm" style="width:100px;" >
                                 </td>
                                 <td>
-                                    <input type="text" id="bizarea_id" value="" style="width:100px;" >
+                                    <select id="bizarea_id" style="width:100px;" >
+                                        {% for i in rsBizarea %}
+                                            <option value="{{i.id}}">{{i.bizarea_nm}}</option>
+                                        {% endfor %}
+                                    </select>
                                 </td>
                                 <td>
-                                    <input type="text" id="bizunit_id" value="" style="width:100px;" >
+                                    <select id="bizunit_id" style="width:100px;" >
+                                        {% for i in rsBizunit %}
+                                            <option value="{{i.id}}">{{i.bizunit_nm}}</option>
+                                        {% endfor %}
+                                    </select>
                                 </td>
                                 <td>
-                                    <input type="text" id="factory_id" value="" style="width:100px;" >
+                                    <select id="factory_id" style="width:100px;" >
+                                        {% for i in rsFactory %}
+                                            <option value="{{i.id}}">{{i.factory_nm}}</option>
+                                        {% endfor %}
+                                    </select>
                                 </td>
                                 <td>
-                                    <select type="text" id="cstctr_type" value="" >
+                                    <select type="text" id="cstctr_type" >
                                         <option>
                                             A(보조)
                                         </option>
@@ -79,12 +86,12 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <select type="text" id="cstctr_dir_div" value="" >
-                                        <option>
-                                            I(간접)
-                                        </option>
+                                    <select type="text" id="cstctr_dir_div" >
                                         <option>
                                             D(직접)
+                                        </option>
+                                        <option>
+                                            I(간접)
                                         </option>
                                     </select>
                                 </td>
@@ -109,11 +116,8 @@
                                     <th>코스트센터 코드</th>
                                     <th>코스트센터명</th>
                                     <th>사업장</th>
-                                    <th>사업장명</th>
                                     <th>사업부</th>
-                                    <th>사업부명</th>
                                     <th>공장</th>
-                                    <th>공장명</th>
                                     <th>코스트타입</th>
                                     <th>직간접구분</th>
                                     <!-- <th>사용구분</th> -->
@@ -133,31 +137,85 @@
                                             {{ i.cstctr_nm }}
                                         </td>
                                         <td>
-                                            {{ i.bizarea_id }}
+                                            <select id="bizarea_id{{i.id}}">
+                                                {% for ii in rsBizarea %}
+                                                    {% if i.bizarea_id == ii.id %}
+                                                        <option selected value="{{ii.id}}">{{ii.bizarea_nm}}</option>
+                                                    {% else %}
+                                                        <option value="{{ii.id}}">{{ii.bizarea_nm}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </td>
                                         <td>
-                                            {{ i.bizarea_nm }}
+                                            <select id="bizunit_id{{i.id}}">
+                                                {% for ii in rsBizunit %}
+                                                    {% if i.bizunit_id == ii.id %}
+                                                        <option selected value="{{ii.id}}">{{ ii.bizunit_nm }}</option>
+                                                    {% else %}
+                                                        <option value="{{ii.id}}">{{ ii.bizunit_nm }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </td>
                                         <td>
-                                            {{ i.bizunit_id }}
+                                            <select id="factory_id{{i.id}}">
+                                                {% for ii in rsFactory %}
+                                                    {% if i.factory_id == ii.id %}
+                                                        <option selected value="{{ii.id}}">{{ ii.factory_nm }}</option>
+                                                    {% else %}
+                                                        <option value="{{ii.id}}">{{ ii.factory_nm }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </td>
                                         <td>
-                                            {{ i.bizunit_nm }}
+                                            <select id="cstctr_type{{i.id}}">
+                                                {% if i.cstctr_type == "A(보조)" %}
+                                                    <option selected>A(보조)</option>
+                                                {% else %}
+                                                    <option>A(보조)</option>
+                                                {% endif %}
+
+                                                {% if i.cstctr_type == "C(공통)" %}
+                                                    <option selected>C(공통)</option>
+                                                {% else %}
+                                                    <option>C(공통)</option>
+                                                {% endif %}
+
+                                                {% if i.cstctr_type == "M(제조)" %}
+                                                    <option selected>M(제조)</option>
+                                                {% else %}
+                                                    <option>M(제조)</option>
+                                                {% endif %}
+
+                                                {% if i.cstctr_type == "S(판관)" %}
+                                                    <option selected>S(판관)</option>
+                                                {% else %}
+                                                    <option>S(판관)</option>
+                                                {% endif %}
+                                            </select>
                                         </td>
                                         <td>
-                                            {{ i.factory_id }}
-                                        </td>
-                                        <td>
-                                            {{ i.factory_nm }}
-                                        </td>
-                                        <td>
-                                            {{ i.cstctr_type }}
-                                        </td>
-                                        <td>
-                                            {{ i.cstctr_dir_div }}
+                                            <select id="cstctr_dir_div{{i.id}}">
+                                                {% if i.cstctr_dir_div == "D(직접)" %}
+                                                    <option selected>D(직접)</option>
+                                                {% else %}
+                                                    <option>D(직접)</option>
+                                                {% endif %}
+
+                                                {% if i.cstctr_dir_div == "I(간접)" %}
+                                                    <option selected>I(간접)</option>
+                                                {% else %}
+                                                    <option>I(간접)</option>
+                                                {% endif %}
+                                            </select>
                                         </td>
                                         <td width="5%" align="center" style="padding:5px 0;" >
-                                            <span id="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
+                                            <span value="{{ i.id }}" onclick="update_element(this)" style="cursor:pointer;">수정</span>
+                                        </td>
+                                        <td width="5%" align="center" style="padding:5px 0;" >
+                                            <span value="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -195,12 +253,20 @@
                     //변수 리스트
                     var cstctrcd = document.getElementById("cstctr_cd").value;
                     var cstctrnm = document.getElementById("cstctr_nm").value;
-                    var bizareaid = document.getElementById("bizarea_id").value;
-                    var bizunitid = document.getElementById("bizunit_id").value;
-                    var factoryid = document.getElementById("factory_id").value;
+
+                    var bizarea_selected = document.getElementById("bizarea_id");
+                    var bizareaid = bizarea_selected.options[bizarea_selected.selectedIndex].value;
+
+                    var bizunit_selected = document.getElementById("bizunit_id");
+                    var bizunitid = bizunit_selected.options[bizunit_selected.selectedIndex].value;
+
+                    var factory_selected = document.getElementById("factory_id");
+                    var factoryid = factory_selected.options[factory_selected.selectedIndex].value;
+
                     var cstctrtype = document.getElementById("cstctr_type").value;
                     var cstctrdirdiv = document.getElementById("cstctr_dir_div").value;
                     //예외 처리
+
 
                     // 코스트센터 항목
                     if(cstctrcd == '') {
@@ -214,36 +280,6 @@
                         document.getElementById("cstctr_nm").focus();
                         return false;
                     }
-
-                    if(bizareaid == '') {
-                        alert('사업장 ID가 비었습니다.');
-                        document.getElementById("bizarea_id").focus();
-                        return false;
-                    }
-
-                    if(bizunitid == '') {
-                        alert('사업부 ID가 비었습니다.');
-                        document.getElementById("bizunit_id").focus();
-                        return false;
-                    }
-
-                    if(factoryid == '') {
-                        alert('공장 ID가 비었습니다.');
-                        document.getElementById("factory_id").focus();
-                        return false;
-                    }
-
-                    if(cstctrtype == '') {
-                        alert('코스트센터 타입이 비었습니다.');
-                        document.getElementById("cstctr_type").focus();
-                        return false;
-                    }
-
-                    if(cstctrdirdiv == '') {
-                        alert('직간접구분이 비었습니다.');
-                        document.getElementById("cstctr_dir_div").focus();
-                        return false;
-                    }
                     //예외 처리 끝
 
                     var strurl = "costcenter_element_insert?cstctrcd=" + cstctrcd
@@ -253,9 +289,6 @@
                         + "&factoryid=" + factoryid
                         + "&cstctrtype=" + cstctrtype
                         + "&cstctrdirdiv=" + cstctrdirdiv
-
-                    //alert(strurl);
-                    //return false;
 
                     xhr = new XMLHttpRequest();
                     xhr.onreadystatechange = function() {
@@ -277,7 +310,21 @@
                 }
 
                 function update_element(elem) {
-                    var id = elem.getAttribute('id');
+                    var id = elem.getAttribute('value');
+
+                    var bizarea_selected = document.getElementById('bizarea_id' + id);
+                    var bizareaid = bizarea_selected.options[bizarea_selected.selectedIndex].value;
+
+                    var bizunit_selected = document.getElementById('bizunit_id' + id);
+                    var bizunitid = bizunit_selected.options[bizunit_selected.selectedIndex].value;
+
+                    var factory_selected = document.getElementById('factory_id' + id);
+                    var factoryid = factory_selected.options[factory_selected.selectedIndex].value;
+
+                    var cstctrtype = $('#cstctr_type' + id).val();
+                    var cstctrdirdiv = $('#cstctr_dir_div' + id).val();
+
+
                     var e_value = elem.value;
                     if(e_value == ''){
                         alert('Value empty');
@@ -285,9 +332,12 @@
                         return false;
                     }
 
-                    var strurl = "factory_element_update?id=" + id + "&e_value=" + e_value;
-                    //alert(strurl);
-                    //return false;
+                    var strurl = "costcenter_element_update?id=" + id
+                        + "&bizareaid=" + bizareaid
+                        + "&bizunitid=" + bizunitid
+                        + "&factoryid=" + factoryid
+                        + "&cstctrtype=" + cstctrtype
+                        + "&cstctrdirdiv=" + cstctrdirdiv
 
                     xhr = new XMLHttpRequest();
                     xhr.onreadystatechange = function() {

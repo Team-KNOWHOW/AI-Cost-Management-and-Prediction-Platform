@@ -276,7 +276,7 @@ class BWorkcenter(models.Model):  # 작업장
     cstctr_id = models.CharField(max_length=50, blank=True, null=True)
     insrt_id = models.CharField(max_length=50, blank=True, null=True)
     insrt_dt = models.DateTimeField(blank=True, null=True)
-    updt_user = models.CharField(max_length=50, blank=True, null=True)
+    #updt_user = models.CharField(max_length=50, blank=True, null=True)
     updt_dt = models.DateTimeField(blank=True, null=True)
     usage_fg = models.CharField(max_length=1, blank=True, null=True)
 

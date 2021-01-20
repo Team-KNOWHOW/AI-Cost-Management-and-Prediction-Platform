@@ -39,13 +39,17 @@
                             <tbody>
                             <tr>
                                 <td>
-                                    <input type="text" id="workcenter_cd" value="" >
+                                    <input type="text" id="workcenter_cd">
                                 </td>
                                 <td>
-                                    <input type="text" id="workcenter_nm" value="" >
+                                    <input type="text" id="workcenter_nm">
                                 </td>
                                 <td>
-                                    <input type="text" id="cstctr_id" value="" style="width:100px;" >
+                                    <select id="cstctr" style="width:100px;" >
+                                        {% for i in rsCostcenter %}
+                                            <option value="{{i.id}}">{{ i.cstctr_nm }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </td>
                                 <td>
                                     <button onclick="insert_element();" style="width: 50px">저장</button>
@@ -67,7 +71,6 @@
                                     <th>ID</th>
                                     <th>작업장코드</th>
                                     <th>작업장명</th>
-                                    <th>코스트센터</th>
                                     <th>코스트센터명</th>
                                     <!-- <th>사용구분</th> -->
                                 </tr>
@@ -83,16 +86,35 @@
                                             {{ i.workcenter_cd }}
                                         </td>
                                         <td>
-                                            {{ i.workcenter_nm }}
+                                            <!--
+                                            <select id="workcenter_nm{{i.id}}">
+                                                {% for ii in rsWorkcenter %}
+                                                    {% if i.workcenter_nm == ii.workcenter_nm %}
+                                                        <option selected>{{ ii.workcenter_nm }}</option>
+                                                    {% else %}
+                                                        <option>{{ ii.workcenter_nm }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                            -->
+                                            {{i.workcenter_nm}}
                                         </td>
                                         <td>
-                                            {{ i.cstctr_id }}
-                                        </td>
-                                        <td>
-                                            {{ i.cstctr_nm }}
+                                            <select id="cstctr_id{{i.id}}">
+                                                {% for ii in rsCostcenter %}
+                                                    {% if i.cstctr_id == ii.id %}
+                                                        <option selected value="{{ ii.id }}">{{ ii.cstctr_nm }}</option>
+                                                    {% else %}
+                                                        <option value="{{ ii.id }}">{{ ii.cstctr_nm }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </td>
                                         <td width="5%" align="center" style="padding:5px 0;" >
-                                            <span id="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
+                                            <span value="{{ i.id }}" onclick="update_element(this)" style="cursor:pointer;">수정</span>
+                                        </td>
+                                        <td width="5%" align="center" style="padding:5px 0;" >
+                                            <span value="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -128,18 +150,13 @@
 
                 function insert_element() {
                     //변수 리스트
-                    var cstctrid = document.getElementById("cstctr_id").value;
+                    var cstctr_selected = document.getElementById('cstctr');
+                    var cstctrid = cstctr_selected.options[cstctr_selected.selectedIndex].value;
+
                     var workcentercd = document.getElementById("workcenter_cd").value;
                     var workcenternm = document.getElementById("workcenter_nm").value;
 
                     //예외 처리
-
-                    // 코스트센터 항목
-                    if(cstctrid == '') {
-                        alert('코스트센터 ID가 비었습니다.');
-                        document.getElementById("cstctr_id").focus();
-                        return false;
-                    }
 
                     // 작업장 코드 항목
                     if(workcentercd == '') {
@@ -160,8 +177,6 @@
                     var strurl = "workcenter_element_insert?cstctrid=" + cstctrid
                         + "&workcentercd=" + workcentercd
                         + "&workcenternm=" + workcenternm;
-                    //alert(strurl);
-                    //return false;
 
                     xhr = new XMLHttpRequest();
                     xhr.onreadystatechange = function() {
@@ -183,7 +198,11 @@
                 }
 
                 function update_element(elem) {
-                    var id = elem.getAttribute('id');
+                    var id = elem.getAttribute('value');
+
+                    var cstctr_selected = document.getElementById('cstctr_id' + id);
+                    var cstctrid = cstctr_selected.options[cstctr_selected.selectedIndex].value;
+
                     var e_value = elem.value;
                     if(e_value == ''){
                         alert('Value empty');
@@ -191,9 +210,8 @@
                         return false;
                     }
 
-                    var strurl = "factory_element_update?id=" + id + "&e_value=" + e_value;
-                    //alert(strurl);
-                    //return false;
+                    var strurl = "workcenter_element_update?id=" + id
+                        + "&cstctrid=" + cstctrid;
 
                     xhr = new XMLHttpRequest();
                     xhr.onreadystatechange = function() {
@@ -211,10 +229,8 @@
                 }
 
                 function delete_element(elem) {
-                    var id = elem.getAttribute('id');
+                    var id = elem.getAttribute('value');
                     var strurl = "workcenter_element_delete?id=" + id;
-                    //alert(strurl);
-                    //return false;
 
                     xhr = new XMLHttpRequest();
                     xhr.onreadystatechange = function() {
