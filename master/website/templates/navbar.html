@@ -223,17 +223,23 @@
           <!-- alert notification end-->
           <!-- user login dropdown start-->
           <li class="dropdown">
-            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+              {% if id == None %}
+            <a href="{% url 'main' %}">
+                            <span class="username">로그인</span>
+                        </a>
+              {% else %}
+               <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="profile-ava">
                                 <img alt="" src="{% static 'img/avatar-mini2.jpg' %}">
                             </span>
-                            <span class="username">노하우</span>
+                            <span class="username">{{user_id}}</span>
                             <b class="caret"></b>
                         </a>
+              {% endif %}
             <ul class="dropdown-menu extended logout">
               <div class="log-arrow-up"></div>
               <li class="eborder-top">
-                <a href="#"><i class="icon_profile"></i> My Profile</a>
+                <a href="{% url 'board:member_edit' %}"><i class="icon_profile"></i> My Profile</a>
               </li>
               <li>
                 <a href="#"><i class="icon_mail_alt"></i> My Inbox</a>
@@ -245,7 +251,7 @@
                 <a href="#"><i class="icon_chat_alt"></i> Chats</a>
               </li>
               <li>
-                <a href="/"><i class="icon_key_alt"></i> Log Out</a>
+                <a href="{% url 'board:member_logout' %}"><i class="icon_key_alt"></i> Log Out</a>
               </li>
               <li>
                 <a href="#"><i class="icon_key_alt"></i> Documentation</a>

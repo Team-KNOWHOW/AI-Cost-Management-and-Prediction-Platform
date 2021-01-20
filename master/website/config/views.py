@@ -1,33 +1,17 @@
 from django.shortcuts import render
-#from ..board.models import BUser
-import json
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 
-# Main View
 def main_view(request):
-    return render(request, "login.html")
 
-
-# User Register
-
-def member_register(request):
-    return render(request, "member_register.html")
-
-
-"""@csrf_exempt
-def member_id_check(request):
     context = {}
-
-    member_id = request.GET['user_id']
-    rs = BUser.objects.filter(user_id=member_id)
-    if(len(rs))>0:
-        context['flag'] = '1'
-        context['result_msg'] = '이미 존재하는 아이디입니다.'
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
     else:
-        context['flag'] = '0'
-        context['result_msg'] = '사용가능한 아이디입니다.'
+        member_no = None
+        member_id = None
 
-    return JsonResponse(context, content_type="application/json")
-"""
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+    return render(request, "registration/login.html", context)

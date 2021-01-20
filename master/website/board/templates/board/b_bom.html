@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+    {{ block.super }}
+
+
+{% endblock %}
+
+{% block body %}
+
+    {% include "navbar.html" %}
+    {% include "sidebar.html" %}
+
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="page-header"><i class="fa fa-table"></i> {{title}}</h3>
+                </div>
+            </div>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+
+    <link href="{% static '/icofont/icofont.min.css' %}" rel="stylesheet">
+
+    <script>
+        // https://docs.djangoproject.com/en/3.1/ref/csrf/
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+        var xhr;
+
+        function searchItem() {
+
+                var itemspec = document.getElementById('itemspec1').value;
+                var itemcode = document.getElementById('itemcode1').value;
+
+                var strurl = "?itemspec=" + itemspec + "&itemcode=" + itemcode;
+                //alert(strurl);
+                //return false;
+
+                location.href = strurl;
+            }
+
+        function searchItemgrp() {
+                var itemgrpid = document.getElementById('itmgrp_').value;
+
+                var strurl = "?itemgrpid=" + itemgrpid;
+                //alert(strurl);
+                //eturn false;
+
+                location.href = strurl;
+            }
+
+        function createBOM(bomid) {
+
+            var itemid = document.getElementById('itemid').value;
+
+            var strurl = "bom_create?itemid=" + itemid;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    if(obj.flag == "1") {
+                        alert(obj.result_msg);
+                    }
+                    else {
+                        location.reload();
+                    }
+
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+
+        function searchBOMItem(bomid) {
+
+            var itmtext = document.getElementById('itmtext_'+bomid).value;
+
+            var strurl = "bomitem_read?bomid=" + bomid + "&itmtext=" + itmtext;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    //alert(obj.itmstr);
+
+                    //view에서 만들어준 itmstr명령을 받아서 innerhtml함수로 넣어주게 된다.
+                    document.getElementById('itmlist_'+bomid).innerHTML = obj.itmstr;
+
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+
+        function pickBOMItem(elem) {
+
+            var bomid = elem.getAttribute('bomid');
+            var itemid = elem.getAttribute('itemid');
+            var flag = elem.getAttribute('flag');
+
+            var strurl = "bomitem_pick?bomid=" + bomid + "&itemid=" + itemid + "&flag=" + flag;
+            alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    if(obj.flag == "1") {
+                      alert(obj.result_msg);
+                    }
+                    else {
+                        location.reload();
+                    }
+                    //alert(obj.itmstr);
+                    //document.getElementById('itmlist_'+itemid).innerHTML = obj.itmstr;
+
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+
+
+        function openItemBox(elem) {
+
+            var bomid = elem.getAttribute('bomid');
+            var dval = document.getElementById('itmbox_'+bomid).style.display;
+
+            var myNodelist = document.getElementsByName("itmbox_");
+            var i;
+            for (i = 0; i < myNodelist.length; i++) {
+                myNodelist[i].style.display = "none";
+            }
+
+            var myNodelist = document.getElementsByName("itmlist_");
+            var i;
+            for (i = 0; i < myNodelist.length; i++) {
+                myNodelist[i].innerHTML = "";
+            }
+            if(dval == "block") {
+                document.getElementById('itmbox_'+bomid).style.display = "none";
+            }
+            else {
+                document.getElementById('itmbox_'+bomid).style.display = "block";
+            }
+
+        }
+
+        function updateBOM(elem) {
+
+            var bomid = document.getElementById('bomid').value;
+            var bvalue = elem.value;
+            var flag = elem.getAttribute('flag');
+
+            var strurl = "bom_update?bomid=" + bomid + "&bvalue=" + bvalue + "&flag=" + flag;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    if (obj.flag == "1") {
+                        alert(obj.result_msg);
+                    } else {
+                        elem.style.color = "#3388cc";
+                    }
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+    </script>
+
+</head>
+<body>
+
+<input type="hidden" value="{{itemid}}" id="itemid">
+<input type="hidden" value="{{bomid}}" id="bomid">
+
+<div >
+
+    <div>
+    <table border="1" cellpadding="0" cellspacing="0" width="100%">
+    <tr height="45">
+        <td width="20%" align="center"  bgcolor="#FFF" valign="top">
+            <div style="padding:5px 0;background-color:#87cefa;">검색조건</div>
+            <div style="padding:5px 0;background-color:#fff;">
+                <table border="0" cellpadding="1" cellspacing="1" width="100%">
+                    <tr height="35">
+                        <td width="70%" align="left"  bgcolor="#fff">
+                            <input type="text" style="width:90%;padding:5px 0;" id="itemcode1"></td>
+                        <td width="30%" align="center"  bgcolor="#fff">품목코드</td>
+                    </tr>
+                    <tr height="35">
+                        <td width="70%" align="left"  bgcolor="#fff">
+                            <input type="text" style="width:90%;padding:5px 0;" id="itemspec1">
+                        </td>
+                        <td width="30%" align="center"  bgcolor="#fff">규 격</td>
+                    </tr>
+                    <tr height="35">
+                        <td width="70%" align="left"  bgcolor="#fff">
+                            {% if not rsItemgrp %}
+                                <p>품목그룹 없음</p>
+                            {% else %}
+                                <select name="itmgrp" id="itmgrp_" style="width:90%;padding:5px 0;" onchange="searchItemgrp()">
+                                {% for ii in rsItemgrp %}
+                                    {% if itemgrpid == ii.id|slugify  %}
+                                    <option value="{{ ii.id }}" selected>{{ ii.itemgrp_nm }}</option>
+                                    {% else %}
+                                    <option value="{{ ii.id }}">{{ ii.itemgrp_nm }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                                </select>
+                            {% endif %}
+
+                        </td>
+                        <td width="30%" align="center"  bgcolor="#fff">
+                            <button onclick="searchItem();">검색</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div style="border:solid 0px #3388cc;height:100%">
+            {% if not rsItem %}
+                <p class="text-center">내용이 없습니다! </p>
+            {% else %}
+                <table border="0" cellpadding="3" cellspacing="3" width="100%">
+                    <tr height="35">
+                        <td width="40%" align="center"  bgcolor="#E8E8E8">품목코드</td>
+                        <td width="50%" align="center"  bgcolor="#E8E8E8">규격</td>
+                        <td width="10%" align="center"  bgcolor="#E8E8E8"></td>
+                    </tr>
+                </table>
+                {% for i in rsItem %}
+                <div style="border-bottom:solid 1px #888;" id="typebox_{{ i.id }}">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr height="35">
+                    <td width="40%" align="left"  bgcolor="#FFF">
+                        <a href="?itemid={{ i.id }}">{{ i.item_cd }}</a>
+                    </td>
+                    <td width="50%" align="left"  bgcolor="#FFF">{{ i.item_spec }}</td>
+                    <td width="10%" align="center"  bgcolor="#FFF">
+                        {% if i.bom_fg == '0' %}
+                            <i class="icofont-site-map" style="color:#ddd;"></i>
+                        {% else %}
+                            <i class="icofont-site-map" style="color:#FF6600;"></i>
+                        {% endif %}
+                    </td>
+                </tr>
+                </table>
+                </div>
+                {% endfor %}
+            {% endif %}
+            </div>
+
+        </td>
+        <td width="80%" align="center"  bgcolor="#FFF" valign="top">
+            <div style="padding:5px;background-color:#87cefa;text-align:left;">BOM TREE</div>
+            <div style="padding:5px;background-color:#DDD;">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#DDD" >
+                <tr height="45">
+                    <td width="10%" align="center"  >BOM품목
+                    </td>
+                    <td width="20%" align="left"  ><div style="width:60%;padding:5px;border:solid 1px #888;">{{ itemcd }}</div>
+                    </td>
+                    <td width="30%" align="left"  ><div style="width:60%;padding:5px;border:solid 1px #888;">{{ itemspec }}</div>
+                    </td>
+                    <td width="20%" align="left"  >
+                    </td>
+                    <td width="20%" align="left"  >
+                    </td>
+                </tr>
+                <tr height="45">
+                    <td width="10%" align="center" >
+                    </td>
+                    <td width="20%" align="left"  >
+                    </td>
+                    <td width="30%" align="left" >
+                        <div style="width:60%;padding:5px;border:solid 1px #888;">{{ registerdate }}</div>
+                    </td>
+                    <td width="32%" align="left" >
+                    </td>
+                    <td width="8%" align="center" >
+                        <button style="padding:5px 10px;" itemid="{{itemid}}" onclick="createBOM(0)">생성</button>
+                    </td>
+                </tr>
+                </table>
+            </div>
+
+            <div >
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#fff" >
+                <tr height="35">
+                    <td width="19%" align="center" bgcolor="#80FFDB">품목코드(click)
+                    </td>
+                    <td width="3%" align="center"  bgcolor="#80FFDB">
+                    </td>
+                    <td width="3%" align="center"  bgcolor="#80FFDB">
+                    </td>
+                    <td width="27%" align="center"  bgcolor="#80FFDB">품목명(click)
+                    </td>
+                    <td width="30%" align="center" bgcolor="#80FFDB" >규격
+                    </td>
+                    <td width="9%" align="center" bgcolor="#80FFDB" >투입단위
+                    </td>
+                    <td width="9%" align="center" bgcolor="#80FFDB" >소요량
+                    </td>
+                    <td width="3%" align="center"  >
+                    </td>
+                </tr>
+                </table>
+
+                {% if not rsBOM %}
+                    <p class="text-center">BOM이 없습니다.</p>
+                {% else %}
+                    {% for i in rsBOM %}
+                    <div style="padding:5px 0;border-bottom:solid 1px #3388cc;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#fff" >
+                        <tr height="35">
+                            <td width="19%" align="left"  style="padding-left:5px;">
+                                <script>
+                                    var i;
+                                    text=""
+                                    for (i = 0; i < {{i.bom_level}}; i++) {
+                                      text += "▒";
+                                    }
+                                    document.write(text);
+                                </script>
+                                <a href="?itemid={{itemid}}&bomid={{i.id}}">{{i.item.item_cd}}</a>
+                            </td>
+                            <td width="3%" align="center"  >{{i.bom_level}}
+                            </td>
+                            <td width="3%" align="center"  >
+                                {% if i.leaf_fg == "1" %}
+                                <i class="icofont-leaf" style="color:#FF6600;"></i>
+                                {% else %}
+                                <i class="icofont-leaf" style="color:#DDD;"></i>
+                                {% endif %}
+                            </td>
+                            <td width="27%" align="left" bgcolor="#f0f0ff"  style="padding-left:5px;">
+                                <span bomid="{{i.id}}" onclick="openItemBox(this)" style="cursor:pointer;">{{i.item.item_nm}}</span>
+                            </td>
+                            <td width="30%" align="left"  >{{i.item.item_spec}}
+                            </td>
+                            <td width="9%" align="center"  bgcolor="#f0f0ff" >{{i.unit_product}}
+                            </td>
+                            <td width="9%" align="center"  >{{i.demand_amt}}
+                            </td>
+                            <td width="3%" align="center"  ><i class="icofont-close" onclick="javascript:alert('작업 중입니다.');"></i>
+                            </td>
+                        </tr>
+                        </table>
+                        <div style="margin-top:3px;display:none;" id="itmbox_{{i.id}}" name="itmbox_">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#fff" >
+                        <tr>
+                            <td width="20%" align="left" valign="top" style="padding-left:5px;">
+                                <input type="text" style="width:95%;padding:3px 0;" id="itmtext_{{i.id}}">
+                            </td>
+                            <td width="8%" align="left" valign="top" style="padding-left:5px;">
+                                <input type="button" value="품목조회" onclick="searchBOMItem({{i.id}})">
+                            </td>
+                            <td width="72%" align="left" valign="top" style="padding-left:5px;">
+                                <div id="itmlist_{{i.id}}" name="itmlist_">
+
+                                </div>
+                            </td>
+                        </tr>
+                        </table>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div style="margin-top:10px;padding:5px;background-color:#87cefa;text-align:left;">BOM 구성정보</div>
+
+            {% if bomid != "0" %}
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#fff" >
+            <tr height="35">
+                <td width="25%" align="center" colspan="2">품목코드 {{ itemcd }}
+                </td>
+                <td width="8%" align="center" bgcolor="#FFF" >모품목기준
+                </td>
+                <td width="17%" align="center"  ><input type="text" value="{{ moitembase }}" style="padding:5px 3px;width:95%;text-align:center;" flag="mobase" onchange="updateBOM(this)">
+                </td>
+                <td width="8%" align="center" bgcolor="#FFF" >자품목기준
+                </td>
+                <td width="17%" align="center"  ><input type="text" value="{{ jaitembase }}" style="padding:5px 3px;width:95%;text-align:center;" flag="jabase" onchange="updateBOM(this)">
+                </td>
+                <td width="8%" align="center" bgcolor="#FFF" >투입단위
+                </td>
+                <td width="17%" align="center"  ><input type="text" value="{{ unitproduct }}" style="padding:5px 3px;width:95%;text-align:center;" flag="unit" onchange="updateBOM(this)">
+                </td>
+            </tr>
+            <tr height="35">
+                <td width="8%" align="center" bgcolor="#FFF" >Loss%
+                </td>
+                <td width="17%" align="center"  ><input type="text" value="{{ lossproduct }}" style="padding:5px 3px;width:95%;text-align:center;" flag="loss" onchange="updateBOM(this)">
+                </td>
+                <td width="8%" align="center" bgcolor="#FFF" >소요량
+                </td>
+                <td width="17%" align="center"  ><input type="text" value="{{ demandamt }}" style="padding:5px 3px;width:95%;text-align:center;" flag="demand" onchange="updateBOM(this)">
+                </td>
+                <td width="8%" align="center" bgcolor="#FFF" >적용시작일
+                </td>
+                <td width="17%" align="center"  > <input type="text" value="{{ startdate }}" style="padding:5px 3px;width:95%;text-align:center;" flag="sdate" onchange="updateBOM(this)">
+                </td>
+                <td width="8%" align="center" bgcolor="#FFF" >적용종료일
+                </td>
+                <td width="17%" align="center"  > <input type="text" value="{{ enddate }}" style="padding:5px 3px;width:95%;text-align:center;" flag="edate" onchange="updateBOM(this)">
+                </td>
+            </tr>
+            </table>
+            {% endif %}
+
+        </td>
+    </tr>
+    </table>
+    </div>
+
+</div>
+
+</body>
+</html>
+
+<script>
+document.getElementById('formdownload_btn').onclick = downloadTemplate;
+</script>
+
+            </section>
+        <!--main content end-->
+    </section>
+    <!-- container section start -->
+{% endblock %}

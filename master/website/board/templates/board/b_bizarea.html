@@ -20,36 +20,65 @@
                     <h3 class="page-header"><i class="fa fa-table"></i> 사업장</h3>
                 </div>
             </div>
-
 <div>
-    {% if not rsBizarea %}
-        <p class="text-center">내용이 없습니다! </p>
-    {% else %}
-        <div>
 <!--        <div style="border-top:solid 2px #888;">-->
         <table>
             <tr>
-                <td width="" align="center"  bgcolor="#E8E8E8">ID</td>
-                <td width="" align="center"  bgcolor="#E8E8E8">사업장코드</td>
-                <td width="" align="center"  bgcolor="#E8E8E8">대표자</td>
-
+                <td width="" align="center">사업장코드</td>
+                <td width="" align="center">법인명</td>
+                <td width="" align="center">사업장명</td>
+                <td width="" align="center">사업방약명</td>
+                <td width="" align="center">사업자번호</td>
+                <td width="" align="center">대표자</td>
+                <td width="" align="center">국가코드</td>
+                <td width="" align="center">기준통화코드</td>
 
                 </td>
             </tr>
                                   <tbody >
                                     <tr>
-                                        <td>
-                                          <input type="text" id="bizarea_cd" value="" style="width:100px;" >
+                                     <td>
+                                          <input type="text" id="bizarea_cd" value="" >
+
+                                      </td>
+
+                                  <td >
+                                      <select class="coid">
+                                          {% for ii in rsCo %}
+                                          <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                     <td>
+                                          <input type="text" id="bizarea_nm" value="" >
 
                                       </td>
                                         <td>
-                                          <input type="text" id="bizarea_nm" value="" >
+                                          <input type="text" id="bizarea_shnm" value="" >
+
+                                      </td>
+                                        <td>
+                                          <input type="text" id="biz_no" value="" >
 
                                       </td>
                                         <td>
                                           <input type="text" id="biz_rpr" value="" >
 
                                       </td>
+                                  <td >
+                                      <select class="cn">
+                                          {% for ii in rsUnitCn %}
+                                          <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                          {% endfor %}
+                                      </select>
+                                  </td>
+                                  <td >
+                                      <select class="cur">
+                                          {% for ii in rsUnitCur %}
+                                          <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                          {% endfor %}
+                                      </select>
+                                  </td>
                                         <td>
                                             <button onclick="insert_element();" style="width: 50px">저장</button>
                                         </td>
@@ -58,6 +87,13 @@
 
         </table>
         </div>
+
+
+<div>
+    {% if not rsBizarea %}
+        <p class="text-center">내용이 없습니다! </p>
+    {% else %}
+
     </div>
     {% endif %}
 </div>
@@ -65,59 +101,50 @@
               <div class="col-lg-12" style="margin-top:15px">
                 <section class="panel">
                   <div class="table-responsive">
-                    {% if rsHeader %}
+                    {% if rsBizarea %}
                           <table class="table">
                               <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>사업장코드</th>
                                     <th>법인명</th>
                                     <th>사업장명</th>
-                                    <th>사업장약성</th>
+                                    <th>사업장약명</th>
                                     <th>사업자번호</th>
                                     <th>대표자</th>
-                                    <th>개업일자</th>
+<!--                                    <th>개업일자</th>-->
                                     <th>국가코드</th>
                                     <th>기준통화코드</th>
 
                                 </tr>
                               </thead>
-                        {% for i in rsBizarea %}
-                                  <tbody >
-                                    <tr>
-            <td>{{ i.id }}</td>
+            {% for i in rsBizarea %}
+            <tbody >
+            <tr>
             <td>{{ i.bizarea_cd }}</td>
+            <td>{{ i.co_nm }}</td>
             <td>
-                {% if not rsCo %}////법인명 부분
-                    <p class="text-center">법인없음</p>
-                {% else %}
-                    <select name="bizco" id="bizco{{ i.id }}">#bizco를 b_co의 id로 설정
-                    {% for ii in rsCo %}
-                        {% if i.co_id == ii.id %}
-                        <option value="{{ ii.id }}" selected>{{ ii.co_nm }}</option>
-                        {% else %}
-                        <option value="{{ ii.id }}">{{ ii.co_nm }}</option>
-                        {% endif %}
-                    {% endfor %}
-                    </select>
-                {% endif %}
+                <input type="text" id="bizareanm{{ i.id }}" value="{{ i.bizarea_nm }}" placeholder="bizareanm" />
             </td>
-
-            <td >{{ i.bizarea_nm }}</td>
-            <td >{{ i.bizarea_shnm }}</td>
-            <td >{{ i.biz_no }}</td>
-            <td >{{ i.biz_rpr }}</td>
-            <td >{{ i.str_dt }}</td>
+            <td width="15%">
+                <input type="text" id="bizareashnm{{ i.id }}" value="{{ i.bizarea_shnm }}" placeholder="bizareashnm"/>
+            </td><td >
+                <input type="text" id="bizno{{ i.id }}" value="{{ i.biz_no }}" placeholder="bizno" />
+            </td>
+            <td>
+                <input type="text" id="bizrpr{{ i.id }}" value="{{ i.biz_rpr }}" placeholder="bizrpr"/>
+            </td>
+<!--            <td >{{ i.str_dt }}</td>-->
             <td>
                 {% if not rsUnitCn %}
                     <p class="text-center">지정국가 없음</p>//cb_code_dtl의 country부분
                 {% else %}
-                    <select name="unitcn" id="unitcn_{{ i.id }}" style="width:100%;padding:3px;">
+                    <select class="unitcnid{{ i.id }}" style="width:100%;padding:3px;">
+<!--                    <select name="unitcn" id="unitcn_{{ i.id }}" style="width:100%;padding:3px;">-->
                                           {% for ii in rsUnitCn %}
-                                          {% if i.unit_id == ii.id %}
-                                          <option selected> {{ ii.cd_nm }} </option>
+                                          {% if i.unitcn_id == ii.id %}
+                                          <option value="{{ ii.id }}" selected> {{ ii.cd_nm }} </option>
                                           {% else %}
-                                          <option> {{ ii.cd_nm }} </option>
+                                          <option value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
                                           {% endif %}
                                           {% endfor %}
                                       </select>
@@ -126,11 +153,11 @@
             </td>
             <td>
                 {% if not rsUnitCur %}
-                    <p class="text-center">기준통화 없음</p>//cb_code_dtl의 curreny부분
+                    <p class="text-center">기준통화 없음</p>
                 {% else %}
-                    <select name="unitcur" id="unitcur_{{ i.id }}" style="width:100%;padding:3px;">
+                    <select class="unitcurid{{ i.id }}" style="width:100%;padding:3px;">
                     {% for ii in rsUnitCur %}
-                        {% if i.unit_id == ii.id %}
+                        {% if i.unitcur_id == ii.id %}
                         <option value="{{ ii.id }}" selected>{{ ii.cd_nm }}</option>
                         {% else %}
                         <option value="{{ ii.id }}">{{ ii.cd_nm }}</option>
@@ -139,8 +166,10 @@
                     </select>
                 {% endif %}
             </td>
-            <td width="5%" align="center" style="padding:5px 0;">
-                    <span id="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
+
+            <td width="5%"><a class="btn btn-default btn-sm" typeid="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator";>수정</a></td>
+                <td width="5%">
+                <a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator";>삭제</a>
             </td>
 
                                     </tr>
@@ -177,14 +206,22 @@
 
         function insert_element() {
 //변수 리스트
+
             var bizareacd = document.getElementById("bizarea_cd").value;
             var bizareanm = document.getElementById("bizarea_nm").value;
+            var bizareashnm = document.getElementById("bizarea_shnm").value;
+            var bizno = document.getElementById("biz_no").value;
             var bizrpr = document.getElementById("biz_rpr").value;
 
+            var conmSelect = document.querySelector('.coid');
+            var conm = conmSelect.options[conmSelect.selectedIndex].value;
+
+
+
 //예외 처리
-            // 사업부 코드 항목
-            if(bizareacd == '') {
-                alert('사업장 코드가 비었습니다.');
+            //사업부 코드 항목
+            if(bizareashnm == '') {
+                alert('사업장약명이 비었습니다.');
                 document.getElementById("bizarea_cd").focus();
                 return false;
             }
@@ -192,6 +229,12 @@
             if(bizareanm == '') {
                 alert('사업장명이 비었습니다.');
                 document.getElementById("bizarea_nm").focus();
+                return false;
+            }
+            // 사업번호 항목
+            if(bizno == '') {
+                alert('사업번호가 비었습니다.');
+                document.getElementById("biz_no").focus();
                 return false;
             }
             // 비고 항목
@@ -202,11 +245,17 @@
             }
 
 //예외 처리 끝
+            var unitCurSelect = document.querySelector('.cur');
+            var unitcurid = unitCurSelect.options[unitCurSelect.selectedIndex].value;
 
-            var strurl = "bizarea_element_insert?bizareacd=" +bizareacd + "&bizareanm=" + bizareanm+ "&bizrpr=" + bizrpr;
+            var unitCnSelect = document.querySelector('.cn');
+            var unitcnid = unitCnSelect.options[unitCnSelect.selectedIndex].value;
+
+            var strurl = "bizarea_element_insert?bizareanm=" + bizareanm + "&bizrpr=" + bizrpr + "&bizno=" + bizno +
+            "&bizareashnm=" + bizareashnm +"&bizareacd=" + bizareacd +"&conm=" + conm +  "&unitcurid=" +unitcurid+ "&unitcnid="+ unitcnid;
+
             //alert(strurl);
             //return false;
-
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4) {
@@ -226,15 +275,24 @@
         }
 
         function update_element(elem) {
-            var id = elem.getAttribute('id');
-            var e_value = elem.value;
-            if(e_value == ''){
-                alert('Value empty');
-                elem.focus();
-                return false;
-            }
+            var typeid = elem.getAttribute('typeid');
+            // alert(id);
+            // return false;
+            var unitcnSelect = document.querySelector('.unitcnid' + typeid);
+            var unitcnid = unitcnSelect.options[unitcnSelect.selectedIndex].value;
 
-            var strurl = "bizarea_element_update?id=" + id + "&e_value=" + e_value;
+            var unitcurSelect = document.querySelector('.unitcurid' + typeid);
+            var unitcurid = unitcurSelect.options[unitcurSelect.selectedIndex].value;
+
+            var bizareanm = $('#bizareanm' + typeid).val();
+            var bizareashnm = $('#bizareashnm' + typeid).val();
+            var bizno = $('#bizno' + typeid).val();
+            var bizrpr = $('#bizrpr' + typeid).val();
+
+
+            var strurl = "bizarea_element_update?typeid=" + typeid +"&bizareanm="+bizareanm +"&bizareashnm="+bizareashnm +
+                "&bizno="+bizno + "&bizrpr="+bizrpr+ "&unitcnid="+ unitcnid + "&unitcurid="+ unitcurid;
+            // + "&e_value=" + e_value
             //alert(strurl);
             //return false;
 
@@ -245,9 +303,8 @@
 
                     var obj = JSON.parse(data);
                     alert(obj.result_msg);
-                    // if(obj.flag =='1') {
-                    //     document.getElementById('typebox_' + id).ontimeupdate();
-                    // }
+                        location.reload();
+
                 }
             };
             xhr.open("POST", strurl);
@@ -258,6 +315,9 @@
         function delete_element(elem) {
 
             var id = elem.getAttribute('id');
+
+            // alert(id);
+            // return false;
 
             var strurl = "bizarea_element_delete?id=" + id;
             //alert(strurl);
@@ -270,10 +330,7 @@
 
                     var obj = JSON.parse(data);
                     alert(obj.result_msg);
-
-                    if(obj.flag =='1') {
-                        document.getElementById('typebox_' + id).remove();
-                    }
+                    location.reload();
                 }
             };
             xhr.open("POST", strurl);
