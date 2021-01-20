@@ -136,9 +136,6 @@ class BBizarea(models.Model):  # 사업장 현준
     biz_no = models.CharField(db_column='biz_no', max_length=50, blank=True, null=True)
     biz_rpr = models.CharField(db_column='biz_rpr', max_length=50, blank=True, null=True)
     str_dt = models.DateTimeField(db_column='str_dt', blank=True, null=True)
-    unitcur= models.ForeignKey(CbCodeDtl, related_name='+', on_delete=models.CASCADE)
-    unitcn= models.ForeignKey(CbCodeDtl, related_name='+', on_delete=models.CASCADE)
-
     # cn_cd = models.CharField(db_column='cn_cd', max_length=20, blank=True, null=True)
     # cur_cd = models.CharField(db_column='cur_cd', max_length=20, blank=True, null=True)
     # insrt_id = models.IntegerField(db_column='insrt_id', blank=True, null=True)
@@ -166,6 +163,7 @@ class BBizunit(models.Model):  # 사업부 현준
     class Meta:
         managed = False
         db_table = 'b_bizunit'
+
 
 class BBizpartner(models.Model):  # 거래처
     id = models.AutoField(db_column='id', primary_key=True)

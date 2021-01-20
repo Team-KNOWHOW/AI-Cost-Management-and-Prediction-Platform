@@ -20,6 +20,11 @@
                     <h3 class="page-header"><i class="fa fa-table"></i> 사업부</h3>
                 </div>
             </div>
+
+<div>
+    {% if not rsHeader %}
+        <p class="text-center">내용이 없습니다! </p>
+    {% else %}
         <div>
 <!--        <div style="border-top:solid 2px #888;">-->
         <table>
@@ -36,7 +41,7 @@
                                           <input type="text" id="bizunit_cd" value="" style="width:100px;" >
 
                                       </td>
-                                       <td>
+                                        <td>
                                           <input type="text" id="bizunit_nm" value="" >
 
                                       </td>
@@ -52,7 +57,8 @@
 
         </table>
         </div>
-
+    </div>
+    {% endif %}
 </div>
             <div class="row">
               <div class="col-lg-12" style="margin-top:15px">
@@ -62,29 +68,47 @@
                           <table class="table">
                               <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>사업부코드</th>
                                     <th>사업부명</th>
                                     <th>비고</th>
-
+                                    <th>생성자</th>
+                                    <th>생성일자</th>
+                                    <th>수정자</th>
+                                    <th>수정일자</th>
 <!--                                    <th>사용구분</th>-->
                                 </tr>
                               </thead>
                         {% for i in rsHeader %}
                                   <tbody >
                                     <tr>
-                                        <td width="15%">
+                                      <td>
+<!--                                          <a href="b_bizpartner?id={{ i.id }}">-->
+                                          {{ i.id }}
+                                      </td>
+                                        <td>
                                           {{ i.bizunit_cd }}
                                       </td>
-
-                                      <td width="15%">
+                                        <td>
                                           {{ i.bizunit_nm }}
                                       </td>
-                                      <td width="15%">
-                                           <input type="text" class="bizunitrmrk" id="bizunitrmrk{{ i.id }}" value="{{ i.bizunit_rmrk }}" placeholder="bizunitrmrk"/>
+                                        <td>
+                                          {{ i.bizunit_rmrk }}
+                                      </td>
+                                        <td>
+                                          {{ i.insrt_id }}
+                                      </td>
+                                        <td>
+                                          {{ i.insrt_dt }}
+                                      </td>
+                                        <td>
+                                          {{ i.updt_id }}
+                                      </td>
+                                        <td>
+                                          {{ i.updt_dt }}
                                       </td>
                                         <td width="5%" align="center" style="padding:5px 0;" >
-                    <td width="8%"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator">수정</a></td>
-                    <td width="8%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator">삭제</a></td>
+                    <span id="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
                 </td>
 
                                     </tr>
@@ -170,10 +194,17 @@
         }
 
         function update_element(elem) {
-            var value = elem.getAttribute('value');
-            var bizunitrmrk = $('#bizunitrmrk' + value).val();
+            var id = elem.getAttribute('id');
+            var e_value = elem.value;
+            if(e_value == ''){
+                alert('Value empty');
+                elem.focus();
+                return false;
+            }
 
-            var strurl = "bizunit_element_update?value=" + value + "&bizunitrmrk="+bizunitrmrk;
+            var strurl = "bizunit_element_update?id=" + id + "&e_value=" + e_value;
+            //alert(strurl);
+            //return false;
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
@@ -182,10 +213,9 @@
 
                     var obj = JSON.parse(data);
                     alert(obj.result_msg);
-
-                    if(obj.flag =='0') {
-                        location.reload();
-                    }
+                    // if(obj.flag =='1') {
+                    //     document.getElementById('typebox_' + id).ontimeupdate();
+                    // }
                 }
             };
             xhr.open("POST", strurl);
@@ -198,8 +228,8 @@
             var id = elem.getAttribute('id');
 
             var strurl = "bizunit_element_delete?id=" + id;
-            // alert(strurl);
-            // return false;
+            //alert(strurl);
+            //return false;
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
@@ -208,14 +238,12 @@
 
                     var obj = JSON.parse(data);
                     alert(obj.result_msg);
-                        location.reload();
 
                     if(obj.flag =='1') {
                         document.getElementById('typebox_' + id).remove();
                     }
                 }
             };
-
             xhr.open("POST", strurl);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
             xhr.send(null);
