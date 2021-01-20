@@ -127,7 +127,7 @@ class BCo(models.Model):  # 법인
         db_table = 'b_co'
 
 
-lass BBizarea(models.Model):  # 사업장 현준
+class BBizarea(models.Model):  # 사업장 현준
     id = models.AutoField(db_column='id', primary_key=True)
     bizarea_cd = models.CharField(db_column='bizarea_cd', max_length=50, blank=True, null=True)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)

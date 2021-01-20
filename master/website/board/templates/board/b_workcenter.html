@@ -86,18 +86,7 @@
                                             {{ i.workcenter_cd }}
                                         </td>
                                         <td>
-                                            <!--
-                                            <select id="workcenter_nm{{i.id}}">
-                                                {% for ii in rsWorkcenter %}
-                                                    {% if i.workcenter_nm == ii.workcenter_nm %}
-                                                        <option selected>{{ ii.workcenter_nm }}</option>
-                                                    {% else %}
-                                                        <option>{{ ii.workcenter_nm }}</option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                            -->
-                                            {{i.workcenter_nm}}
+                                            <input id="workcenter_nm{{i.id}}" type="text" value="{{ i.workcenter_nm }}">
                                         </td>
                                         <td>
                                             <select id="cstctr_id{{i.id}}">
@@ -199,6 +188,7 @@
 
                 function update_element(elem) {
                     var id = elem.getAttribute('value');
+                    var workcenternm = document.getElementById('workcenter_nm' + id).value;
 
                     var cstctr_selected = document.getElementById('cstctr_id' + id);
                     var cstctrid = cstctr_selected.options[cstctr_selected.selectedIndex].value;
@@ -211,6 +201,7 @@
                     }
 
                     var strurl = "workcenter_element_update?id=" + id
+                        + "&workcenternm=" + workcenternm
                         + "&cstctrid=" + cstctrid;
 
                     xhr = new XMLHttpRequest();

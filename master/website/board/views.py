@@ -561,19 +561,14 @@ def factory_element_insert(request):
     factoryrmrk = request.GET['factoryrmrk']
     usagefg = 'Y'
 
-    if BFactory.objects.filter(factory_cd=factorycd).exists():
+    if BFactory.objects.filter(factory_cd=factorycd, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "factory_cd exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BFactory.objects.filter(factory_nm=factorynm).exists():
+    if BFactory.objects.filter(factory_nm=factorynm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "factory_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BFactory.objects.filter(factory_rmrk=factoryrmrk).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "factory_rmrk exists..."
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
@@ -593,17 +588,14 @@ def factory_element_insert(request):
 def factory_element_update(request):
     context = {}
 
-    typeid = request.GET['typeid']
-    tvalue = request.GET['tvalue']
+    id = request.GET['id']
+    factorynm = request.GET['factorynm']
+    factoryrmrk = request.GET['factoryrmrk']
 
-    if BFactory.objects.filter(type_nm=tvalue).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    rsHeader = BFactory.objects.get(id=typeid)
-    rsHeader.type_nm = tvalue
-    rsHeader.save()
+    rsFactory = BFactory.objects.get(id=id)
+    rsFactory.factory_nm = factorynm
+    rsFactory.factory_rmrk = factoryrmrk
+    rsFactory.save()
 
     context["flag"] = "0"
     context["result_msg"] = "BFactory update success..."
@@ -1772,12 +1764,12 @@ def workcenter_element_insert(request):
     cstctrid = request.GET['cstctrid']
     usagefg = 'Y'
 
-    if BWorkcenter.objects.filter(workcenter_cd=workcentercd).exists():
+    if BWorkcenter.objects.filter(workcenter_cd=workcentercd, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "workcenter_cd exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BWorkcenter.objects.filter(workcenter_nm=workcenternm).exists():
+    if BWorkcenter.objects.filter(workcenter_nm=workcenternm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "workcenter_nm exists..."
         return JsonResponse(context, content_type="application/json")
@@ -1798,9 +1790,11 @@ def workcenter_element_update(request):
     context = {}
 
     id = request.GET['id']
+    workcenternm = request.GET['workcenternm']
     cstctrid = request.GET['cstctrid']
 
     rsWorkcenter = BWorkcenter.objects.get(id=id)
+    rsWorkcenter.workcenter_nm = workcenternm
     rsWorkcenter.cstctr_id = cstctrid
     rsWorkcenter.save()
 
@@ -1883,12 +1877,12 @@ def costcenter_element_insert(request):
     while CbCostCenter.objects.filter(id=id).exists():
         id += 1
 
-    if CbCostCenter.objects.filter(cstctr_cd=cstctrcd).exists():
+    if CbCostCenter.objects.filter(cstctr_cd=cstctrcd, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "cstctr_cd exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if CbCostCenter.objects.filter(cstctr_nm=cstctrnm).exists():
+    if CbCostCenter.objects.filter(cstctr_nm=cstctrnm, usage_fg='Y').exists():
         context['flag'] = "1"
         context['result_msg'] = "cstctr_nm exists..."
         return JsonResponse(context, content_type="application/json")
@@ -1914,6 +1908,7 @@ def costcenter_element_update(request):
     context = {}
 
     id = request.GET['id']
+    cstctrnm = request.GET['cstctrnm']
     bizareaid = request.GET['bizareaid']
     bizunitid = request.GET['bizunitid']
     factoryid = request.GET['factoryid']
@@ -1921,6 +1916,7 @@ def costcenter_element_update(request):
     cstctrdirdiv = request.GET['cstctrdirdiv']
 
     rsCostcenter = CbCostCenter.objects.get(id=id)
+    rsCostcenter.cstctr_nm = cstctrnm
     rsCostcenter.bizarea_id = bizareaid
     rsCostcenter.bizunit_id = bizunitid
     rsCostcenter.factory_id = factoryid

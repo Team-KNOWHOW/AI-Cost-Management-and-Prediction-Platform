@@ -134,7 +134,7 @@
                                             {{ i.cstctr_cd }}
                                         </td>
                                         <td>
-                                            {{ i.cstctr_nm }}
+                                            <input id="cstctr_nm{{i.id}}" type="text" value="{{ i.cstctr_nm }}">
                                         </td>
                                         <td>
                                             <select id="bizarea_id{{i.id}}">
@@ -311,6 +311,7 @@
 
                 function update_element(elem) {
                     var id = elem.getAttribute('value');
+                    var cstctrnm = document.getElementById('cstctr_nm' + id).value;
 
                     var bizarea_selected = document.getElementById('bizarea_id' + id);
                     var bizareaid = bizarea_selected.options[bizarea_selected.selectedIndex].value;
@@ -333,6 +334,7 @@
                     }
 
                     var strurl = "costcenter_element_update?id=" + id
+                        + "&cstctrnm=" + cstctrnm
                         + "&bizareaid=" + bizareaid
                         + "&bizunitid=" + bizunitid
                         + "&factoryid=" + factoryid
