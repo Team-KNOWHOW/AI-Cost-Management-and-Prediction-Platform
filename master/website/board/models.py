@@ -127,7 +127,7 @@ class BCo(models.Model):  # 법인
         db_table = 'b_co'
 
 
-class BBizarea(models.Model):  # 사업장 현준
+lass BBizarea(models.Model):  # 사업장 현준
     id = models.AutoField(db_column='id', primary_key=True)
     bizarea_cd = models.CharField(db_column='bizarea_cd', max_length=50, blank=True, null=True)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
@@ -136,12 +136,8 @@ class BBizarea(models.Model):  # 사업장 현준
     biz_no = models.CharField(db_column='biz_no', max_length=50, blank=True, null=True)
     biz_rpr = models.CharField(db_column='biz_rpr', max_length=50, blank=True, null=True)
     str_dt = models.DateTimeField(db_column='str_dt', blank=True, null=True)
-    # cn_cd = models.CharField(db_column='cn_cd', max_length=20, blank=True, null=True)
-    # cur_cd = models.CharField(db_column='cur_cd', max_length=20, blank=True, null=True)
-    # insrt_id = models.IntegerField(db_column='insrt_id', blank=True, null=True)
-    # insrt_dt = models.DateTimeField(db_column='insrt_dt', auto_now_add=True, blank=True, null=True)
-    # updt_id = models.IntegerField(db_column='updt_id', max_length=50, blank=True, null=True)
-    # updt_dt = models.DateTimeField(db_column='updt_dt',auto_now=True,blank=True, null=True)
+    unitcur= models.ForeignKey(CbCodeDtl, related_name='+', on_delete=models.CASCADE)
+    unitcn= models.ForeignKey(CbCodeDtl, related_name='+', on_delete=models.CASCADE)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, blank=True, null=True)
 
     class Meta:

@@ -303,22 +303,21 @@ def b_bizarea(request):
     context["id"] = member_no
     context["user_id"] = member_id
 
-    rsHeader = BBizarea.objects.filter(usage_fg='Y')
 
-    strsql = "SELECT b.*,a.*,c.* " + \
-             "FROM b_bizarea a " + \
+    strsql = "SELECT a.*, b.* ,c.*, d.* " + \
+             "FROM (SELECT *FROM  b_bizarea WHERE usage_fg='Y') a " + \
              "LEFT JOIN b_co b ON a.co_id=b.id " + \
-             "LEFT JOIN cb_code_dtl c ON a.unit_id=c.id "
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd ='country' ) c ON a.unitcn_id=c.id " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd='currency') d ON a.unitcur_id=d.id "
     rsBizarea = BBizarea.objects.raw(strsql)
-    context["rsBizarea"] = rsBizarea[:100]
+    context["rsBizarea"] = rsBizarea
 
-    rsCo = BCo.objects.filter()
+    rsCo = BCo.objects.filter(usage_fg='Y')
     rsUnitCur = CbCodeDtl.objects.filter(type_cd='currency', usage_fg='Y')
     rsUnitCn = CbCodeDtl.objects.filter(type_cd='country', usage_fg='Y')
     context["rsCo"] = rsCo
     context["rsUnitCur"] = rsUnitCur
     context["rsUnitCn"] = rsUnitCn
-    context["rsHeader"] = rsHeader
     context["title"] = "사업장"
     context["result_msg"] = "사업장"
     return render(request, board_path + "b_bizarea.html", context)
@@ -327,35 +326,50 @@ def b_bizarea(request):
 @csrf_exempt
 def bizarea_element_insert(request):
     context = {}
-
+    unitcnid=request.GET['unitcnid']
+    unitcurid=request.GET['unitcurid']
+    conm = request.GET['conm']
     bizareacd = request.GET['bizareacd']
+    bizareashnm = request.GET['bizareashnm']
     bizareanm = request.GET['bizareanm']
     bizrpr = request.GET['bizrpr']
+    bizno = request.GET['bizno']
     usagefg = 'Y'
 
-    if BBizarea.objects.filter(bizarea_cd=bizareacd).exists():
+    if BBizarea.objects.filter(bizarea_shnm=bizareashnm, usage_fg='Y').exists():
         context["flag"] = "1"
-        context["result_msg"] = "bizarea_cd exists..."
+        context["result_msg"] = "bizarea_shnm exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BBizarea.objects.filter(biz_rpr=bizrpr).exists():
+    if BBizarea.objects.filter(biz_rpr=bizrpr, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "biz_rpr exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BBizarea.objects.filter(bizarea_nm=bizareanm).exists():
+    if BBizarea.objects.filter(bizarea_nm=bizareanm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "bizarea_nm exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BBizarea.objects.filter(biz_rpr=bizrpr).exists():
+    if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
         context["flag"] = "1"
-        context["result_msg"] = "bizpartner_stat exists..."
+        context["result_msg"] = "biz_no exists..."
         return JsonResponse(context, content_type="application/json")
 
-    BBizarea.objects.create(bizarea_cd=bizareacd,
+    if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
+        context["flag"] = "1"
+        context["result_msg"] = "biz_no exists..."
+        return JsonResponse(context, content_type="application/json")
+
+    BBizarea.objects.create(
+                            bizarea_cd=bizareacd,
+                            bizarea_shnm=bizareashnm,
                             bizarea_nm=bizareanm,
                             biz_rpr=bizrpr,
+                            biz_no=bizno,
+                            co_id=conm,
+                            unitcur_id=unitcurid,
+                            unitcn_id=unitcnid,
                             usage_fg=usagefg
                             )
 
@@ -369,19 +383,27 @@ def bizarea_element_update(request):
     context = {}
 
     typeid = request.GET['typeid']
-    tvalue = request.GET['tvalue']
 
-    if BBizpartner.objects.filter(type_nm=tvalue).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
+    bizareanm=request.GET['bizareanm']
+    bizareashnm=request.GET['bizareashnm']
+    bizno=request.GET['bizno']
+    bizrpr=request.GET['bizrpr']
 
-    rsHeader = BBizarea.objects.get(id=typeid)
-    rsHeader.type_nm = tvalue
-    rsHeader.save()
+    unitcnid= request.GET['unitcnid']
+    unitcurid = request.GET['unitcurid']
+
+    rs=BBizarea.objects.get(id=typeid)
+    rs.bizarea_nm=bizareanm
+    rs.bizarea_shnm=bizareashnm
+    rs.biz_no=bizno
+    rs.biz_rpr=bizrpr
+
+    rs.unitcur_id=unitcurid
+    rs.unitcn_id=unitcnid
+    rs.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "Type update success..."
+    context["result_msg"] = "Update success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -421,7 +443,7 @@ def b_bizunit(request):  # 사업부
     context["user_id"] = member_id
 
     rsHeader = BBizunit.objects.filter(usage_fg='Y')
-    rsuserid = BUser.objects.filter()  # user_id때문에
+    rsuserid = BUser.objects.filter(usage_fg='Y')  # user_id때문에
 
     context["title"] = "사업부"
     context["result_msg"] = "사업부"
@@ -441,17 +463,17 @@ def bizunit_element_insert(request):
     bizunitrmrk = request.GET['bizunitrmrk']
     usagefg = 'Y'
 
-    if BBizunit.objects.filter(bizunit_cd=bizunitcd).exists():
+    if BBizunit.objects.filter(bizunit_cd=bizunitcd,usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "bizunit_cd exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BBizunit.objects.filter(bizunit_nm=bizunitnm).exists():
+    if BBizunit.objects.filter(bizunit_nm=bizunitnm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "bizunit_nm exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BBizunit.objects.filter(bizunit_rmrk=bizunitrmrk).exists():
+    if BBizunit.objects.filter(bizunit_rmrk=bizunitrmrk, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "bizunit_rmrk exists..."
         return JsonResponse(context, content_type="application/json")
@@ -468,25 +490,17 @@ def bizunit_element_insert(request):
     return JsonResponse(context, content_type="application/json")
 
 
-# Update기능 미완성 -> 회의 후 항목 설정 예정.
 @csrf_exempt
 def bizunit_element_update(request):
     context = {}
-
-    typeid = request.GET['typeid']
-    tvalue = request.GET['tvalue']
-
-    if BFactory.objects.filter(type_nm=tvalue).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    rsHeader = BBizunit.objects.get(id=typeid)
-    rsHeader.type_nm = tvalue
+    value = request.GET['value']
+    bizunitrmrk=request.GET['bizunitrmrk']
+    rsHeader = BBizunit.objects.get(id=value)
+    rsHeader.bizunit_rmrk=bizunitrmrk
     rsHeader.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory update success..."
+    context["result_msg"] = "BBizunit update success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -508,6 +522,7 @@ def bizunit_element_delete(request):
 # **********************************************************************************************************************
 # 사업부 코드 끝
 # ***********************************************************************************************************************
+
 
 # *********************************************************************************************************************
 # 공장 코드 시작
