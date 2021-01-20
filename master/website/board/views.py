@@ -125,7 +125,7 @@ def member_edit(request):  # 회원정보 수정
         context['flag'] = "0"
         context['result_msg'] = '회원정보 수정가능합니다.'
 
-        return render(request, "member_edit.html", context)
+        return render(request, "registration/member_edit.html", context)
 
     else:
         return redirect('/')
@@ -826,16 +826,97 @@ def b_item(request):
     context['flag'] = '0'
     context['result_msg'] = '품목코드 관리'
 
+    itemcode = ''
+    if 'itemcode' in request.GET:
+        itemcode = request.GET['itemcode']
+    itemname = ''
+    if 'itemname' in request.GET:
+        itemname = request.GET['itemname']
+    itemspec = ''
+    if 'itemspec' in request.GET:
+        itemspec = request.GET['itemspec']
+
+
+    if itemcode != "" and itemname != "" and itemspec != "":
+        strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
+                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y' " \
+                 "AND item_cd LIKE '%%" + itemcode + "%%' AND item_nm LIKE '%%" + itemname + "%%' AND item_spec LIKE '%%" + itemspec + "%%') a " + \
+                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+                 "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
+                 "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
+        rsItem = BItem.objects.raw(strSql)
+
+    elif itemcode != "" and itemname != "":
+        strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
+                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y' " \
+                 "AND item_cd LIKE '%%" + itemcode + "%%' AND item_nm LIKE '%%" + itemname + "%%') a " + \
+                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+                 "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
+                 "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
+        rsItem = BItem.objects.raw(strSql)
+
+    elif itemcode != "" and itemspec != "":
+        strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
+                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y' " \
+                 "AND item_cd LIKE '%%" + itemcode + "%%' AND item_spec LIKE '%%" + itemspec + "%%') a " + \
+                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+                 "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
+                 "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
+        rsItem = BItem.objects.raw(strSql)
+
+    elif itemname != "" and itemspec != "":
+        strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
+                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y' " \
+                 "AND item_nm LIKE '%%" + itemname + "%%' AND item_spec LIKE '%%" + itemspec + "%%') a " + \
+                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+                 "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
+                 "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
+        rsItem = BItem.objects.raw(strSql)
+
+    elif itemcode != "":
+        strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
+                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y' AND item_cd LIKE '%%" + itemcode + "%%') a " + \
+                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+                 "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
+                 "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
+
+        rsItem = BItem.objects.raw(strSql)
+
+    elif itemname != "":
+        strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
+                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y' AND item_nm LIKE '%%" + itemname + "%%') a " + \
+                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+                 "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
+                 "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
+
+        rsItem = BItem.objects.raw(strSql)
+
+    elif itemspec != "":
+        strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
+                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y' AND item_spec LIKE '%%" + itemspec + "%%') a " + \
+                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+                 "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
+                 "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
+
+        rsItem = BItem.objects.raw(strSql)
+
     # rsItem = BItem.objects.filter(usage_fg='Y')
+    else:
+        strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
+                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y') a " + \
+                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
+                 "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
+                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
+                 "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
 
-    strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " + \
-             "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y') a " + \
-             "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
-             "LEFT JOIN (SELECT id, code_cd AS unit_cd, cd_nm AS unit_name FROM cb_code_dtl WHERE type_cd = 'unit') c  ON a.unit_id = c.id " + \
-             "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id " + \
-             "LEFT JOIN b_itemaccnt e ON a.itemaccnt_id = e.id "
-
-    rsItem = BItem.objects.raw(strSql)
+        rsItem = BItem.objects.raw(strSql)
 
     rsFactory = BFactory.objects.filter(usage_fg='Y')
     rsUnit = CbCodeDtl.objects.filter(type_cd='unit', usage_fg='Y')
