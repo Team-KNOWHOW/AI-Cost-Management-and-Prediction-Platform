@@ -357,10 +357,8 @@
                 }
 
                 function delete_element(elem) {
-                    var id = elem.getAttribute('id');
+                    var id = elem.getAttribute('value');
                     var strurl = "costcenter_element_delete?id=" + id;
-                    //alert(strurl);
-                    //return false;
 
                     xhr = new XMLHttpRequest();
                     xhr.onreadystatechange = function() {

@@ -629,10 +629,14 @@ def b_factory(request):
 def factory_element_insert(request):
     context = {}
 
+    id = 1
     factorycd = request.GET['factorycd']
     factorynm = request.GET['factorynm']
     factoryrmrk = request.GET['factoryrmrk']
     usagefg = 'Y'
+
+    while BFactory.objects.filter(id=id).exists():
+        id += 1
 
     if BFactory.objects.filter(factory_cd=factorycd, usage_fg='Y').exists():
         context["flag"] = "1"
@@ -645,11 +649,13 @@ def factory_element_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
-    BFactory.objects.create(factory_cd=factorycd,
+    BFactory.objects.create(id=id,
+                            factory_cd=factorycd,
                             factory_nm=factorynm,
                             factory_rmrk=factoryrmrk,
-                            usage_fg=usagefg
-                            )
+                            insrt_dt=datetime.now(),
+                            updt_dt=datetime.now(),
+                            usage_fg=usagefg)
 
     context["flag"] = "0"
     context["result_msg"] = "factory insert success..."
@@ -668,6 +674,7 @@ def factory_element_update(request):
     rsFactory = BFactory.objects.get(id=id)
     rsFactory.factory_nm = factorynm
     rsFactory.factory_rmrk = factoryrmrk
+    rsFactory.updt_dt = datetime.now()
     rsFactory.save()
 
     context["flag"] = "0"
@@ -1834,10 +1841,14 @@ def b_workcenter(request):
 def workcenter_element_insert(request):
     context = {}
 
+    id = 1
     workcentercd = request.GET['workcentercd']
     workcenternm = request.GET['workcenternm']
     cstctrid = request.GET['cstctrid']
     usagefg = 'Y'
+
+    while BWorkcenter.objects.filter(id=id).exists():
+        id += 1
 
     if BWorkcenter.objects.filter(workcenter_cd=workcentercd, usage_fg='Y').exists():
         context["flag"] = "1"
@@ -1850,9 +1861,12 @@ def workcenter_element_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
-    BWorkcenter.objects.create(workcenter_cd=workcentercd,
+    BWorkcenter.objects.create(id=id,
+                               workcenter_cd=workcentercd,
                                workcenter_nm=workcenternm,
                                cstctr_id=cstctrid,
+                               insrt_dt=datetime.now(),
+                               updt_dt=datetime.now(),
                                usage_fg=usagefg)
 
     context["flag"] = "0"
@@ -1871,6 +1885,7 @@ def workcenter_element_update(request):
     rsWorkcenter = BWorkcenter.objects.get(id=id)
     rsWorkcenter.workcenter_nm = workcenternm
     rsWorkcenter.cstctr_id = cstctrid
+    rsWorkcenter.updt_dt = datetime.now()
     rsWorkcenter.save()
 
     context["flag"] = "0"
@@ -1972,6 +1987,8 @@ def costcenter_element_insert(request):
                                 factory_id=factoryid,
                                 cstctr_type=cstctrtype,
                                 cstctr_dir_div=cstctrdirdiv,
+                                insrt_dt=datetime.now(),
+                                updt_dt=datetime.now(),
                                 usage_fg=usagefg)
 
     context["flag"] = "0"
@@ -1998,6 +2015,7 @@ def costcenter_element_update(request):
     rsCostcenter.factory_id = factoryid
     rsCostcenter.cstctr_type = cstctrtype
     rsCostcenter.cstctr_dir_div = cstctrdirdiv
+    rsCostcenter.updt_dt = datetime.now()
     rsCostcenter.save()
 
     context['flag'] = "0"
