@@ -127,7 +127,7 @@ class BCo(models.Model):  # 법인
         db_table = 'b_co'
 
 
-lass BBizarea(models.Model):  # 사업장 현준
+class BBizarea(models.Model):  # 사업장 현준
     id = models.AutoField(db_column='id', primary_key=True)
     bizarea_cd = models.CharField(db_column='bizarea_cd', max_length=50, blank=True, null=True)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
@@ -272,7 +272,7 @@ class BWorkcenter(models.Model):  # 작업장
     cstctr_id = models.CharField(max_length=50, blank=True, null=True)
     insrt_id = models.CharField(max_length=50, blank=True, null=True)
     insrt_dt = models.DateTimeField(blank=True, null=True)
-    updt_user = models.CharField(max_length=50, blank=True, null=True)
+    #updt_user = models.CharField(max_length=50, blank=True, null=True)
     updt_dt = models.DateTimeField(blank=True, null=True)
     usage_fg = models.CharField(max_length=1, blank=True, null=True)
 
