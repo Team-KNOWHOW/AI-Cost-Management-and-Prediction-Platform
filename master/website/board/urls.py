@@ -25,6 +25,10 @@ urlpatterns = [
     path('member_insert', views.member_insert, name="member_insert"),
     path('member_login', views.member_login, name="member_login"),
     path('member_logout', views.member_logout, name="member_logout"),
+    path('member_check', views.member_check, name="member_check"),
+    path('member_pwd_check', views.member_pwd_check, name="member_pwd_check"),
+    path('member_edit', views.member_edit, name="member_edit"),
+    path('member_update', views.member_update, name="member_update"),
 
     # 사업장
     path('b_bizarea/bizarea_element_insert', views.bizarea_element_insert, name="bizarea_element_insert"),
@@ -34,11 +38,6 @@ urlpatterns = [
     path('b_bizunit/bizunit_element_insert', views.bizunit_element_insert, name="bizunit_element_insert"),
     path('b_bizunit/bizunit_element_update', views.bizunit_element_update, name="bizunit_element_update"),
     path('b_bizunit/bizunit_element_delete', views.bizunit_element_delete, name="bizunit_element_delete"),
-
-    # 공장 기능 항목
-    path('b_factory/factory_element_insert', views.factory_element_insert, name="factory_element_insert"),
-    path('b_factory/factory_element_update', views.factory_element_update, name="factory_element_update"),
-    path('b_factory/factory_element_delete', views.factory_element_delete, name="factory_element_delete"),
 
     # 거래처 기능 항목
     path('b_bizpartner/bizpartner_element_insert', views.bizpartner_element_insert, name="bizpartner_element_insert"),
@@ -77,11 +76,18 @@ urlpatterns = [
     path('b_bom/bomitem_pick', views.bomitem_pick, name="bomitem_pick"),
     path('b_bom/bom_update', views.bom_update, name="bom_update"),
 
+    # 공장 기능 항목
+    path('b_factory/factory_element_insert', views.factory_element_insert, name="factory_element_insert"),
+    path('b_factory/factory_element_update', views.factory_element_update, name="factory_element_update"),
+    path('b_factory/factory_element_delete', views.factory_element_delete, name="factory_element_delete"),
+
     # 작업장 기능 항목
     path('b_workcenter/workcenter_element_insert', views.workcenter_element_insert, name="workcenter_element_insert"),
+    path('b_workcenter/workcenter_element_update', views.workcenter_element_update, name="workcenter_element_update"),
     path('b_workcenter/workcenter_element_delete', views.workcenter_element_delete, name="workcenter_element_delete"),
 
     # 코스트센터 기능 항목
     path('cb_cost_center/costcenter_element_insert', views.costcenter_element_insert, name="costcenter_element_insert"),
+    path('cb_cost_center/costcenter_element_update', views.costcenter_element_update, name="costcenter_element_update"),
     path('cb_cost_center/costcenter_element_delete', views.costcenter_element_delete, name="costcenter_element_delete")
 ]
