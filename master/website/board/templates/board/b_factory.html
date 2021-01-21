@@ -72,9 +72,6 @@
                                     <th>공장코드</th>
                                     <th>공장명</th>
                                     <th>비고</th>
-                                    <th>생성일자</th>
-                                    <th>수정일자</th>
-                                    <th>수정자</th>
                                     <th width="5%"></th>
 <!--                                    <th>사용구분</th>-->
                                 </tr>
@@ -82,37 +79,30 @@
                         {% for i in rsHeader %}
                                   <tbody >
                                     <tr>
-                                      <td>
+                                        <td>
 <!--                                          <a href="b_bizpartner?id={{ i.id }}">-->
                                           {{ i.id }}
-                                      </td>
+                                        </td>
                                         <td>
                                           {{ i.factory_cd }}
-                                      </td>
+                                        </td>
                                         <td>
-                                          {{ i.factory_nm }}
-                                      </td>
+                                            <input id="factory_nm{{i.id}}" type="text" value="{{ i.factory_nm }}">
+                                        </td>
                                         <td>
-                                          {{ i.factory_rmrk }}
-                                      </td>
-                                        <td>
-                                          {{ i.insrt_dt }}
-                                      </td>
-                                        <td>
-                                          {{ i.updt_dt }}
-                                      </td>
-                                        <td>
-                                            {{ i.user_id }}
+                                            <input id="factory_rmrk{{i.id}}" type="text" value="{{ i.factory_rmrk }}">
                                         </td>
                                         <td width="5%" align="center" style="padding:5px 0;" >
-                    <span id="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
-                </td>
-
+                                            <span value="{{ i.id }}" onclick="update_element(this)" style="cursor:pointer;">수정</span>
+                                        </td>
+                                        <td width="5%" align="center" style="padding:5px 0;" >
+                                            <span value="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
+                                        </td>
                                     </tr>
                                   </tbody>
-                        {% endfor %}
+                              {% endfor %}
                               </table>
-                      {% else %}
+                        {% else %}
                             <span>내용이 없습니다.</span>
                       {% endif %}
                   </div>
@@ -168,9 +158,9 @@
 
 //예외 처리 끝
 
-            var strurl = "factory_element_insert?factorycd=" + factorycd + "&factorynm=" + factorynm+ "&factoryrmrk=" + factoryrmrk;
-            //alert(strurl);
-            //return false;
+            var strurl = "factory_element_insert?factorycd=" + factorycd
+                + "&factorynm=" + factorynm
+                + "&factoryrmrk=" + factoryrmrk;
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
@@ -191,7 +181,10 @@
         }
 
         function update_element(elem) {
-            var id = elem.getAttribute('id');
+            var id = elem.getAttribute('value');
+            var factorynm = document.getElementById('factory_nm' + id).value;
+            var factoryrmrk = document.getElementById('factory_rmrk' + id).value;
+
             var e_value = elem.value;
             if(e_value == ''){
                 alert('Value empty');
@@ -199,9 +192,9 @@
                 return false;
             }
 
-            var strurl = "factory_element_update?id=" + id + "&e_value=" + e_value;
-            //alert(strurl);
-            //return false;
+            var strurl = "factory_element_update?id=" + id
+                    + "&factorynm=" + factorynm
+                    + "&factoryrmrk=" + factoryrmrk;
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
@@ -219,12 +212,9 @@
         }
 
         function delete_element(elem) {
-
-            var id = elem.getAttribute('id');
+            var id = elem.getAttribute('value');
 
             var strurl = "factory_element_delete?id=" + id;
-            //alert(strurl);
-            //return false;
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
