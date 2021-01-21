@@ -224,6 +224,14 @@ def b_bizpartner(request):
     # print(typecd)
 
     rsHeader = BBizpartner.objects.filter(usage_fg='Y')
+    rsCo = BCo.objects.filter(usage_fg='Y')
+    rsCncd = CbCodeDtl.objects.filter(usage_fg='Y',type_cd ='country')
+    rsCurcd = CbCodeDtl.objects.filter(usage_fg='Y',type_cd ='currency')
+    rsBizpartnerstat = BBizpartner.objects.filter(usage_fg='Y')
+    context['rsBizpartnerstat'] = rsBizpartnerstat
+    context["rsCo"] = rsCo
+    context["rsCncd"] = rsCncd
+    context["rsCurcd"] = rsCurcd
 
     context["rsHeader"] = rsHeader
 
@@ -235,8 +243,16 @@ def b_bizpartner(request):
 
 @csrf_exempt
 def bizpartner_element_insert(request):
-    # print("실행완료")
     context = {}
+
+    # ##########나중에 admin연결 후 삭제 할 거#############
+    # if request.session.has_key('id'):
+    #     member_id = request.session['user_id']
+    # else:
+    #     member_id = None
+    # #######################
+    # context["user_id"] = member_id
+
 
     bizpartnercd = request.GET['bizpartnercd']
     coid = request.GET['coid']
@@ -246,21 +262,12 @@ def bizpartner_element_insert(request):
     cncd = request.GET['cncd']
     curcd = request.GET['curcd']
     bizpartnerstat = request.GET['bizpartnerstat']
+    # user_id = request.session['user_id']
     usagefg = 'Y'
 
     if BBizpartner.objects.filter(bizpartner_cd=bizpartnercd).exists():
         context["flag"] = "1"
         context["result_msg"] = "bizpartner_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(co_id=coid).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "co_id exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(bizpartner_type=bizpartnertype).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizpartner_type exists..."
         return JsonResponse(context, content_type="application/json")
 
     if BBizpartner.objects.filter(biz_nm=biznm).exists():
@@ -273,21 +280,6 @@ def bizpartner_element_insert(request):
         context["result_msg"] = "bizpartner_nm exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BBizpartner.objects.filter(cn_cd=cncd).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "cn_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(cur_cd=curcd).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "cur_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(bizpartner_stat=bizpartnerstat).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizpartner_stat exists..."
-        return JsonResponse(context, content_type="application/json")
-
     BBizpartner.objects.create(bizpartner_cd=bizpartnercd,
                                co_id=coid,
                                bizpartner_type=bizpartnertype,
@@ -296,7 +288,8 @@ def bizpartner_element_insert(request):
                                cn_cd=cncd,
                                cur_cd=curcd,
                                bizpartner_stat=bizpartnerstat,
-                               usage_fg=usagefg
+                               usage_fg=usagefg,
+
                                )
 
     context["flag"] = "0"
@@ -308,20 +301,27 @@ def bizpartner_element_insert(request):
 def bizpartner_element_update(request):
     context = {}
 
-    typeid = request.GET['typeid']
-    tvalue = request.GET['tvalue']
+    id = request.GET['id']
+    biznm = request.GET['biznm']
+    bizpartnernm = request.GET['bizpartnernm']
+    coid = request.GET['coid']
+    cncd = request.GET['cncd']
+    curcd = request.GET['curcd']
+    bizpartnerstat = request.GET['bizpartnerstat']
+    bizpartnertype = request.GET['bizpartnertype']
 
-    if BBizpartner.objects.filter(type_nm=tvalue).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    rsHeader = BBizpartner.objects.get(id=typeid)
-    rsHeader.type_nm = tvalue
-    rsHeader.save()
+    rs = BBizpartner.objects.get(id=id)
+    rs.biz_nm = biznm
+    rs.bizpartner_nm = bizpartnernm
+    rs.co_id = coid
+    rs.cn_cd = cncd
+    rs.cur_cd = curcd
+    rs.bizpartner_stat = bizpartnerstat
+    rs.bizpartner_type = bizpartnertype
+    rs.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "Type update success..."
+    context["result_msg"] = " update success..."
     return JsonResponse(context, content_type="application/json")
 
 

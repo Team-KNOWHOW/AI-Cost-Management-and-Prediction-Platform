@@ -164,19 +164,17 @@ class BBizunit(models.Model):  # 사업부 현준
 class BBizpartner(models.Model):  # 거래처
     id = models.AutoField(db_column='id', primary_key=True)
     bizpartner_cd = models.CharField(db_column='bizpartner_cd', max_length=50)
-    # foreignkey연결 필요.
-    co_id = models.IntegerField(db_column='co_id', max_length=50)
+    co_id = models.IntegerField(db_column='co_id')
     bizpartner_type = models.CharField(db_column='bizpartner_type', max_length=20, blank=True, null=True)
     biz_nm = models.CharField(db_column='biz_nm', max_length=50, blank=True, null=True)
     bizpartner_nm = models.CharField(db_column='bizpartner_nm', max_length=50, blank=True, null=True)
     cn_cd = models.CharField(db_column='cn_cd', max_length=20, blank=True, null=True)
     cur_cd = models.CharField(db_column='cur_cd', max_length=20, blank=True, null=True)
     bizpartner_stat = models.CharField(db_column='bizpartner_stat', max_length=20, blank=True, null=True)
-    insrt_id = models.IntegerField(db_column='insrt_id', max_length=50, blank=True, null=True)
     insrt_dt = models.DateTimeField(db_column='insrt_dt', blank=True, null=True, auto_now_add=True)
-    updt_id = models.IntegerField(db_column='updt_id', max_length=50, blank=True, null=True)
     updt_dt = models.DateTimeField(db_column='updt_dt', blank=True, null=True, auto_now=True)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, blank=True, null=True)
+    user_id = models.IntegerField(db_column='user_id', null=True)
 
     class Meta:
         managed = False
