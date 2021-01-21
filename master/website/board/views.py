@@ -561,19 +561,14 @@ def factory_element_insert(request):
     factoryrmrk = request.GET['factoryrmrk']
     usagefg = 'Y'
 
-    if BFactory.objects.filter(factory_cd=factorycd).exists():
+    if BFactory.objects.filter(factory_cd=factorycd, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "factory_cd exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BFactory.objects.filter(factory_nm=factorynm).exists():
+    if BFactory.objects.filter(factory_nm=factorynm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "factory_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BFactory.objects.filter(factory_rmrk=factoryrmrk).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "factory_rmrk exists..."
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
@@ -593,17 +588,14 @@ def factory_element_insert(request):
 def factory_element_update(request):
     context = {}
 
-    typeid = request.GET['typeid']
-    tvalue = request.GET['tvalue']
+    id = request.GET['id']
+    factorynm = request.GET['factorynm']
+    factoryrmrk = request.GET['factoryrmrk']
 
-    if BFactory.objects.filter(type_nm=tvalue).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    rsHeader = BFactory.objects.get(id=typeid)
-    rsHeader.type_nm = tvalue
-    rsHeader.save()
+    rsFactory = BFactory.objects.get(id=id)
+    rsFactory.factory_nm = factorynm
+    rsFactory.factory_rmrk = factoryrmrk
+    rsFactory.save()
 
     context["flag"] = "0"
     context["result_msg"] = "BFactory update success..."
@@ -1754,10 +1746,12 @@ def b_workcenter(request):
                "LEFT JOIN cb_cost_center b ON a.cstctr_id=b.id"
 
     rsWorkcenter = BWorkcenter.objects.raw(wc_query)
+    rsCostcenter = CbCostCenter.objects.filter(usage_fg='Y')
 
     context["title"] = "작업장"
     context["result_msg"] = "작업장"
     context['rsWorkcenter'] = rsWorkcenter
+    context['rsCostcenter'] = rsCostcenter
 
     return render(request, board_path + 'b_workcenter.html', context)
 
@@ -1770,19 +1764,14 @@ def workcenter_element_insert(request):
     cstctrid = request.GET['cstctrid']
     usagefg = 'Y'
 
-    if BWorkcenter.objects.filter(workcenter_cd=workcentercd).exists():
+    if BWorkcenter.objects.filter(workcenter_cd=workcentercd, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "workcenter_cd exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BWorkcenter.objects.filter(workcenter_nm=workcenternm).exists():
+    if BWorkcenter.objects.filter(workcenter_nm=workcenternm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "workcenter_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BWorkcenter.objects.filter(cstctr_id=cstctrid).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "cstctr_id exists..."
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
@@ -1792,8 +1781,27 @@ def workcenter_element_insert(request):
                             usage_fg=usagefg)
 
     context["flag"] = "0"
-    context["result_msg"] = "factory insert success..."
+    context["result_msg"] = "workcenter insert success..."
     return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def workcenter_element_update(request):
+    context = {}
+
+    id = request.GET['id']
+    workcenternm = request.GET['workcenternm']
+    cstctrid = request.GET['cstctrid']
+
+    rsWorkcenter = BWorkcenter.objects.get(id=id)
+    rsWorkcenter.workcenter_nm = workcenternm
+    rsWorkcenter.cstctr_id = cstctrid
+    rsWorkcenter.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "workcenter update success..."
+    return JsonResponse(context, content_type="application/json")
+
 
 
 @csrf_exempt
@@ -1840,9 +1848,9 @@ def cb_cost_center(request):
                "LEFT JOIN b_factory d ON a.factory_id=d.id"
 
     rsCostcenter = CbCostCenter.objects.raw(cc_query)
-    rsBizarea = BBizarea.objects.filter()
-    rsBizunit = BBizunit.objects.filter()
-    rsFactory = BFactory.objects.filter()
+    rsBizarea = BBizarea.objects.filter(usage_fg='Y')
+    rsBizunit = BBizunit.objects.filter(usage_fg='Y')
+    rsFactory = BFactory.objects.filter(usage_fg='Y')
 
     context["title"] = "코스트센터"
     context["result_msg"] = "코스트센터"
@@ -1856,6 +1864,7 @@ def cb_cost_center(request):
 def costcenter_element_insert(request):
     context = {}
 
+    id = 1
     cstctrcd = request.GET['cstctrcd']
     cstctrnm = request.GET['cstctrnm']
     bizareaid = request.GET['bizareaid']
@@ -1863,35 +1872,19 @@ def costcenter_element_insert(request):
     factoryid = request.GET['factoryid']
     cstctrtype = request.GET['cstctrtype']
     cstctrdirdiv = request.GET['cstctrdirdiv']
-    usagefg='Y'
-    id=1
+    usagefg = 'Y'
 
     while CbCostCenter.objects.filter(id=id).exists():
-        id+=1
+        id += 1
 
-    if CbCostCenter.objects.filter(cstctr_cd=cstctrcd).exists():
+    if CbCostCenter.objects.filter(cstctr_cd=cstctrcd, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "cstctr_cd exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if CbCostCenter.objects.filter(cstctr_nm=cstctrnm).exists():
+    if CbCostCenter.objects.filter(cstctr_nm=cstctrnm, usage_fg='Y').exists():
         context['flag'] = "1"
         context['result_msg'] = "cstctr_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if CbCostCenter.objects.filter(bizarea_id=bizareaid).exists():
-        context['flag'] = "1"
-        context['result_msg'] = "bizarea_id exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if CbCostCenter.objects.filter(bizunit_id=bizunitid).exists():
-        context['flag'] = "1"
-        context['result_msg'] = "bizunit_id exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if CbCostCenter.objects.filter(factory_id=factoryid).exists():
-        context['flag'] = "1"
-        context['result_msg'] = "factory_id exists..."
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
@@ -1908,6 +1901,33 @@ def costcenter_element_insert(request):
     context["flag"] = "0"
     context["result_msg"] = "costcenter insert success..."
     return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def costcenter_element_update(request):
+    context = {}
+
+    id = request.GET['id']
+    cstctrnm = request.GET['cstctrnm']
+    bizareaid = request.GET['bizareaid']
+    bizunitid = request.GET['bizunitid']
+    factoryid = request.GET['factoryid']
+    cstctrtype = request.GET['cstctrtype']
+    cstctrdirdiv = request.GET['cstctrdirdiv']
+
+    rsCostcenter = CbCostCenter.objects.get(id=id)
+    rsCostcenter.cstctr_nm = cstctrnm
+    rsCostcenter.bizarea_id = bizareaid
+    rsCostcenter.bizunit_id = bizunitid
+    rsCostcenter.factory_id = factoryid
+    rsCostcenter.cstctr_type = cstctrtype
+    rsCostcenter.cstctr_dir_div = cstctrdirdiv
+    rsCostcenter.save()
+
+    context['flag'] = "0"
+    context['result_msg'] = "costcenter update success..."
+    return JsonResponse(context, content_type="application/json")
+
 
 def costcenter_element_delete(request):
     context = {}

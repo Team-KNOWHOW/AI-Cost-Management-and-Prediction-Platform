@@ -36,11 +36,6 @@ urlpatterns = [
     path('b_bizunit/bizunit_element_update', views.bizunit_element_update, name="bizunit_element_update"),
     path('b_bizunit/bizunit_element_delete', views.bizunit_element_delete, name="bizunit_element_delete"),
 
-    # 공장 기능 항목
-    path('b_factory/factory_element_insert', views.factory_element_insert, name="factory_element_insert"),
-    path('b_factory/factory_element_update', views.factory_element_update, name="factory_element_update"),
-    path('b_factory/factory_element_delete', views.factory_element_delete, name="factory_element_delete"),
-
     # 거래처 기능 항목
     path('b_bizpartner/bizpartner_element_insert', views.bizpartner_element_insert, name="bizpartner_element_insert"),
     path('b_bizpartner/bizpartner_element_update', views.bizpartner_element_update, name="bizpartner_element_update"),
@@ -78,11 +73,18 @@ urlpatterns = [
     path('b_bom/bomitem_pick', views.bomitem_pick, name="bomitem_pick"),
     path('b_bom/bom_update', views.bom_update, name="bom_update"),
 
+    # 공장 기능 항목
+    path('b_factory/factory_element_insert', views.factory_element_insert, name="factory_element_insert"),
+    path('b_factory/factory_element_update', views.factory_element_update, name="factory_element_update"),
+    path('b_factory/factory_element_delete', views.factory_element_delete, name="factory_element_delete"),
+
     # 작업장 기능 항목
     path('b_workcenter/workcenter_element_insert', views.workcenter_element_insert, name="workcenter_element_insert"),
+    path('b_workcenter/workcenter_element_update', views.workcenter_element_update, name="workcenter_element_update"),
     path('b_workcenter/workcenter_element_delete', views.workcenter_element_delete, name="workcenter_element_delete"),
 
     # 코스트센터 기능 항목
     path('cb_cost_center/costcenter_element_insert', views.costcenter_element_insert, name="costcenter_element_insert"),
+    path('cb_cost_center/costcenter_element_update', views.costcenter_element_update, name="costcenter_element_update"),
     path('cb_cost_center/costcenter_element_delete', views.costcenter_element_delete, name="costcenter_element_delete")
 ]
