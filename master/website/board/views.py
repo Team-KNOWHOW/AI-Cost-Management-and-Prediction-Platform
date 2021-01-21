@@ -678,7 +678,7 @@ def factory_element_update(request):
     rsFactory.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory update success..."
+    context["result_msg"] = "factory update success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -693,7 +693,7 @@ def factory_element_delete(request):
     rsHeader.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory elements delete success..."
+    context["result_msg"] = "factory elements delete success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -1904,7 +1904,7 @@ def workcenter_element_delete(request):
     rsWorkcenter.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory elements delete success..."
+    context["result_msg"] = "workcenter elements delete success..."
     return JsonResponse(context, content_type="application/json")
 
 
