@@ -25,7 +25,10 @@ urlpatterns = [
     path('member_insert', views.member_insert, name="member_insert"),
     path('member_login', views.member_login, name="member_login"),
     path('member_logout', views.member_logout, name="member_logout"),
+    path('member_check', views.member_check, name="member_check"),
+    path('member_pwd_check', views.member_pwd_check, name="member_pwd_check"),
     path('member_edit', views.member_edit, name="member_edit"),
+    path('member_update', views.member_update, name="member_update"),
 
     # 사업장
     path('b_bizarea/bizarea_element_insert', views.bizarea_element_insert, name="bizarea_element_insert"),
