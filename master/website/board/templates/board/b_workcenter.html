@@ -217,6 +217,7 @@
                     xhr.open("POST", strurl);
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
                     xhr.send(null);
+                    location.reload();
                 }
 
                 function delete_element(elem) {
@@ -240,6 +241,7 @@
                     xhr.open("POST", strurl);
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
                     xhr.send(null);
+                    location.reload();
                 }
             </script>
         </section>
