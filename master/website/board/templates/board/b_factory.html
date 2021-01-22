@@ -77,10 +77,9 @@
                                 </tr>
                               </thead>
                         {% for i in rsHeader %}
-                                  <tbody >
+                                  <tbody id="row{{i.id}}">
                                     <tr>
                                         <td>
-<!--                                          <a href="b_bizpartner?id={{ i.id }}">-->
                                           {{ i.id }}
                                         </td>
                                         <td>
@@ -225,13 +224,15 @@
                     alert(obj.result_msg);
 
                     if(obj.flag =='1') {
-                        document.getElementById('typebox_' + id).remove();
+                        document.getElementById('row' + id).remove();
                     }
                 }
             };
+
             xhr.open("POST", strurl);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
             xhr.send(null);
+            location.reload();
         }
     </script>
 
