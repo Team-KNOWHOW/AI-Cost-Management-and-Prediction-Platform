@@ -345,7 +345,7 @@ def bizpartner_element_delete(request):
 # *********************************************************************************************************************
 
 
-def b_co(request):
+def b_co(request):  # 법인정보
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -357,7 +357,22 @@ def b_co(request):
 
     context["id"] = member_no
     context["user_id"] = member_id
-    return render(request, board_path + "b_co.html")
+
+    strsql = "SELECT a.*, b.*, c.* " + \
+             "FROM (SELECT *FROM  b_co WHERE usage_fg='Y') a " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd ='country' ) b ON a.unitcn_id=b.id " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd='currency') c ON a.unitcur_id=c.id "
+    rsCo = BCo.objects.raw(strsql)
+    context["rsCo"] = rsCo
+
+    rsUnitCur = CbCodeDtl.objects.filter(type_cd='currency', usage_fg='Y')
+    rsUnitCn = CbCodeDtl.objects.filter(type_cd='country', usage_fg='Y')
+    context["rsUnitCur"] = rsUnitCur
+    context["rsUnitCn"] = rsUnitCn
+    context["title"] = "법인정보"
+    context["result_msg"] = "법인정보"
+
+    return render(request, board_path + "b_co.html", context)
 
 
 # **********************************************************************************************************************
@@ -422,11 +437,6 @@ def bizarea_element_insert(request):
     if BBizarea.objects.filter(bizarea_nm=bizareanm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "bizarea_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "biz_no exists..."
         return JsonResponse(context, content_type="application/json")
 
     if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
