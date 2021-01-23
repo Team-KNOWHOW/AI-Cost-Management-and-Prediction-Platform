@@ -345,7 +345,7 @@ def bizpartner_element_delete(request):
 # *********************************************************************************************************************
 
 
-def b_co(request):
+def b_co(request):  # 법인정보
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -357,7 +357,22 @@ def b_co(request):
 
     context["id"] = member_no
     context["user_id"] = member_id
-    return render(request, board_path + "b_co.html")
+
+    strsql = "SELECT a.*, b.*, c.* " + \
+             "FROM (SELECT *FROM  b_co WHERE usage_fg='Y') a " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd ='country' ) b ON a.unitcn_id=b.id " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd='currency') c ON a.unitcur_id=c.id "
+    rsCo = BCo.objects.raw(strsql)
+    context["rsCo"] = rsCo
+
+    rsUnitCur = CbCodeDtl.objects.filter(type_cd='currency', usage_fg='Y')
+    rsUnitCn = CbCodeDtl.objects.filter(type_cd='country', usage_fg='Y')
+    context["rsUnitCur"] = rsUnitCur
+    context["rsUnitCn"] = rsUnitCn
+    context["title"] = "법인정보"
+    context["result_msg"] = "법인정보"
+
+    return render(request, board_path + "b_co.html", context)
 
 
 # **********************************************************************************************************************
@@ -422,11 +437,6 @@ def bizarea_element_insert(request):
     if BBizarea.objects.filter(bizarea_nm=bizareanm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "bizarea_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "biz_no exists..."
         return JsonResponse(context, content_type="application/json")
 
     if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
@@ -629,10 +639,14 @@ def b_factory(request):
 def factory_element_insert(request):
     context = {}
 
+    id = 1
     factorycd = request.GET['factorycd']
     factorynm = request.GET['factorynm']
     factoryrmrk = request.GET['factoryrmrk']
     usagefg = 'Y'
+
+    while BFactory.objects.filter(id=id).exists():
+        id += 1
 
     if BFactory.objects.filter(factory_cd=factorycd, usage_fg='Y').exists():
         context["flag"] = "1"
@@ -645,11 +659,13 @@ def factory_element_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
-    BFactory.objects.create(factory_cd=factorycd,
+    BFactory.objects.create(id=id,
+                            factory_cd=factorycd,
                             factory_nm=factorynm,
                             factory_rmrk=factoryrmrk,
-                            usage_fg=usagefg
-                            )
+                            insrt_dt=datetime.now(),
+                            updt_dt=datetime.now(),
+                            usage_fg=usagefg)
 
     context["flag"] = "0"
     context["result_msg"] = "factory insert success..."
@@ -668,10 +684,11 @@ def factory_element_update(request):
     rsFactory = BFactory.objects.get(id=id)
     rsFactory.factory_nm = factorynm
     rsFactory.factory_rmrk = factoryrmrk
+    rsFactory.updt_dt = datetime.now()
     rsFactory.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory update success..."
+    context["result_msg"] = "factory update success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -686,7 +703,7 @@ def factory_element_delete(request):
     rsHeader.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory elements delete success..."
+    context["result_msg"] = "factory elements delete success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -1834,10 +1851,14 @@ def b_workcenter(request):
 def workcenter_element_insert(request):
     context = {}
 
+    id = 1
     workcentercd = request.GET['workcentercd']
     workcenternm = request.GET['workcenternm']
     cstctrid = request.GET['cstctrid']
     usagefg = 'Y'
+
+    while BWorkcenter.objects.filter(id=id).exists():
+        id += 1
 
     if BWorkcenter.objects.filter(workcenter_cd=workcentercd, usage_fg='Y').exists():
         context["flag"] = "1"
@@ -1850,9 +1871,12 @@ def workcenter_element_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
-    BWorkcenter.objects.create(workcenter_cd=workcentercd,
+    BWorkcenter.objects.create(id=id,
+                               workcenter_cd=workcentercd,
                                workcenter_nm=workcenternm,
                                cstctr_id=cstctrid,
+                               insrt_dt=datetime.now(),
+                               updt_dt=datetime.now(),
                                usage_fg=usagefg)
 
     context["flag"] = "0"
@@ -1871,6 +1895,7 @@ def workcenter_element_update(request):
     rsWorkcenter = BWorkcenter.objects.get(id=id)
     rsWorkcenter.workcenter_nm = workcenternm
     rsWorkcenter.cstctr_id = cstctrid
+    rsWorkcenter.updt_dt = datetime.now()
     rsWorkcenter.save()
 
     context["flag"] = "0"
@@ -1889,7 +1914,7 @@ def workcenter_element_delete(request):
     rsWorkcenter.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory elements delete success..."
+    context["result_msg"] = "workcenter elements delete success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -1972,6 +1997,8 @@ def costcenter_element_insert(request):
                                 factory_id=factoryid,
                                 cstctr_type=cstctrtype,
                                 cstctr_dir_div=cstctrdirdiv,
+                                insrt_dt=datetime.now(),
+                                updt_dt=datetime.now(),
                                 usage_fg=usagefg)
 
     context["flag"] = "0"
@@ -1998,6 +2025,7 @@ def costcenter_element_update(request):
     rsCostcenter.factory_id = factoryid
     rsCostcenter.cstctr_type = cstctrtype
     rsCostcenter.cstctr_dir_div = cstctrdirdiv
+    rsCostcenter.updt_dt = datetime.now()
     rsCostcenter.save()
 
     context['flag'] = "0"
