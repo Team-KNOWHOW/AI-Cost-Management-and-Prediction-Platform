@@ -225,8 +225,8 @@ def b_bizpartner(request):
 
     rsHeader = BBizpartner.objects.filter(usage_fg='Y')
     rsCo = BCo.objects.filter(usage_fg='Y')
-    rsCncd = CbCodeDtl.objects.filter(usage_fg='Y',type_cd ='country')
-    rsCurcd = CbCodeDtl.objects.filter(usage_fg='Y',type_cd ='currency')
+    rsCncd = CbCodeDtl.objects.filter(usage_fg='Y', type_cd='country')
+    rsCurcd = CbCodeDtl.objects.filter(usage_fg='Y', type_cd='currency')
     rsBizpartnerstat = BBizpartner.objects.filter(usage_fg='Y')
     context['rsBizpartnerstat'] = rsBizpartnerstat
     context["rsCo"] = rsCo
@@ -252,7 +252,6 @@ def bizpartner_element_insert(request):
     #     member_id = None
     # #######################
     # context["user_id"] = member_id
-
 
     bizpartnercd = request.GET['bizpartnercd']
     coid = request.GET['coid']
@@ -345,7 +344,7 @@ def bizpartner_element_delete(request):
 # *********************************************************************************************************************
 
 
-def b_co(request):
+def b_co(request):  # 법인정보
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -357,7 +356,103 @@ def b_co(request):
 
     context["id"] = member_no
     context["user_id"] = member_id
-    return render(request, board_path + "b_co.html")
+
+    strsql = "SELECT a.*, b.*, c.* " + \
+             "FROM (SELECT *FROM  b_co WHERE usage_fg='Y') a " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd ='country' ) b ON a.unitcn_id=b.id " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd='currency') c ON a.unitcur_id=c.id "
+    rsCo = BCo.objects.raw(strsql)
+    context["rsCo"] = rsCo
+
+    rsUnitCur = CbCodeDtl.objects.filter(type_cd='currency', usage_fg='Y')
+    rsUnitCn = CbCodeDtl.objects.filter(type_cd='country', usage_fg='Y')
+    context["rsUnitCur"] = rsUnitCur
+    context["rsUnitCn"] = rsUnitCn
+    context["title"] = "법인정보"
+    context["result_msg"] = "법인정보"
+
+    return render(request, board_path + "b_co.html", context)
+
+
+@csrf_exempt
+def co_element_insert(request):
+    context = {}
+    unitCnid = request.GET['unitcnid']
+    unitCurid = request.GET['unitcurid']
+    coCd = request.GET['co_cd']
+    coNm = request.GET['co_nm']
+    coShnm = request.GET['co_shnm']
+    coRpr = request.GET['co_rpr']
+    coType = request.GET['co_type']
+    coDiv = request.GET['co_div']
+    usage_fg = 'Y'
+
+    if BCo.objects.filter(co_cd=coCd, usage_fg='Y').exists():
+        context["flag"] = "1"
+        context["result_msg"] = "이미 존재하는 법인코드입니다."
+
+    else:
+        BCo.objects.create(
+            co_cd=coCd,
+            co_nm=coNm,
+            co_shnm=coShnm,
+            co_rpr=coRpr,
+            co_type=coType,
+            co_div=coDiv,
+            unitcur_id=unitCurid,
+            unitcn_id=unitCnid,
+            usage_fg=usage_fg
+        )
+
+        context["flag"] = "0"
+        context["result_msg"] = "데이터 입력이 완료되었습니다."
+
+    return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def co_element_update(request):
+    context = {}
+
+    coId = request.GET['id']
+    coNm = request.GET['co_nm']
+    coShnm = request.GET['co_shnm']
+    coRpr = request.GET['co_rpr']
+    coType = request.GET['co_type']
+    coDiv = request.GET['co_div']
+
+    unitCnId = request.GET['unitcn_id']
+    unitCurId = request.GET['unitcur_id']
+
+    rs = BCo.objects.get(id=coId)
+    rs.co_nm = coNm
+    rs.co_shnm = coShnm
+    rs.co_rpr = coRpr
+    rs.co_type = coType
+    rs.co_div = coDiv
+
+    rs.unitcn_id = unitCnId
+    rs.unitcur_id = unitCurId
+    rs.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "수정이 완료되었습니다."
+    return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def co_element_delete(request):
+    context = {}
+
+    coId = request.GET['id']
+
+    rsHeader = BCo.objects.get(id=coId)
+    rsHeader.usage_fg = 'N'
+    rsHeader.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "삭제가 완료되었습니다."
+    return JsonResponse(context, content_type="application/json")
 
 
 # **********************************************************************************************************************
@@ -422,11 +517,6 @@ def bizarea_element_insert(request):
     if BBizarea.objects.filter(bizarea_nm=bizareanm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "bizarea_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "biz_no exists..."
         return JsonResponse(context, content_type="application/json")
 
     if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
