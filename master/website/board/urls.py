@@ -30,10 +30,16 @@ urlpatterns = [
     path('member_edit', views.member_edit, name="member_edit"),
     path('member_update', views.member_update, name="member_update"),
 
+    # 법인정보
+    path('b_co/co_element_insert', views.co_element_insert, name="co_element_insert"),
+    path('b_co/co_element_update', views.co_element_update, name="co_element_update"),
+    path('b_co/co_element_delete', views.co_element_delete, name="co_element_delete"),
+
     # 사업장
     path('b_bizarea/bizarea_element_insert', views.bizarea_element_insert, name="bizarea_element_insert"),
     path('b_bizarea/bizarea_element_update', views.bizarea_element_update, name="bizarea_element_update"),
     path('b_bizarea/bizarea_element_delete', views.bizarea_element_delete, name="bizarea_element_delete"),
+
     # 사업부
     path('b_bizunit/bizunit_element_insert', views.bizunit_element_insert, name="bizunit_element_insert"),
     path('b_bizunit/bizunit_element_update', views.bizunit_element_update, name="bizunit_element_update"),
