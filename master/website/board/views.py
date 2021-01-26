@@ -224,6 +224,14 @@ def b_bizpartner(request):
     # print(typecd)
 
     rsHeader = BBizpartner.objects.filter(usage_fg='Y')
+    rsCo = BCo.objects.filter(usage_fg='Y')
+    rsCncd = CbCodeDtl.objects.filter(usage_fg='Y', type_cd='country')
+    rsCurcd = CbCodeDtl.objects.filter(usage_fg='Y', type_cd='currency')
+    rsBizpartnerstat = BBizpartner.objects.filter(usage_fg='Y')
+    context['rsBizpartnerstat'] = rsBizpartnerstat
+    context["rsCo"] = rsCo
+    context["rsCncd"] = rsCncd
+    context["rsCurcd"] = rsCurcd
 
     context["rsHeader"] = rsHeader
 
@@ -235,8 +243,15 @@ def b_bizpartner(request):
 
 @csrf_exempt
 def bizpartner_element_insert(request):
-    # print("실행완료")
     context = {}
+
+    # ##########나중에 admin연결 후 삭제 할 거#############
+    # if request.session.has_key('id'):
+    #     member_id = request.session['user_id']
+    # else:
+    #     member_id = None
+    # #######################
+    # context["user_id"] = member_id
 
     bizpartnercd = request.GET['bizpartnercd']
     coid = request.GET['coid']
@@ -246,21 +261,12 @@ def bizpartner_element_insert(request):
     cncd = request.GET['cncd']
     curcd = request.GET['curcd']
     bizpartnerstat = request.GET['bizpartnerstat']
+    # user_id = request.session['user_id']
     usagefg = 'Y'
 
     if BBizpartner.objects.filter(bizpartner_cd=bizpartnercd).exists():
         context["flag"] = "1"
         context["result_msg"] = "bizpartner_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(co_id=coid).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "co_id exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(bizpartner_type=bizpartnertype).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizpartner_type exists..."
         return JsonResponse(context, content_type="application/json")
 
     if BBizpartner.objects.filter(biz_nm=biznm).exists():
@@ -273,21 +279,6 @@ def bizpartner_element_insert(request):
         context["result_msg"] = "bizpartner_nm exists..."
         return JsonResponse(context, content_type="application/json")
 
-    if BBizpartner.objects.filter(cn_cd=cncd).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "cn_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(cur_cd=curcd).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "cur_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(bizpartner_stat=bizpartnerstat).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizpartner_stat exists..."
-        return JsonResponse(context, content_type="application/json")
-
     BBizpartner.objects.create(bizpartner_cd=bizpartnercd,
                                co_id=coid,
                                bizpartner_type=bizpartnertype,
@@ -296,7 +287,8 @@ def bizpartner_element_insert(request):
                                cn_cd=cncd,
                                cur_cd=curcd,
                                bizpartner_stat=bizpartnerstat,
-                               usage_fg=usagefg
+                               usage_fg=usagefg,
+
                                )
 
     context["flag"] = "0"
@@ -308,20 +300,27 @@ def bizpartner_element_insert(request):
 def bizpartner_element_update(request):
     context = {}
 
-    typeid = request.GET['typeid']
-    tvalue = request.GET['tvalue']
+    id = request.GET['id']
+    biznm = request.GET['biznm']
+    bizpartnernm = request.GET['bizpartnernm']
+    coid = request.GET['coid']
+    cncd = request.GET['cncd']
+    curcd = request.GET['curcd']
+    bizpartnerstat = request.GET['bizpartnerstat']
+    bizpartnertype = request.GET['bizpartnertype']
 
-    if BBizpartner.objects.filter(type_nm=tvalue).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    rsHeader = BBizpartner.objects.get(id=typeid)
-    rsHeader.type_nm = tvalue
-    rsHeader.save()
+    rs = BBizpartner.objects.get(id=id)
+    rs.biz_nm = biznm
+    rs.bizpartner_nm = bizpartnernm
+    rs.co_id = coid
+    rs.cn_cd = cncd
+    rs.cur_cd = curcd
+    rs.bizpartner_stat = bizpartnerstat
+    rs.bizpartner_type = bizpartnertype
+    rs.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "Type update success..."
+    context["result_msg"] = " update success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -345,7 +344,7 @@ def bizpartner_element_delete(request):
 # *********************************************************************************************************************
 
 
-def b_co(request):
+def b_co(request):  # 법인정보
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -357,7 +356,103 @@ def b_co(request):
 
     context["id"] = member_no
     context["user_id"] = member_id
-    return render(request, board_path + "b_co.html")
+
+    strsql = "SELECT a.*, b.*, c.* " + \
+             "FROM (SELECT *FROM  b_co WHERE usage_fg='Y') a " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd ='country' ) b ON a.unitcn_id=b.id " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd='currency') c ON a.unitcur_id=c.id "
+    rsCo = BCo.objects.raw(strsql)
+    context["rsCo"] = rsCo
+
+    rsUnitCur = CbCodeDtl.objects.filter(type_cd='currency', usage_fg='Y')
+    rsUnitCn = CbCodeDtl.objects.filter(type_cd='country', usage_fg='Y')
+    context["rsUnitCur"] = rsUnitCur
+    context["rsUnitCn"] = rsUnitCn
+    context["title"] = "법인정보"
+    context["result_msg"] = "법인정보"
+
+    return render(request, board_path + "b_co.html", context)
+
+
+@csrf_exempt
+def co_element_insert(request):
+    context = {}
+    unitCnid = request.GET['unitcnid']
+    unitCurid = request.GET['unitcurid']
+    coCd = request.GET['co_cd']
+    coNm = request.GET['co_nm']
+    coShnm = request.GET['co_shnm']
+    coRpr = request.GET['co_rpr']
+    coType = request.GET['co_type']
+    coDiv = request.GET['co_div']
+    usage_fg = 'Y'
+
+    if BCo.objects.filter(co_cd=coCd, usage_fg='Y').exists():
+        context["flag"] = "1"
+        context["result_msg"] = "이미 존재하는 법인코드입니다."
+
+    else:
+        BCo.objects.create(
+            co_cd=coCd,
+            co_nm=coNm,
+            co_shnm=coShnm,
+            co_rpr=coRpr,
+            co_type=coType,
+            co_div=coDiv,
+            unitcur_id=unitCurid,
+            unitcn_id=unitCnid,
+            usage_fg=usage_fg
+        )
+
+        context["flag"] = "0"
+        context["result_msg"] = "데이터 입력이 완료되었습니다."
+
+    return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def co_element_update(request):
+    context = {}
+
+    coId = request.GET['id']
+    coNm = request.GET['co_nm']
+    coShnm = request.GET['co_shnm']
+    coRpr = request.GET['co_rpr']
+    coType = request.GET['co_type']
+    coDiv = request.GET['co_div']
+
+    unitCnId = request.GET['unitcn_id']
+    unitCurId = request.GET['unitcur_id']
+
+    rs = BCo.objects.get(id=coId)
+    rs.co_nm = coNm
+    rs.co_shnm = coShnm
+    rs.co_rpr = coRpr
+    rs.co_type = coType
+    rs.co_div = coDiv
+
+    rs.unitcn_id = unitCnId
+    rs.unitcur_id = unitCurId
+    rs.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "수정이 완료되었습니다."
+    return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def co_element_delete(request):
+    context = {}
+
+    coId = request.GET['id']
+
+    rsHeader = BCo.objects.get(id=coId)
+    rsHeader.usage_fg = 'N'
+    rsHeader.save()
+
+    context["flag"] = "0"
+    context["result_msg"] = "삭제가 완료되었습니다."
+    return JsonResponse(context, content_type="application/json")
 
 
 # **********************************************************************************************************************
@@ -422,11 +517,6 @@ def bizarea_element_insert(request):
     if BBizarea.objects.filter(bizarea_nm=bizareanm, usage_fg='Y').exists():
         context["flag"] = "1"
         context["result_msg"] = "bizarea_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "biz_no exists..."
         return JsonResponse(context, content_type="application/json")
 
     if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
@@ -629,10 +719,14 @@ def b_factory(request):
 def factory_element_insert(request):
     context = {}
 
+    id = 1
     factorycd = request.GET['factorycd']
     factorynm = request.GET['factorynm']
     factoryrmrk = request.GET['factoryrmrk']
     usagefg = 'Y'
+
+    while BFactory.objects.filter(id=id).exists():
+        id += 1
 
     if BFactory.objects.filter(factory_cd=factorycd, usage_fg='Y').exists():
         context["flag"] = "1"
@@ -645,11 +739,13 @@ def factory_element_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
-    BFactory.objects.create(factory_cd=factorycd,
+    BFactory.objects.create(id=id,
+                            factory_cd=factorycd,
                             factory_nm=factorynm,
                             factory_rmrk=factoryrmrk,
-                            usage_fg=usagefg
-                            )
+                            insrt_dt=datetime.now(),
+                            updt_dt=datetime.now(),
+                            usage_fg=usagefg)
 
     context["flag"] = "0"
     context["result_msg"] = "factory insert success..."
@@ -668,10 +764,11 @@ def factory_element_update(request):
     rsFactory = BFactory.objects.get(id=id)
     rsFactory.factory_nm = factorynm
     rsFactory.factory_rmrk = factoryrmrk
+    rsFactory.updt_dt = datetime.now()
     rsFactory.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory update success..."
+    context["result_msg"] = "factory update success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -686,7 +783,7 @@ def factory_element_delete(request):
     rsHeader.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory elements delete success..."
+    context["result_msg"] = "factory elements delete success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -1834,10 +1931,14 @@ def b_workcenter(request):
 def workcenter_element_insert(request):
     context = {}
 
+    id = 1
     workcentercd = request.GET['workcentercd']
     workcenternm = request.GET['workcenternm']
     cstctrid = request.GET['cstctrid']
     usagefg = 'Y'
+
+    while BWorkcenter.objects.filter(id=id).exists():
+        id += 1
 
     if BWorkcenter.objects.filter(workcenter_cd=workcentercd, usage_fg='Y').exists():
         context["flag"] = "1"
@@ -1850,9 +1951,12 @@ def workcenter_element_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
-    BWorkcenter.objects.create(workcenter_cd=workcentercd,
+    BWorkcenter.objects.create(id=id,
+                               workcenter_cd=workcentercd,
                                workcenter_nm=workcenternm,
                                cstctr_id=cstctrid,
+                               insrt_dt=datetime.now(),
+                               updt_dt=datetime.now(),
                                usage_fg=usagefg)
 
     context["flag"] = "0"
@@ -1871,6 +1975,7 @@ def workcenter_element_update(request):
     rsWorkcenter = BWorkcenter.objects.get(id=id)
     rsWorkcenter.workcenter_nm = workcenternm
     rsWorkcenter.cstctr_id = cstctrid
+    rsWorkcenter.updt_dt = datetime.now()
     rsWorkcenter.save()
 
     context["flag"] = "0"
@@ -1889,7 +1994,7 @@ def workcenter_element_delete(request):
     rsWorkcenter.save()
 
     context["flag"] = "0"
-    context["result_msg"] = "BFactory elements delete success..."
+    context["result_msg"] = "workcenter elements delete success..."
     return JsonResponse(context, content_type="application/json")
 
 
@@ -1972,6 +2077,8 @@ def costcenter_element_insert(request):
                                 factory_id=factoryid,
                                 cstctr_type=cstctrtype,
                                 cstctr_dir_div=cstctrdirdiv,
+                                insrt_dt=datetime.now(),
+                                updt_dt=datetime.now(),
                                 usage_fg=usagefg)
 
     context["flag"] = "0"
@@ -1998,6 +2105,7 @@ def costcenter_element_update(request):
     rsCostcenter.factory_id = factoryid
     rsCostcenter.cstctr_type = cstctrtype
     rsCostcenter.cstctr_dir_div = cstctrdirdiv
+    rsCostcenter.updt_dt = datetime.now()
     rsCostcenter.save()
 
     context['flag'] = "0"
