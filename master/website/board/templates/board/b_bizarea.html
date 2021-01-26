@@ -2,189 +2,169 @@
 {% load static %}
 
 {% block scripts %}
-    {{ block.super }}
+{{ block.super }}
 
 
 {% endblock %}
 
 {% block body %}
 
-    {% include "navbar.html" %}
-    {% include "sidebar.html" %}
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
 
-    <!--main content start-->
-    <section id="main-content">
-        <section class="wrapper">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-table"></i> 사업장</h3>
-                </div>
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-table"></i> 사업장</h3>
             </div>
-<div>
-<!--        <div style="border-top:solid 2px #888;">-->
-        <table>
-            <tr>
-                <td width="" align="center">사업장코드</td>
-                <td width="" align="center">법인명</td>
-                <td width="" align="center">사업장명</td>
-                <td width="" align="center">사업방약명</td>
-                <td width="" align="center">사업자번호</td>
-                <td width="" align="center">대표자</td>
-                <td width="" align="center">국가코드</td>
-                <td width="" align="center">기준통화코드</td>
-
-                </td>
-            </tr>
-                                  <tbody >
-                                    <tr>
-                                     <td>
-                                          <input type="text" id="bizarea_cd" value="" >
-
-                                      </td>
-
-                                  <td >
-                                      <select class="coid">
-                                          {% for ii in rsCo %}
-                                          <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
-                                          {% endfor %}
-                                      </select>
-                                  </td>
-                                     <td>
-                                          <input type="text" id="bizarea_nm" value="" >
-
-                                      </td>
-                                        <td>
-                                          <input type="text" id="bizarea_shnm" value="" >
-
-                                      </td>
-                                        <td>
-                                          <input type="text" id="biz_no" value="" >
-
-                                      </td>
-                                        <td>
-                                          <input type="text" id="biz_rpr" value="" >
-
-                                      </td>
-                                  <td >
-                                      <select class="cn">
-                                          {% for ii in rsUnitCn %}
-                                          <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                          {% endfor %}
-                                      </select>
-                                  </td>
-                                  <td >
-                                      <select class="cur">
-                                          {% for ii in rsUnitCur %}
-                                          <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                          {% endfor %}
-                                      </select>
-                                  </td>
-                                        <td>
-                                            <button onclick="insert_element();" style="width: 50px">저장</button>
-                                        </td>
-                                    </tr>
-                                  </tbody>
-
-        </table>
         </div>
+        <div>
+            {% if not rsBizarea %}
+            <p class="text-center">내용이 없습니다! </p>
+            {% else %}
 
-
-<div>
-    {% if not rsBizarea %}
-        <p class="text-center">내용이 없습니다! </p>
-    {% else %}
-
-    </div>
-    {% endif %}
-</div>
-            <div class="row">
-              <div class="col-lg-12" style="margin-top:15px">
+        </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-lg-12" style="margin-top:15px">
                 <section class="panel">
-                  <div class="table-responsive">
-                    {% if rsBizarea %}
-                          <table class="table">
-                              <thead>
-                                <tr>
-                                    <th>사업장코드</th>
-                                    <th>법인명</th>
-                                    <th>사업장명</th>
-                                    <th>사업장약명</th>
-                                    <th>사업자번호</th>
-                                    <th>대표자</th>
-<!--                                    <th>개업일자</th>-->
-                                    <th>국가코드</th>
-                                    <th>기준통화코드</th>
+                    <div class="table-responsive">
+                        {% if rsBizarea %}
+                        <table class="table" width="100%">
+                            <thead>
+                            <tr>
+                                <th>사업장코드</th>
+                                <th>법인명</th>
+                                <th>사업장명</th>
+                                <th>사업장약명</th>
+                                <th>사업자번호</th>
+                                <th>대표자</th>
+                                <!--                                    <th>개업일자</th>-->
+                                <th>국가코드</th>
+                                <th>기준통화코드</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr bgcolor="#F7F7F7">
+                                <td>
+                                    <input type="text" class="form-control" id="bizarea_cd" value="" >
+                                </td>
+                                <td align="center">
+                                    <select class="coid">
+                                        {% for ii in rsCo %}
+                                        <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="bizarea_nm" value="" >
 
-                                </tr>
-                              </thead>
-            {% for i in rsBizarea %}
-            <tbody >
-            <tr>
-            <td>{{ i.bizarea_cd }}</td>
-            <td>{{ i.co_nm }}</td>
-            <td>
-                <input type="text" id="bizareanm{{ i.id }}" value="{{ i.bizarea_nm }}" placeholder="bizareanm" />
-            </td>
-            <td width="15%">
-                <input type="text" id="bizareashnm{{ i.id }}" value="{{ i.bizarea_shnm }}" placeholder="bizareashnm"/>
-            </td><td >
-                <input type="text" id="bizno{{ i.id }}" value="{{ i.biz_no }}" placeholder="bizno" />
-            </td>
-            <td>
-                <input type="text" id="bizrpr{{ i.id }}" value="{{ i.biz_rpr }}" placeholder="bizrpr"/>
-            </td>
-<!--            <td >{{ i.str_dt }}</td>-->
-            <td>
-                {% if not rsUnitCn %}
-                    <p class="text-center">지정국가 없음</p>//cb_code_dtl의 country부분
-                {% else %}
-                    <select class="unitcnid{{ i.id }}" style="width:100%;padding:3px;">
-<!--                    <select name="unitcn" id="unitcn_{{ i.id }}" style="width:100%;padding:3px;">-->
-                                          {% for ii in rsUnitCn %}
-                                          {% if i.unitcn_id == ii.id %}
-                                          <option value="{{ ii.id }}" selected> {{ ii.cd_nm }} </option>
-                                          {% else %}
-                                          <option value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
-                                          {% endif %}
-                                          {% endfor %}
-                                      </select>
-                    </select>
-                {% endif %}
-            </td>
-            <td>
-                {% if not rsUnitCur %}
-                    <p class="text-center">기준통화 없음</p>
-                {% else %}
-                    <select class="unitcurid{{ i.id }}" style="width:100%;padding:3px;">
-                    {% for ii in rsUnitCur %}
-                        {% if i.unitcur_id == ii.id %}
-                        <option value="{{ ii.id }}" selected>{{ ii.cd_nm }}</option>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="bizarea_shnm" value="" >
+
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="biz_no" value="" >
+
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="biz_rpr" value="" >
+
+                                </td>
+                                <td align="center">
+                                    <select class="cn">
+                                        {% for ii in rsUnitCn %}
+                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td align="center">
+                                    <select class="cur">
+                                        {% for ii in rsUnitCur %}
+                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <button onclick="insert_element();" class="btn btn-default btn-sm">저장</button>
+                                </td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+
+                            {% for i in rsBizarea %}
+                            <tbody >
+                            <tr>
+                                <td>{{ i.bizarea_cd }}</td>
+                                <td>{{ i.co_nm }}</td>
+                                <td>
+                                    <input type="text" class="form-control" id="bizareanm{{ i.id }}" value="{{ i.bizarea_nm }}" placeholder="bizareanm" />
+                                </td>
+                                <td width="15%">
+                                    <input type="text" class="form-control" id="bizareashnm{{ i.id }}" value="{{ i.bizarea_shnm }}" placeholder="bizareashnm"/>
+                                </td><td >
+                                <input type="text" class="form-control" id="bizno{{ i.id }}" value="{{ i.biz_no }}" placeholder="bizno" />
+                            </td>
+                                <td>
+                                    <input type="text" class="form-control" id="bizrpr{{ i.id }}" value="{{ i.biz_rpr }}" placeholder="bizrpr"/>
+                                </td>
+                                <!--            <td >{{ i.str_dt }}</td>-->
+                                <td>
+                                    {% if not rsUnitCn %}
+                                    <p class="text-center">지정국가 없음</p>//cb_code_dtl의 country부분
+                                    {% else %}
+                                    <select class="unitcnid{{ i.id }}" style="width:100%;padding:3px;">
+                                        <!--                    <select name="unitcn" id="unitcn_{{ i.id }}" style="width:100%;padding:3px;">-->
+                                        {% for ii in rsUnitCn %}
+                                        {% if i.unitcn_id == ii.id %}
+                                        <option value="{{ ii.id }}" selected> {{ ii.cd_nm }} </option>
+                                        {% else %}
+                                        <option value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    </select>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not rsUnitCur %}
+                                    <p class="text-center">기준통화 없음</p>
+                                    {% else %}
+                                    <select class="unitcurid{{ i.id }}" style="width:100%;padding:3px;">
+                                        {% for ii in rsUnitCur %}
+                                        {% if i.unitcur_id == ii.id %}
+                                        <option value="{{ ii.id }}" selected>{{ ii.cd_nm }}</option>
+                                        {% else %}
+                                        <option value="{{ ii.id }}">{{ ii.cd_nm }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    {% endif %}
+                                </td>
+
+                                <td width="5%"><a class="btn btn-default btn-sm" typeid="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator";>수정</a></td>
+                                <td width="5%">
+                                    <a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator";>삭제</a>
+                                </td>
+
+                            </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
                         {% else %}
-                        <option value="{{ ii.id }}">{{ ii.cd_nm }}</option>
+                        <span>내용이 없습니다.</span>
                         {% endif %}
-                    {% endfor %}
-                    </select>
-                {% endif %}
-            </td>
-
-            <td width="5%"><a class="btn btn-default btn-sm" typeid="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator";>수정</a></td>
-                <td width="5%">
-                <a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator";>삭제</a>
-            </td>
-
-                                    </tr>
-                                  </tbody>
-                              {% endfor %}
-                              </table>
-                      {% else %}
-                      <span>내용이 없습니다.</span>
-                      {% endif %}
-                  </div>
+                    </div>
 
                 </section>
-              </div>
             </div>
-            <script>
+        </div>
+        <script>
         function getCookie(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -339,8 +319,8 @@
         }
     </script>
 
-        </section>
-        <!--main content end-->
     </section>
-    <!-- container section start -->
+    <!--main content end-->
+</section>
+<!-- container section start -->
 {% endblock %}
