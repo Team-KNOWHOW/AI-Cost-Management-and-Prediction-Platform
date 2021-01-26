@@ -2,114 +2,115 @@
 {% load static %}
 
 {% block scripts %}
-    {{ block.super }}
+{{ block.super }}
 
 
 {% endblock %}
 
 {% block body %}
 
-    {% include "navbar.html" %}
-    {% include "sidebar.html" %}
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
 
-    <!--main content start-->
-    <section id="main-content">
-        <section class="wrapper">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-table"></i> 공장</h3>
-                </div>
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-table"></i> 공장</h3>
             </div>
-
-<div>
-    {% if not rsHeader %}
-        <p class="text-center">내용이 없습니다! </p>
-    {% else %}
-        <div>
-        <table>
-            <tr>
-                <td width="" align="center"  >공장코드</td>
-                <td width="" align="center"  >공장명</td>
-                <td width="" align="center"  >비고</td>
-                <td width="" align="center"  >등록</td>
-                </td>
-            </tr>
-                                  <tbody >
-                                    <tr>
-                                        <td>
-                                          <input type="text" id="factory_cd" value="" style="width:100px;" >
-
-                                      </td>
-                                        <td>
-                                          <input type="text" id="factory_nm" value="" >
-
-                                      </td>
-                                        <td>
-                                          <input type="text" id="factory_rmrk" value="" >
-
-                                      </td>
-                                        <td>
-                                            <button onclick="insert_element();" style="width: 50px">저장</button>
-                                        </td>
-                                    </tr>
-                                  </tbody>
-
-        </table>
         </div>
-    </div>
-            <br>
-    {% endif %}
+
+        <div>
+            {% if not rsHeader %}
+            <p class="text-center">내용이 없습니다! </p>
+            {% else %}
+            <div>
+                <table>
+                    <tr>
+                        <td width="" align="center"  >공장코드</td>
+                        <td width="" align="center"  >공장명</td>
+                        <td width="" align="center"  >비고</td>
+                        <td width="" align="center"  >등록</td>
+                        </td>
+                    </tr>
+                    <tbody >
+                    <tr>
+                        <td>
+                            <input type="text" id="factory_cd" value="" class="form-control" placeholder="Factory Code" >
+
+                        </td>
+                        <td>
+                            <input type="text" id="factory_nm" value="" class="form-control" placeholder="Factory Name">
+
+                        </td>
+                        <td>
+                            <input type="text" id="factory_rmrk" value="" class="form-control" placeholder="">
+
+                        </td>
+                        <td>
+                            <button onclick="insert_element();" class="btn btn-primary btn-sm">등록</button>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
             </div>
-            <div class="row">
-              <div class="col-lg-12">
+        </div>
+        <br>
+        {% endif %}
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
                 <section class="panel">
-                  <div class="table-responsive">
-                    {% if rsHeader %}
-                          <table class="table">
-                              <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>공장코드</th>
-                                    <th>공장명</th>
-                                    <th>비고</th>
-                                    <th width="5%"></th>
-<!--                                    <th>사용구분</th>-->
-                                </tr>
-                              </thead>
-                        {% for i in rsHeader %}
-                                  <tbody id="row{{i.id}}">
-                                    <tr>
-                                        <td>
-                                          {{ i.id }}
-                                        </td>
-                                        <td>
-                                          {{ i.factory_cd }}
-                                        </td>
-                                        <td>
-                                            <input id="factory_nm{{i.id}}" type="text" value="{{ i.factory_nm }}">
-                                        </td>
-                                        <td>
-                                            <input id="factory_rmrk{{i.id}}" type="text" value="{{ i.factory_rmrk }}">
-                                        </td>
-                                        <td width="5%" align="center" style="padding:5px 0;" >
-                                            <span value="{{ i.id }}" onclick="update_element(this)" style="cursor:pointer;">수정</span>
-                                        </td>
-                                        <td width="5%" align="center" style="padding:5px 0;" >
-                                            <span value="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
-                                        </td>
-                                    </tr>
-                                  </tbody>
-                              {% endfor %}
-                              </table>
+                    <div class="table-responsive">
+                        {% if rsHeader %}
+                        <table class="table" width="100%">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>공장코드</th>
+                                <th>공장명</th>
+                                <th>비고</th>
+                                <th width="5%"></th>
+                                <th></th>
+                                <!--                                    <th>사용구분</th>-->
+                            </tr>
+                            </thead>
+                            {% for i in rsHeader %}
+                            <tbody id="row{{i.id}}">
+                            <tr>
+                                <td width="5%">
+                                    {{ i.id }}
+                                </td>
+                                <td width="10%">
+                                    {{ i.factory_cd }}
+                                </td>
+                                <td width="20%">
+                                    <input id="factory_nm{{i.id}}" class="form-control" type="text" value="{{ i.factory_nm }}" >
+                                </td>
+                                <td width="20%">
+                                    <input id="factory_rmrk{{i.id}}" class="form-control" type="text" value="{{ i.factory_rmrk }}">
+                                </td>
+                                <td width="40%" align="right">
+                                    <a value="{{ i.id }}" onclick="update_element(this)" class="btn btn-default btn-sm">수정</a>
+                                </td>
+                                <td width="5%" align="center" >
+                                    <a value="{{ i.id }}" onclick="delete_element(this)" class="btn btn-default btn-sm">삭제</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
                         {% else %}
-                            <span>내용이 없습니다.</span>
-                      {% endif %}
-                  </div>
+                        <span>내용이 없습니다.</span>
+                        {% endif %}
+                    </div>
 
                 </section>
-              </div>
             </div>
-            <script>
+        </div>
+        <script>
         function getCookie(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -236,8 +237,8 @@
         }
     </script>
 
-        </section>
-        <!--main content end-->
     </section>
-    <!-- container section start -->
+    <!--main content end-->
+</section>
+<!-- container section start -->
 {% endblock %}

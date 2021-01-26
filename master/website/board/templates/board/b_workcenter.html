@@ -22,37 +22,33 @@
                 </div>
             </div>
 
-            <div style="margin:20px 0;">
-                등록
-                    <div style="margin:20px 0;">
-                        <!-- <div style="border-top:solid 2px #888;"> -->
+            <div>
+                    <div>
                         <table>
                             <tr>
-                                <td width="" align="center"  bgcolor="#E8E8E8">작업장코드</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">작업장명</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">코스트센터</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">등록</td>
-                                <td width="" align="center" style="padding-right:10px ;"  bgcolor="#E8E8E8">
-                                </td>
+                                <td width="" align="center">작업장코드</td>
+                                <td width="" align="center">작업장명</td>
+                                <td width="" align="center">코스트센터</td>
+                                <td width="" align="center"></td>
                             </tr>
 
                             <tbody>
                             <tr>
                                 <td>
-                                    <input type="text" id="workcenter_cd">
+                                    <input type="text" class="form-control" id="workcenter_cd" placeholder="Code">
                                 </td>
                                 <td>
-                                    <input type="text" id="workcenter_nm">
+                                    <input type="text" class="form-control" id="workcenter_nm" placeholder="Name">
                                 </td>
                                 <td>
-                                    <select id="cstctr" style="width:100px;" >
+                                    <select id="cstctr">
                                         {% for i in rsCostcenter %}
                                             <option value="{{i.id}}">{{ i.cstctr_nm }}</option>
                                         {% endfor %}
                                     </select>
                                 </td>
                                 <td>
-                                    <button onclick="insert_element();" style="width: 50px">저장</button>
+                                    <button onclick="insert_element();" class="btn btn-primary btn-sm" >등록</button>
                                 </td>
                             </tr>
                             </tbody>
@@ -60,10 +56,10 @@
                    </div>
             </div>
 
-            <div class="row" style="margin:2px 0;">
-                <div class="col-lg-12" style="margin-top:15px">
+            <br>
+            <div class="row" >
+                <div class="col-lg-12">
                     <section class="panel">
-                        <header class="panel-heading">작업장 테이블</header>
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
@@ -72,6 +68,8 @@
                                     <th>작업장코드</th>
                                     <th>작업장명</th>
                                     <th>코스트센터명</th>
+                                    <th></th>
+                                    <th></th>
                                     <!-- <th>사용구분</th> -->
                                 </tr>
                                 </thead>
@@ -86,7 +84,7 @@
                                             {{ i.workcenter_cd }}
                                         </td>
                                         <td>
-                                            <input id="workcenter_nm{{i.id}}" type="text" value="{{ i.workcenter_nm }}">
+                                            <input class="form-control" id="workcenter_nm{{i.id}}" type="text" value="{{ i.workcenter_nm }}">
                                         </td>
                                         <td>
                                             <select id="cstctr_id{{i.id}}">
@@ -99,11 +97,11 @@
                                                 {% endfor %}
                                             </select>
                                         </td>
-                                        <td width="5%" align="center" style="padding:5px 0;" >
-                                            <span value="{{ i.id }}" onclick="update_element(this)" style="cursor:pointer;">수정</span>
+                                        <td width="40%" align="right" >
+                                            <a value="{{ i.id }}" class="btn btn-default btn-sm" onclick="update_element(this)">수정</a>
                                         </td>
-                                        <td width="5%" align="center" style="padding:5px 0;" >
-                                            <span value="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
+                                        <td width="5%">
+                                            <a value="{{ i.id }}" class="btn btn-default btn-sm" onclick="delete_element(this)">삭제</a>
                                         </td>
                                     </tr>
                                 </tbody>

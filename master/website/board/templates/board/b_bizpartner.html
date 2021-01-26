@@ -2,211 +2,198 @@
 {% load static %}
 
 {% block scripts %}
-    {{ block.super }}
+{{ block.super }}
 
 
 {% endblock %}
 
 {% block body %}
 
-    {% include "navbar.html" %}
-    {% include "sidebar.html" %}
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
 
-    <!--main content start-->
-    <section id="main-content">
-        <section class="wrapper">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-table"></i> 거래처</h3>
-                </div>
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-table"></i> 거래처</h3>
             </div>
-
-<div>
-    {% if not rsHeader %}
-        <p class="text-center">내용이 없습니다! </p>
-    {% else %}
-        <div>
-        <div style="border-top:solid 2px #888;">
-        <table>
-            <tr>
-                <td width="3%" align="center"  bgcolor="#E8E8E8">법인명</td>
-                <td width="1%" align="center"  bgcolor="#E8E8E8">거래처코드</td>
-                <td width="2%" align="center"  bgcolor="#E8E8E8">거래처형태</td>
-                <td width="1%" align="center"  bgcolor="#E8E8E8">상호명</td>
-                <td width="1%" align="center"  bgcolor="#E8E8E8">거래처명</td>
-                <td width="1%" align="center"  bgcolor="#E8E8E8">국가코드</td>
-                <td width="1%" align="center"  bgcolor="#E8E8E8">통화코드</td>
-                <td width="1%" align="center"  bgcolor="#E8E8E8">거래처상태</td>
-
-                <td width="3%" align="center"  bgcolor="#E8E8E8">등록</td>
-                <td width="3%" align="center" style="padding-right:10px ;"  bgcolor="#E8E8E8">
-                </td>
-            </tr>
-                                  <tbody >
-                                    <tr>
-                                        <td width="4%" align="center"  bgcolor="#E8E8E8">
-                                            <select class="conm" >
-                                          {% for ii in rsCo %}
-                                          <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
-                                          {% endfor %}
-                                      </select>
-                                        </td>
-                                        <td width="4%" align="center" bgcolor="#E8E8E8">
-                                          <input type="text" id="bizpartner_cd" value="" >
-
-                                      </td>
-                                        <td width="4%" align="center" bgcolor="#E8E8E8">
-                                          <select class="bizpartnertype" >
-                                                <option value="법인"> 법인 </option>
-                                              <option value="개인"> 개인 </option>
-                                            </select>
-                                      </td>
-                                        <td width="4%" align="center" bgcolor="#E8E8E8">
-                                          <input type="text" id="biz_nm" value="" >
-
-                                      </td>
-                                        <td width="4%" align="center">
-                                          <input type="text" id="bizpartner_nm" value="" >
-
-                                      </td>
-                                        <td width="4%" align="center"  bgcolor="#E8E8E8">
-                                            <select class="cncd" >
-                                          {% for ii in rsCncd %}
-                                                <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                          {% endfor %}
-                                            </select>
-                                        </td>
-                                        <td width="4%" align="center" bgcolor="#E8E8E8">
-                                          <select class="curcd" >
-                                          {% for ii in rsCurcd %}
-                                                <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                          {% endfor %}
-                                            </select>
-
-                                      </td>
-                                        <td width="4%" align="center" bgcolor="#E8E8E8">
-                                          <select class="bizpartnerstat" >
-                                                <option value="정상"> 정상 </option>
-                                              <option value="중지"> 중지 </option>
-
-                                            </select>
-                                      </td>
-                                            <td width="3%" align="center" bgcolor="#E8E8E8"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insert_element();" title="Bootstrap 3 themes generator">등록</a></td>
-
-                                    </tr>
-                                  </tbody>
-
-        </table>
         </div>
-    </div>
-    {% endif %}
-</div>
 
-            <div class="row" style="border-top:solid 2px #888;">
-              <div class="col-lg-12" style="margin-top:20px">
+        <div>
+            {% if not rsHeader %}
+            <p class="text-center">내용이 없습니다! </p>
+            {% else %}
+        </div>
+        {% endif %}
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="col-lg-12">
                 <section class="panel">
-                  <div class="table-responsive">
-                    {% if rsHeader %}
-                          <table class="table">
-                              <thead>
-                                <tr>
-                                    <th>법인</th>
-                                    <th>거래처코드</th>
-                                    <th width="7%">거래처형태</th>
-                                    <th>상호명</th>
-                                    <th>거래처명</th>
-                                    <th width="6%">국가코드</th>
-                                    <th width="6%">통화코드</th>
-                                    <th width="7%">거래처상태</th>
-                                    <th>생성일자</th>
-                                    <th>수정일자</th>
-<!--                                    <th>등록/수정자</th>-->
-<!--                                    <th>사용구분</th>-->
-                                </tr>
-                              </thead>
-                        {% for i in rsHeader %}
-                                  <tbody >
-                                    <tr>
-                                        <td>
-                                          <select class="conm{{i.id}}">
-                                              {% for ii in rsCo %}
-                                              {% if i.co_id == ii.id %}
-                                              <option selected value="{{ ii.id }}"> {{ ii.co_nm }} </option>
-                                              {% else %}
-                                              <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
-                                              {% endif %}
-                                              {% endfor %}
-                                      </select>
-                                      </td>
-                                        <td>
-                                          {{ i.bizpartner_cd }}
-                                      </td>
-                                        <td>
-                                          <select class="bizpartnertype{{i.id}}">
-                                              <option value="법인"> 법인 </option>
-                                              <option value="개인"> 개인 </option>
-                                      </select>
-                                      </td>
-                                        <td>
-                                          <input type="text" class="form-control" id="biz_nm{{ i.id }}" value="{{i.biz_nm}}"/>
-                                      </td>
-                                        <td>
-                                          <input type="text" class="form-control" id="bizpartner_nm{{ i.id }}" value="{{ i.bizpartner_nm }}"/>
-                                      </td>
-                                        <td>
-                                          <select class="cncd{{i.id}}">
-                                              {% for ii in rsCncd %}
-                                              {% if i.cn_cd == ii.id %}
-                                              <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
-                                              {% else %}
-                                              <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                              {% endif %}
-                                              {% endfor %}
-                                      </select>
-                                      </td>
-                                        <td>
-                                          <select class="curcd{{i.id}}">
-                                              {% for ii in rsCurcd %}
-                                              {% if i.cur_cd == ii.id %}
-                                              <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
-                                              {% else %}
-                                              <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                              {% endif %}
-                                              {% endfor %}
-                                      </select>
-                                      </td>
-                                        <td>
-                                          <select class="bizpartnerstat{{i.id}}">
-                                              <option value="정상"> 정상 </option>
-                                              <option value="중지"> 중지 </option>
-                                      </select>
-                                      </td>
-                                        <td>
-                                          {{ i.insrt_dt }}
-                                      </td>
-                                        <td>
-                                          {{ i.updt_dt }}
-                                      </td>
-<!--                                        <td>-->
-<!--                                            {{ i.user_id }}-->
-<!--                                        </td>-->
-                                        <td width="5%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator">수정</a></td>
-                                        <td width="5%"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator">삭제</a></td>
+                    <div class="table-responsive">
+                        {% if rsHeader %}
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>법인</th>
+                                <th>거래처코드</th>
+                                <th width="7%">거래처형태</th>
+                                <th>상호명</th>
+                                <th>거래처명</th>
+                                <th width="6%">국가코드</th>
+                                <th width="6%">통화코드</th>
+                                <th width="7%">거래처상태</th>
+                                <th>생성일자</th>
+                                <th>수정일자</th>
+                                <th></th>
+                                <th></th>
+                                <!--                                    <th>등록/수정자</th>-->
+                                <!--                                    <th>사용구분</th>-->
+                            </tr>
+                            </thead>
 
-                                    </tr>
-                </td>
-                                  </tbody>
-                        {% endfor %}
-                              </table>
-                      {% else %}
-                            <span>Type이 없습니다.</span>
-                      {% endif %}
-                  </div>
+                            <tbody>
+                            <tr bgcolor="#F7F7F7">
+                                <td align="center">
+                                    <select class="conm" >
+                                        {% for ii in rsCo %}
+                                        <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td align="center">
+                                    <input type="text" id="bizpartner_cd" class="form-control" value="" >
+
+                                </td>
+                                <td align="center">
+                                    <select class="bizpartnertype" >
+                                        <option value="법인"> 법인 </option>
+                                        <option value="개인"> 개인 </option>
+                                    </select>
+                                </td>
+                                <td align="center">
+                                    <input type="text" class="form-control" id="biz_nm" value="" >
+
+                                </td>
+                                <td align="center">
+                                    <input type="text" class="form-control" id="bizpartner_nm" value="" >
+
+                                </td>
+                                <td align="center">
+                                    <select class="cncd" >
+                                        {% for ii in rsCncd %}
+                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td align="center">
+                                    <select class="curcd" >
+                                        {% for ii in rsCurcd %}
+                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                        {% endfor %}
+                                    </select>
+
+                                </td>
+                                <td align="center">
+                                    <select class="bizpartnerstat" >
+                                        <option value="정상"> 정상 </option>
+                                        <option value="중지"> 중지 </option>
+
+                                    </select>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td align="center"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insert_element();" title="Bootstrap 3 themes generator">등록</a></td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+
+                            {% for i in rsHeader %}
+                            <tbody >
+                            <tr>
+                                <td>
+                                    <select class="conm{{i.id}}">
+                                        {% for ii in rsCo %}
+                                        {% if i.co_id == ii.id %}
+                                        <option selected value="{{ ii.id }}"> {{ ii.co_nm }} </option>
+                                        {% else %}
+                                        <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    {{ i.bizpartner_cd }}
+                                </td>
+                                <td>
+                                    <select class="bizpartnertype{{i.id}}">
+                                        <option value="법인"> 법인 </option>
+                                        <option value="개인"> 개인 </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="biz_nm{{ i.id }}" value="{{i.biz_nm}}"/>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="bizpartner_nm{{ i.id }}" value="{{ i.bizpartner_nm }}"/>
+                                </td>
+                                <td>
+                                    <select class="cncd{{i.id}}">
+                                        {% for ii in rsCncd %}
+                                        {% if i.cn_cd == ii.id %}
+                                        <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
+                                        {% else %}
+                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="curcd{{i.id}}">
+                                        {% for ii in rsCurcd %}
+                                        {% if i.cur_cd == ii.id %}
+                                        <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
+                                        {% else %}
+                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="bizpartnerstat{{i.id}}">
+                                        <option value="정상"> 정상 </option>
+                                        <option value="중지"> 중지 </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    {{ i.insrt_dt }}
+                                </td>
+                                <td>
+                                    {{ i.updt_dt }}
+                                </td>
+                                <!--                                        <td>-->
+                                <!--                                            {{ i.user_id }}-->
+                                <!--                                        </td>-->
+                                <td width="5%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator">수정</a></td>
+                                <td width="5%"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator">삭제</a></td>
+
+                            </tr>
+                            </td>
+                            </tbody>
+                            {% endfor %}
+                        </table>
+                        {% else %}
+                        <span>Type이 없습니다.</span>
+                        {% endif %}
+                    </div>
 
                 </section>
-              </div>
             </div>
-            <script>
+        </div>
+        <script>
         function getCookie(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -397,8 +384,8 @@
         }
     </script>
 
-        </section>
-        <!--main content end-->
     </section>
-    <!-- container section start -->
+    <!--main content end-->
+</section>
+<!-- container section start -->
 {% endblock %}
