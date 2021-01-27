@@ -2,70 +2,73 @@
 {% load static %}
 
 {% block scripts %}
-    {{ block.super }}
-    <script>
+{{ block.super }}
+<script>
 
-    </script>
+</script>
 {% endblock %}
 
 {% block body %}
 
-    {% include "navbar.html" %}
-    {% include "sidebar.html" %}
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
 
-    <!--main content start-->
-    <section id="main-content">
-        <section class="wrapper">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-table"></i> Cost Center</h3>
-                </div>
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-table"></i> Cost Center</h3>
             </div>
+        </div>
 
-            <div style="margin:20px 0;">
-                Adder
-                    <div style="margin:20px 0;">
-                        <!-- <div style="border-top:solid 2px #888;"> -->
-                        <table>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
                             <tr>
-                                <td width="" align="center"  bgcolor="#E8E8E8">코스트센터 코드</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">코스트센터명</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">사업장</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">사업부</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">공장</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">코스트타입</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">직간접구분</td>
-                                <td width="" align="center"  bgcolor="#E8E8E8">등록</td>
-                                <td width="" align="center" style="padding-right:10px ;"  bgcolor="#E8E8E8">
-                                </td>
+                                <th>ID</th>
+                                <th>코스트센터 코드</th>
+                                <th>코스트센터명</th>
+                                <th>사업장</th>
+                                <th>사업부</th>
+                                <th>공장</th>
+                                <th>코스트타입</th>
+                                <th>직간접구분</th>
+                                <th></th>
+                                <th></th>
+                                <!-- <th>사용구분</th> -->
                             </tr>
-
+                            </thead>
                             <tbody>
-                            <tr>
+                            <tr bgcolor="#F7F7F7">
+                                <td></td>
                                 <td>
-                                    <input type="text" id="cstctr_cd" style="width:100px;" >
+                                    <input type="text" class="form-control" id="cstctr_cd">
                                 </td>
                                 <td>
-                                    <input type="text" id="cstctr_nm" style="width:100px;" >
+                                    <input type="text" class="form-control" id="cstctr_nm">
                                 </td>
                                 <td>
-                                    <select id="bizarea_id" style="width:100px;" >
+                                    <select id="bizarea_id">
                                         {% for i in rsBizarea %}
-                                            <option value="{{i.id}}">{{i.bizarea_nm}}</option>
+                                        <option value="{{i.id}}">{{i.bizarea_nm}}</option>
                                         {% endfor %}
                                     </select>
                                 </td>
                                 <td>
-                                    <select id="bizunit_id" style="width:100px;" >
+                                    <select id="bizunit_id">
                                         {% for i in rsBizunit %}
-                                            <option value="{{i.id}}">{{i.bizunit_nm}}</option>
+                                        <option value="{{i.id}}">{{i.bizunit_nm}}</option>
                                         {% endfor %}
                                     </select>
                                 </td>
                                 <td>
-                                    <select id="factory_id" style="width:100px;" >
+                                    <select id="factory_id">
                                         {% for i in rsFactory %}
-                                            <option value="{{i.id}}">{{i.factory_nm}}</option>
+                                        <option value="{{i.id}}">{{i.factory_nm}}</option>
                                         {% endfor %}
                                     </select>
                                 </td>
@@ -96,137 +99,115 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <button onclick="insert_element();" style="width: 50px">저장</button>
+                                    <button onclick="insert_element();" class="btn btn-default btn-sm">저장</button>
+                                </td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+
+                            {% for i in rsCostcenter %}
+                            <tbody>
+                            <tr>
+                                <td>
+                                    {{ i.id }}
+                                </td>
+                                <td>
+                                    {{ i.cstctr_cd }}
+                                </td>
+                                <td>
+                                    <input id="cstctr_nm{{i.id}}" class="form-control" type="text" value="{{ i.cstctr_nm }}">
+                                </td>
+                                <td>
+                                    <select id="bizarea_id{{i.id}}">
+                                        {% for ii in rsBizarea %}
+                                        {% if i.bizarea_id == ii.id %}
+                                        <option selected value="{{ii.id}}">{{ii.bizarea_nm}}</option>
+                                        {% else %}
+                                        <option value="{{ii.id}}">{{ii.bizarea_nm}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="bizunit_id{{i.id}}">
+                                        {% for ii in rsBizunit %}
+                                        {% if i.bizunit_id == ii.id %}
+                                        <option selected value="{{ii.id}}">{{ ii.bizunit_nm }}</option>
+                                        {% else %}
+                                        <option value="{{ii.id}}">{{ ii.bizunit_nm }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="factory_id{{i.id}}">
+                                        {% for ii in rsFactory %}
+                                        {% if i.factory_id == ii.id %}
+                                        <option selected value="{{ii.id}}">{{ ii.factory_nm }}</option>
+                                        {% else %}
+                                        <option value="{{ii.id}}">{{ ii.factory_nm }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="cstctr_type{{i.id}}">
+                                        {% if i.cstctr_type == "A(보조)" %}
+                                        <option selected>A(보조)</option>
+                                        {% else %}
+                                        <option>A(보조)</option>
+                                        {% endif %}
+
+                                        {% if i.cstctr_type == "C(공통)" %}
+                                        <option selected>C(공통)</option>
+                                        {% else %}
+                                        <option>C(공통)</option>
+                                        {% endif %}
+
+                                        {% if i.cstctr_type == "M(제조)" %}
+                                        <option selected>M(제조)</option>
+                                        {% else %}
+                                        <option>M(제조)</option>
+                                        {% endif %}
+
+                                        {% if i.cstctr_type == "S(판관)" %}
+                                        <option selected>S(판관)</option>
+                                        {% else %}
+                                        <option>S(판관)</option>
+                                        {% endif %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="cstctr_dir_div{{i.id}}">
+                                        {% if i.cstctr_dir_div == "D(직접)" %}
+                                        <option selected>D(직접)</option>
+                                        {% else %}
+                                        <option>D(직접)</option>
+                                        {% endif %}
+
+                                        {% if i.cstctr_dir_div == "I(간접)" %}
+                                        <option selected>I(간접)</option>
+                                        {% else %}
+                                        <option>I(간접)</option>
+                                        {% endif %}
+                                    </select>
+                                </td>
+                                <td width="5%" align="center" style="padding:5px 0;" >
+                                    <a value="{{ i.id }}" class="btn btn-default btn-sm" onclick="update_element(this)">수정</a>
+                                </td>
+                                <td width="5%" align="center" style="padding:5px 0;" >
+                                    <a value="{{ i.id }}" class="btn btn-default btn-sm" onclick="delete_element(this)">삭제</a>
                                 </td>
                             </tr>
                             </tbody>
-                       </table>
-                   </div>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </section>
             </div>
+        </div>
 
-            <div class="row" style="margin:2px 0;">
-                <div class="col-lg-12" style="margin-top:15px">
-                    <section class="panel">
-                        <header class="panel-heading">Cost Center 테이블</header>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>코스트센터 코드</th>
-                                    <th>코스트센터명</th>
-                                    <th>사업장</th>
-                                    <th>사업부</th>
-                                    <th>공장</th>
-                                    <th>코스트타입</th>
-                                    <th>직간접구분</th>
-                                    <!-- <th>사용구분</th> -->
-                                </tr>
-                                </thead>
-
-                                {% for i in rsCostcenter %}
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            {{ i.id }}
-                                        </td>
-                                        <td>
-                                            {{ i.cstctr_cd }}
-                                        </td>
-                                        <td>
-                                            <input id="cstctr_nm{{i.id}}" type="text" value="{{ i.cstctr_nm }}">
-                                        </td>
-                                        <td>
-                                            <select id="bizarea_id{{i.id}}">
-                                                {% for ii in rsBizarea %}
-                                                    {% if i.bizarea_id == ii.id %}
-                                                        <option selected value="{{ii.id}}">{{ii.bizarea_nm}}</option>
-                                                    {% else %}
-                                                        <option value="{{ii.id}}">{{ii.bizarea_nm}}</option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select id="bizunit_id{{i.id}}">
-                                                {% for ii in rsBizunit %}
-                                                    {% if i.bizunit_id == ii.id %}
-                                                        <option selected value="{{ii.id}}">{{ ii.bizunit_nm }}</option>
-                                                    {% else %}
-                                                        <option value="{{ii.id}}">{{ ii.bizunit_nm }}</option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select id="factory_id{{i.id}}">
-                                                {% for ii in rsFactory %}
-                                                    {% if i.factory_id == ii.id %}
-                                                        <option selected value="{{ii.id}}">{{ ii.factory_nm }}</option>
-                                                    {% else %}
-                                                        <option value="{{ii.id}}">{{ ii.factory_nm }}</option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select id="cstctr_type{{i.id}}">
-                                                {% if i.cstctr_type == "A(보조)" %}
-                                                    <option selected>A(보조)</option>
-                                                {% else %}
-                                                    <option>A(보조)</option>
-                                                {% endif %}
-
-                                                {% if i.cstctr_type == "C(공통)" %}
-                                                    <option selected>C(공통)</option>
-                                                {% else %}
-                                                    <option>C(공통)</option>
-                                                {% endif %}
-
-                                                {% if i.cstctr_type == "M(제조)" %}
-                                                    <option selected>M(제조)</option>
-                                                {% else %}
-                                                    <option>M(제조)</option>
-                                                {% endif %}
-
-                                                {% if i.cstctr_type == "S(판관)" %}
-                                                    <option selected>S(판관)</option>
-                                                {% else %}
-                                                    <option>S(판관)</option>
-                                                {% endif %}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select id="cstctr_dir_div{{i.id}}">
-                                                {% if i.cstctr_dir_div == "D(직접)" %}
-                                                    <option selected>D(직접)</option>
-                                                {% else %}
-                                                    <option>D(직접)</option>
-                                                {% endif %}
-
-                                                {% if i.cstctr_dir_div == "I(간접)" %}
-                                                    <option selected>I(간접)</option>
-                                                {% else %}
-                                                    <option>I(간접)</option>
-                                                {% endif %}
-                                            </select>
-                                        </td>
-                                        <td width="5%" align="center" style="padding:5px 0;" >
-                                            <span value="{{ i.id }}" onclick="update_element(this)" style="cursor:pointer;">수정</span>
-                                        </td>
-                                        <td width="5%" align="center" style="padding:5px 0;" >
-                                            <span value="{{ i.id }}" onclick="delete_element(this)" style="cursor:pointer;">X</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                {% endfor %}
-                            </table>
-                        </div>
-                    </section>
-                </div>
-            </div>
-
-            <script>
+        <script>
                 function getCookie(name) {
                     var cookieValue = null;
 
@@ -381,9 +362,9 @@
                     location.reload();
                 }
             </script>
-        </section>
-        <!--main content end-->
     </section>
-    <!-- container section start -->
+    <!--main content end-->
+</section>
+<!-- container section start -->
 
 {% endblock %}
