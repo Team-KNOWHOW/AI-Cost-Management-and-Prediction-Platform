@@ -58,7 +58,7 @@
                             <tbody>
                             <tr bgcolor="#F7F7F7">
                                 <td align="center">
-                                    <select class="conm" >
+                                    <select class="conm form-control" >
                                         {% for ii in rsCo %}
                                         <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
                                         {% endfor %}
@@ -69,7 +69,7 @@
 
                                 </td>
                                 <td align="center">
-                                    <select class="bizpartnertype" >
+                                    <select class="bizpartnertype form-control" >
                                         <option value="법인"> 법인 </option>
                                         <option value="개인"> 개인 </option>
                                     </select>
@@ -83,14 +83,14 @@
 
                                 </td>
                                 <td align="center">
-                                    <select class="cncd" >
+                                    <select class="cncd form-control" >
                                         {% for ii in rsCncd %}
                                         <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
                                         {% endfor %}
                                     </select>
                                 </td>
                                 <td align="center">
-                                    <select class="curcd" >
+                                    <select class="curcd form-control" >
                                         {% for ii in rsCurcd %}
                                         <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
                                         {% endfor %}
@@ -98,7 +98,7 @@
 
                                 </td>
                                 <td align="center">
-                                    <select class="bizpartnerstat" >
+                                    <select class="bizpartnerstat form-control" >
                                         <option value="정상"> 정상 </option>
                                         <option value="중지"> 중지 </option>
 
@@ -115,7 +115,7 @@
                             <tbody >
                             <tr>
                                 <td>
-                                    <select class="conm{{i.id}}">
+                                    <select class="conm{{i.id}} form-control">
                                         {% for ii in rsCo %}
                                         {% if i.co_id == ii.id %}
                                         <option selected value="{{ ii.id }}"> {{ ii.co_nm }} </option>
@@ -129,7 +129,7 @@
                                     {{ i.bizpartner_cd }}
                                 </td>
                                 <td>
-                                    <select class="bizpartnertype{{i.id}}">
+                                    <select class="bizpartnertype{{i.id}} form-control">
                                         <option value="법인"> 법인 </option>
                                         <option value="개인"> 개인 </option>
                                     </select>
@@ -141,7 +141,7 @@
                                     <input type="text" class="form-control" id="bizpartner_nm{{ i.id }}" value="{{ i.bizpartner_nm }}"/>
                                 </td>
                                 <td>
-                                    <select class="cncd{{i.id}}">
+                                    <select class="cncd{{i.id}} form-control">
                                         {% for ii in rsCncd %}
                                         {% if i.cn_cd == ii.id %}
                                         <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
@@ -152,7 +152,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <select class="curcd{{i.id}}">
+                                    <select class="curcd{{i.id}} form-control">
                                         {% for ii in rsCurcd %}
                                         {% if i.cur_cd == ii.id %}
                                         <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
@@ -163,7 +163,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <select class="bizpartnerstat{{i.id}}">
+                                    <select class="bizpartnerstat{{i.id}} form-control">
                                         <option value="정상"> 정상 </option>
                                         <option value="중지"> 중지 </option>
                                     </select>
