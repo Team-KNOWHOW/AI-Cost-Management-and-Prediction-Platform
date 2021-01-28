@@ -173,7 +173,6 @@ class BBizpartner(models.Model):  # 거래처
     insrt_dt = models.DateTimeField(db_column='insrt_dt', blank=True, null=True, auto_now_add=True)
     updt_dt = models.DateTimeField(db_column='updt_dt', blank=True, null=True, auto_now=True)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, blank=True, null=True)
-    user_id = models.IntegerField(db_column='user_id', null=True)
 
     class Meta:
         managed = False
@@ -188,7 +187,6 @@ class BFactory(models.Model):  # 공장
     insrt_dt = models.DateTimeField(db_column='insrt_dt', blank=True, null=True, auto_now_add=True)
     updt_dt = models.DateTimeField(blank=True, null=True, auto_now=True)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
-    user_id = models.IntegerField(db_column='user_id')
 
     class Meta:
         managed = False
@@ -202,7 +200,6 @@ class BItemaccnt(models.Model):  # 품목계정
     insrt_dt = models.DateTimeField(db_column='insrt_dt', blank=True, null=True, auto_now_add=True)
     updt_dt = models.DateTimeField(db_column='updt_dt', blank=True, null=True, auto_now=True)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
-    user_id = models.IntegerField(db_column='user_id')
 
     class Meta:
         managed = False
@@ -216,7 +213,6 @@ class BItemgrp(models.Model):  # 품목그룹
     insrt_dt = models.DateTimeField(db_column='insrt_dt', blank=True, null=True, auto_now_add=True)
     updt_dt = models.DateTimeField(db_column='updt_dt', blank=True, null=True, auto_now=True)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
-    user_id = models.IntegerField(db_column='user_id')
 
     class Meta:
         managed = False
@@ -236,7 +232,6 @@ class BItem(models.Model):  # 품목마스터
     updt_dt = models.DateTimeField(db_column='updt_dt', blank=True, null=True, auto_now=True)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
     unit_id = models.IntegerField(db_column='unit_id', default=0)
-    user_id = models.IntegerField(db_column='user_id')
     bom_fg = models.CharField(db_column='bom_fg', max_length=8, default='0')
 
 
@@ -379,3 +374,33 @@ class DjangoMigrations(models.Model):
     class Meta:
         managed = False
         db_table = 'django_migrations'
+
+class CcManucostIf(models.Model): #제조비용
+    id = models.AutoField(db_column='id', primary_key=True)
+    co = models.ForeignKey(BCo, on_delete=models.CASCADE)
+    manucost_ym = models.DateTimeField(db_column='manucost_ym', blank=True, null=True)
+    cstctr = models.ForeignKey(CbCostCenter, on_delete=models.CASCADE)
+    itemaccnt = models.ForeignKey(BItemaccnt, on_delete=models.CASCADE)
+    manucost_price = models.IntegerField(db_column='manucost_price', default=0)
+    mngmt_1 = models.CharField(db_column='mngmt_1', max_length=50, default='0')
+
+    class Meta:
+        managed = False
+        db_table = 'cc_manucost_if'
+
+
+class CcMaterialcostIf(models.Model): #제조비용
+    id = models.AutoField(db_column='id', primary_key=True)
+    factory = models.ForeignKey(BFactory, on_delete=models.CASCADE)
+    co = models.ForeignKey(BCo, on_delete=models.CASCADE)
+    mc_ym = models.DateTimeField(db_column='mc_ym', blank=True, null=True)
+    mc_version = models.CharField(db_column='mc_version', max_length=50)
+    jaiitem_id = models.IntegerField(db_column='jaiitem_id', default=0)
+    workcenter = models.ForeignKey(BWorkcenter, on_delete=models.CASCADE)
+    moitem_id = models.IntegerField(db_column='moitem_id', default=0)
+    mc_amount = models.IntegerField(db_column='mc_amount', default=0)
+    mc_price = models.IntegerField(db_column='mc_price', default=0)
+
+    class Meta:
+        managed = False
+        db_table = 'cc_materialcost_if'

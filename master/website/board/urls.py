@@ -18,6 +18,8 @@ urlpatterns = [
     path('codemanage/', views.codemanage, name='codemanage'),
     path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt'),
     path('b_itemgrp/', views.b_itemgrp, name='b_itemgrp'),
+    path('cc_manucost_if', views.cc_manucost_if, name='cc_manucost_if'),
+    path('cc_materialcost_if', views.cc_materialcost_if, name='cc_materialcost_if'),
 
     # 사용자 관리
     path('member_register', views.member_register, name="member_register"),
