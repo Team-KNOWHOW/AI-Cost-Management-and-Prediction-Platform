@@ -21,74 +21,16 @@
             </div>
         </div>
         <div>
-            <!--        <div style="border-top:solid 2px #888;">-->
-            <table>
-                <tr>
-                    <td width="" align="center">법인코드</td>
-                    <td width="" align="center">법인명</td>
-                    <td width="" align="center">법인약명</td>
-                    <td width="" align="center">법인대표</td>
-                    <td width="" align="center">법인유형</td>
-                    <td width="" align="center">법인구분</td>
-                    <td width="" align="center">국가코드</td>
-                    <td width="" align="center">기준통화코드</td>
-
-                    </td>
-                </tr>
-                <tbody >
-                <tr>
-                    <td>
-                        <input type="text" id="co_cd">
-                    </td>
-                    <td >
-                        <input type="text" id="co_nm">
-                    </td>
-                    <td >
-                        <input type="text" id="co_shnm">
-                    </td>
-                    <td>
-                        <input type="text" id="co_rpr">
-                    </td>
-                    <td>
-                        <input type="text" id="co_type">
-                    </td>
-                    <td>
-                        <input type="text" id="co_div">
-                    </td>
-                    <td >
-                        <select class="cn">
-                            {% for i in rsUnitCn %}
-                            <option value="{{i.id}}"> {{ i.cd_nm }} </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                    <td >
-                        <select class="cur">
-                            {% for i in rsUnitCur %}
-                            <option value="{{i.id}}"> {{ i.cd_nm }} </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                    <td>
-                        <button onclick="insert_element();" style="width: 50px">저장</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-
-        <div>
             {% if not rsCo %}
             <p class="text-center">내용이 없습니다! </p>
             {% endif %}
         </div>
         <div class="row">
-            <div class="col-lg-12" style="margin-top:15px">
+            <div class="col-lg-12">
                 <section class="panel">
                     <div class="table-responsive">
                         {% if rsCo %}
-                        <table class="table">
+                        <table class="table" width="100%">
                             <thead>
                             <tr>
                                 <th>법인코드</th>
@@ -99,26 +41,70 @@
                                 <th>법인구분</th>
                                 <th>국가코드</th>
                                 <th>기준통화코드</th>
+                                <th></th>
+                                <th></th>
                             </tr>
                             </thead>
+
+                            <tbody>
+                            <tr bgcolor="#F7F7F7">
+                                <td>
+                                    <input type="text" class="form-control" id="co_cd">
+                                </td>
+                                <td >
+                                    <input type="text" class="form-control" id="co_nm">
+                                </td>
+                                <td >
+                                    <input type="text" class="form-control" id="co_shnm">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="co_rpr">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="co_type">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="co_div">
+                                </td>
+                                <td >
+                                    <select class="cn"  style="width:100%;padding:3px;">
+                                        {% for i in rsUnitCn %}
+                                        <option value="{{i.id}}"> {{ i.cd_nm }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td >
+                                    <select class="cur"  style="width:100%;padding:3px;">
+                                        {% for i in rsUnitCur %}
+                                        <option value="{{i.id}}"> {{ i.cd_nm }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <button onclick="insert_element();" class="btn btn-default btn-sm">저장</button>
+                                </td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+
                             {% for i in rsCo %}
                             <tbody >
                             <tr>
                                 <td>{{ i.co_cd }}</td>
                                 <td>
-                                    <input type="text" id="co_nm{{ i.id }}" value="{{ i.co_nm }}"/>
+                                    <input type="text" class="form-control" id="co_nm{{ i.id }}" value="{{ i.co_nm }}"/>
                                 </td>
                                 <td>
-                                    <input type="text" id="co_shnm{{ i.id }}" value="{{ i.co_shnm }}"/>
+                                    <input type="text" class="form-control" id="co_shnm{{ i.id }}" value="{{ i.co_shnm }}"/>
                                 </td>
                                 <td width="15%">
-                                    <input type="text" id="co_rpr{{ i.id }}" value="{{ i.co_rpr }}"/>
+                                    <input type="text" class="form-control" id="co_rpr{{ i.id }}" value="{{ i.co_rpr }}"/>
                                 </td>
                                 <td >
-                                    <input type="text" id="co_type{{ i.id }}" value="{{ i.co_type }}"/>
+                                    <input type="text" class="form-control" id="co_type{{ i.id }}" value="{{ i.co_type }}"/>
                                 </td>
                                 <td>
-                                    <input type="text" id="co_div{{ i.id }}" value="{{ i.co_div }}"/>
+                                    <input type="text" class="form-control" id="co_div{{ i.id }}" value="{{ i.co_div }}"/>
                                 </td>
                                 <td>
                                     {% if not rsUnitCn %}

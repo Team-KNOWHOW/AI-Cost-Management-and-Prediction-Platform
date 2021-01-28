@@ -1,70 +1,74 @@
 {% load static %}
 
 <aside>
-      <div id="sidebar" class="nav-collapse ">
+    <div id="sidebar" class="nav-collapse ">
         <!-- sidebar menu start-->
         <ul class="sidebar-menu">
 
-          <li class="sub-menu">
-            <a href="javascript:;" class="">
-                          <i class="icon_table"></i>
-                          <span>기준정보관리</span>
-                          <span class="menu-arrow arrow_carrot-right"></span>
-                      </a>
-            <ul class="sub">
-                <li><a class="" href="{% url 'board:b_co_list' %}">법인 정보</a></li>
-                <li><a class="" href="{% url 'board:b_bizarea_list' %}">사업장</a></li>
-                <li><a class="" href="{% url 'board:b_bizunit_list' %}">사업부</a></li>
-                <li><a class="" href="{% url 'board:b_factory_list' %}">공장</a></li>
-                <li><a class="" href="{% url 'board:b_workcenter_list' %}">작업장</a></li>
-                <li><a class="" href="{% url 'board:b_item_list' %}">품목</a></li>
-                <li><a class="" href="{% url 'board:b_bizpartner_list' %}">거래처</a></li>
-                <li><a class="" href="{% url 'board:b_bom_list' %}">BOM</a></li>
-                <li><a class="" href="{% url 'board:codemanage' %}">통합코드관리</a></li>
-                <li><a class="" href="{% url 'board:b_itemaccnt' %}">품목계정관리</a></li>
-                <li><a class="" href="{% url 'board:b_itemgrp' %}">품목그룹관리</a></li>
-            </ul>
-          </li>
-             <li class="sub-menu">
-            <a href="javascript:;" class="">
-                          <i class="icon_table"></i>
-                          <span>원가기준정보</span>
-                          <span class="menu-arrow arrow_carrot-right"></span>
-                      </a>
-            <ul class="sub">
-               <li><a class="" href="{% url 'board:cb_cost_center_list' %}">Cost Center</a></li>
-                <li><a class=""  >원가요소계정</a></li>
-            </ul>
-          </li>
             <li class="sub-menu">
-            <a href="javascript:;" class="">
-                          <i class="icon_table"></i>
-                          <span>원가계산</span>
-                          <span class="menu-arrow arrow_carrot-right"></span>
-                      </a>
-            <ul class="sub">
-                <li><a class="" >원가 I/F</a></li>
-                <li><a class=""  >원가 계산</a></li>
-            </ul>
-          </li>
+                <a href="javascript:;" class="">
+                    <i class="icon_table"></i>
+                    <span>기준정보관리</span>
+                    <span class="menu-arrow arrow_carrot-right"></span>
+                </a>
+                <ul class="sub">
+                    <li><a class="" href="{% url 'board:b_co_list' %}">법인 정보</a></li>
+                    <li><a class="" href="{% url 'board:b_bizarea_list' %}">사업장</a></li>
+                    <li><a class="" href="{% url 'board:b_bizunit_list' %}">사업부</a></li>
+                    <li><a class="" href="{% url 'board:b_factory_list' %}">공장</a></li>
+                    <li><a class="" href="{% url 'board:b_workcenter_list' %}">작업장</a></li>
+                    <li><a class="" href="{% url 'board:b_item_list' %}">품목</a></li>
+                    <li><a class="" href="{% url 'board:b_bizpartner_list' %}">거래처</a></li>
+                    <li><a class="" href="{% url 'board:b_bom_list' %}">BOM</a></li>
+                    <li><a class="" href="{% url 'board:codemanage' %}">통합코드관리</a></li>
+                    <li><a class="" href="{% url 'board:b_itemaccnt' %}">품목계정관리</a></li>
+                    <li><a class="" href="{% url 'board:b_itemgrp' %}">품목그룹관리</a></li>
+                </ul>
+            </li>
             <li class="sub-menu">
-            <a href="javascript:;" class="">
-                          <i class="icon_table"></i>
-                          <span>원가분석</span>
-                          <span class="menu-arrow arrow_carrot-right"></span>
-                      </a>
-            <ul class="sub">
-                <li><a class=""  >원가 예측</a></li>
-            </ul>
-          </li>
+                <a href="javascript:;" class="">
+                    <i class="icon_table"></i>
+                    <span>원가기준정보</span>
+                    <span class="menu-arrow arrow_carrot-right"></span>
+                </a>
+                <ul class="sub">
+                    <li><a class="" href="{% url 'board:cb_cost_center_list' %}">Cost Center</a></li>
+                    <li><a class=""  >원가요소계정</a></li>
+                </ul>
+            </li>
+            <li class="sub-menu">
+                <a href="javascript:;" class="">
+                    <i class="icon_table"></i>
+                    <span>원가계산</span>
+                    <span class="menu-arrow arrow_carrot-right"></span>
+                </a>
+                <ul class="sub">
+                    <li><a class="" href="{% url 'board:cc_manucost_if' %}">제조비용 I/F</a></li>
+                    <li><a class="" href="{% url 'board:cc_materialcost_if' %}">재료비 I/F</a></li>
+                    <li><a class="" href=#>품목별 제조비용 I/F</a></li>
+                    <li><a class="" href=#>제품원가수불 I/F</a></li>
+                    <li><a class="" >원가 I/F</a></li>
+                    <li><a class=""  >원가 계산</a></li>
+                </ul>
+            </li>
+            <li class="sub-menu">
+                <a href="javascript:;" class="">
+                    <i class="icon_table"></i>
+                    <span>원가분석</span>
+                    <span class="menu-arrow arrow_carrot-right"></span>
+                </a>
+                <ul class="sub">
+                    <li><a class=""  >원가 예측</a></li>
+                </ul>
+            </li>
             <li class="active">
-            <a class="">
-                          <i class="icon_house_alt"></i>
-                          <span>Dashboard</span>
-                      </a>
-          </li>
+                <a class="">
+                    <i class="icon_house_alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
         </ul>
         <!-- sidebar menu end-->
-      </div>
-    </aside>
-    <!--sidebar end-->
+    </div>
+</aside>
+<!--sidebar end-->
