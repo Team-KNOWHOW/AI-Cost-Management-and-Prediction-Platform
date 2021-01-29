@@ -2129,3 +2129,63 @@ def costcenter_element_delete(request):
 # *********************************************************************************************************************
 # 코스트센터 코드 끝
 # *********************************************************************************************************************
+
+# *********************************************************************************************************************
+# 제조비용 코드 시작
+# *********************************************************************************************************************
+
+def cc_manucost_if(request):
+    context = {}
+
+    strSql= "SELECT  a.*, b.*, c.*, d.* " \
+            "FROM (SELECT * FROM cc_manucost_if) a " \
+            "LEFT JOIN b_co b ON a.co_id = b.id " \
+            "LEFT JOIN cb_cost_center c ON a.cstctr_id = c.id " \
+            "LEFT JOIN b_itemaccnt d ON a.itemaccnt_id = d.id "
+    rsManucost = CcManucostIf.objects.raw(strSql)
+    context["rsManucost"] = rsManucost
+
+    rsCo = BCo.objects.filter(usage_fg='Y')
+    rsCstctr = CbCostCenter.objects.filter(usage_fg='Y')
+    rsItemaccnt = BItemaccnt.objects.filter(usage_fg='Y')
+
+
+    context["rsCo"] = rsCo
+    context["rsCstctr"] = rsCstctr
+    context["rsItemaccnt"] = rsItemaccnt
+
+    return render(request, 'board2/cc_manucost_if.html', context)
+
+# *********************************************************************************************************************
+# 제조비용 코드 끝
+# *********************************************************************************************************************
+
+
+# *********************************************************************************************************************
+# 재료비 코드 시작
+# *********************************************************************************************************************
+
+def cc_materialcost_if(request):
+    context = {}
+
+    strSql = "SELECT  a.*, b.*, c.*, d.* " \
+             "FROM (SELECT * FROM cc_materialcost_if) a " \
+             "LEFT JOIN b_factory b ON a.factory_id = b.id " \
+             "LEFT JOIN b_co c ON a.co_id = c.id " \
+             "LEFT JOIN b_workcenter d ON a.workcenter_id = d.id "
+    rsMaterialcost = CcMaterialcostIf.objects.raw(strSql)
+    context["rsMaterialcost"] = rsMaterialcost
+
+    rsCo = BCo.objects.filter(usage_fg='Y')
+    rsFactory = BFactory.objects.filter(usage_fg='Y')
+    rsWrkctr = BWorkcenter.objects.filter(usage_fg='Y')
+
+    context["rsCo"] = rsCo
+    context["rsFactory"] = rsFactory
+    context["rsWrkctr"] = rsWrkctr
+
+    return render(request, 'board2/cc_materialcost_if.html', context)
+
+# *********************************************************************************************************************
+# 재료비 코드 끝
+# *********************************************************************************************************************
