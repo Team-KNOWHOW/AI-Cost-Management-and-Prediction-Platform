@@ -41,7 +41,7 @@
                                     <input type="text" class="form-control" id="workcenter_nm" placeholder="Name">
                                 </td>
                                 <td>
-                                    <select id="cstctr">
+                                    <select id="cstctr" class="form-control">
                                         {% for i in rsCostcenter %}
                                             <option value="{{i.id}}">{{ i.cstctr_nm }}</option>
                                         {% endfor %}
@@ -87,7 +87,7 @@
                                             <input class="form-control" id="workcenter_nm{{i.id}}" type="text" value="{{ i.workcenter_nm }}">
                                         </td>
                                         <td>
-                                            <select id="cstctr_id{{i.id}}">
+                                            <select id="cstctr_id{{i.id}}"  style="padding:3px;">
                                                 {% for ii in rsCostcenter %}
                                                     {% if i.cstctr_id == ii.id %}
                                                         <option selected value="{{ ii.id }}">{{ ii.cstctr_nm }}</option>
