@@ -147,11 +147,12 @@
                                     {% endif %}
                                 </td>
 
-                                <td width="5%"><a class="btn btn-default btn-sm" typeid="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator";>수정</a></td>
                                 <td width="5%">
-                                    <a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator";>삭제</a>
+                                    <button class="btn btn-default btn-sm" id="update_{{i.id}}" name="{{i.id}}" onclick="update_element(this);">수정</button>
                                 </td>
-
+                                <td width="5%">
+                                    <button class="btn btn-default btn-sm" id="delete_{{i.id}}" name="{{i.id}}" onclick="delete_element(this);">삭제</button>
+                                </td>
                             </tr>
                             </tbody>
                             {% endfor %}
