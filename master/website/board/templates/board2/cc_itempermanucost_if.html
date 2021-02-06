@@ -3,7 +3,7 @@
 
 {% block scripts %}
 {{ block.super }}
-    <script>
+<script>
       // https://docs.djangoproject.com/en/3.1/ref/csrf/
     function getCookie(name) {
         let cookieValue = null;
@@ -26,7 +26,7 @@
 
     function downloadTemplate()
     {
-        var strurl = "cc_materialcost_if/materialcosttemplate_download"
+        var strurl = "cc_itempermanucost_if/itempermanucosttemplate_download"
 
         xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -49,8 +49,8 @@
         xhr.send(null);
     }
 
-    </script>
 
+</script>
 {% endblock %}
 
 {% block body %}
@@ -63,7 +63,7 @@
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h3 class="page-header"><i class="fa fa-table"></i>재료비 I/F</h3>
+                <h3 class="page-header"><i class="fa fa-table"></i>품목별 제조비용 I/F</h3>
             </div>
         </div>
         <div align="right" style="margin-right:2px">
@@ -78,7 +78,7 @@
                             <input type="file" name="ufile" accept=".xlsx" style="width:200px">
                         </td>
                         <td>
-                            <button type="submit"class="btn btn-primary btn-sm" >액셀업로드</button>
+                            <button type="submit" class="btn btn-primary btn-sm" >액셀업로드</button>
                         </td>
                     </tr>
                 </table>
@@ -89,7 +89,7 @@
             <div class="col-lg-12">
                 <section class="panel">
                     <div class="table-responsive">
-                        {% if rsMaterialcost %}
+                        {% if rsItempermanucost %}
                         <table class="table">
                             <thead>
                             <tr>
@@ -97,17 +97,14 @@
                                 <th>법인명</th>
                                 <th>년월</th>
                                 <th>version</th>
-                                <th>자재코드</th>
-                                <th>자재명</th>
-                                <th>작업장</th>
-                                <th>작업장명</th>
                                 <th>모품목코드</th>
                                 <th>모품목명</th>
-                                <th>수량</th>
+                                <th>계정코드</th>
+                                <th>계정명</th>
                                 <th>금액</th>
                             </tr>
                             </thead>
-                            {% for i in rsMaterialcost %}
+                            {% for i in rsItempermanucost %}
                             <tbody>
                             <tr>
                                 <td>
@@ -117,22 +114,10 @@
                                     {{ i.co_nm }}
                                 </td>
                                 <td>
-                                    {{ i.mc_ym }}
+                                    {{ i.ipmc_ym }}
                                 </td>
                                 <td>
-                                    {{ i.mc_version }}
-                                </td>
-                                <td>
-
-                                </td>
-                                <td>
-
-                                </td>
-                                <td>
-                                    {{ i.workcenter_cd }}
-                                </td>
-                                <td>
-                                    {{ i.workcenter_nm }}
+                                    {{ i.ipmc_version }}
                                 </td>
                                 <td>
 
@@ -141,10 +126,16 @@
 
                                 </td>
                                 <td>
-                                    {{ i.mc_amount }}
+                                    {{ i.itemaccnt_cd }}
                                 </td>
                                 <td>
-                                    {{ i.mc_price }}
+                                    {{ i.itemaccnt_nm }}
+                                </td>
+                                <td>
+                                    {{ i.ipmc_price }}
+                                </td>
+                                <td>
+
                                 </td>
                             </tr>
                             </tbody>
@@ -170,10 +161,7 @@
                                     법인코드
                                 </th>
                                 <th>
-                                    공장코드
-                                </th>
-                                <th>
-                                    사업장코드
+                                    품목계정코드
                                 </th>
                             </tr>
                             <tbody>
@@ -184,13 +172,8 @@
                                     {% endfor %}
                                 </td>
                                 <td>
-                                    {% for i in rsFactory %}
-                                    <div>{{ i.id }}.{{ i.factory_cd }} - {{ i.factory_nm }}</div>
-                                    {% endfor %}
-                                </td>
-                                <td>
-                                    {% for i in rsWrkctr %}
-                                    <div>{{ i.id }}.{{ i.workcenter_cd }} - {{ i.workcenter_nm }}</div>
+                                    {% for i in rsItemaccnt %}
+                                    <div>{{ i.id }}.{{ i.itemaccnt_cd }} - {{ i.itemaccnt_nm }}</div>
                                     {% endfor %}
                                 </td>
                             </tr>
