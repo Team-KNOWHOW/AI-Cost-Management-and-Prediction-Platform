@@ -1,9 +1,24 @@
+import os
+
+import openpyxl
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
+from openpyxl import Workbook
+
 from .models import *
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from datetime import datetime
+
+import pymysql
+from django.conf import settings
+MYDB = getattr(settings, "DATABASES", None)
+MYDB_NAME = MYDB["default"]["NAME"]
+MYDB_USER = MYDB["default"]["USER"]
+MYDB_PWD = MYDB["default"]["PASSWORD"]
+MYDB_HOST = MYDB["default"]["HOST"]
+dbCon = pymysql.connect(host=MYDB_HOST, user=MYDB_USER, passwd=MYDB_PWD, database=MYDB_NAME)
 
 board_path = "board/"
 
@@ -2128,4 +2143,401 @@ def costcenter_element_delete(request):
 
 # *********************************************************************************************************************
 # 코스트센터 코드 끝
+# *********************************************************************************************************************
+
+# *********************************************************************************************************************
+# 제조비용 코드 시작
+# *********************************************************************************************************************
+
+def cc_manucost_if(request):
+    context = {}
+
+    strSql= "SELECT  a.*, b.*, c.*, d.* " \
+            "FROM (SELECT * FROM cc_manucost_if) a " \
+            "LEFT JOIN b_co b ON a.co_id = b.id " \
+            "LEFT JOIN cb_cost_center c ON a.cstctr_id = c.id " \
+            "LEFT JOIN b_itemaccnt d ON a.itemaccnt_id = d.id "
+    rsManucost = CcManucostIf.objects.raw(strSql)
+    context["rsManucost"] = rsManucost
+
+    rsCo = BCo.objects.filter(usage_fg='Y')
+    rsCstctr = CbCostCenter.objects.filter(usage_fg='Y')
+    rsItemaccnt = BItemaccnt.objects.filter(usage_fg='Y')
+
+
+    context["rsCo"] = rsCo
+    context["rsCstctr"] = rsCstctr
+    context["rsItemaccnt"] = rsItemaccnt
+
+    return render(request, 'board2/cc_manucost_if.html', context)
+
+@csrf_exempt
+def manucosttemplate_download(request):
+    context = {}
+
+    strsql1 = "SHOW TABLES LIKE 'cc_manucost_if'"
+
+    cursor1 = dbCon.cursor()
+    cursor1.execute(strsql1)
+    rsTmp = cursor1.fetchone()
+    cursor1.close()
+
+    rsColumns = None
+    if rsTmp:
+        strsql1 = "SHOW COLUMNS FROM cc_manucost_if"
+
+        cursor2 = dbCon.cursor()
+        cursor2.execute(strsql1)
+        rsColumns = cursor2.fetchall()
+        cursor2.close()
+
+        idx = 1
+
+        bookin = Workbook()
+        sheet_in = bookin.active
+
+        for i in rsColumns:
+            sheet_in.cell(row=1, column=idx).value = i[1]
+            sheet_in.cell(row=2, column=idx).value = i[0]
+            idx += 1
+
+        filename = "static/datatemplates/manucost.xlsx"
+        bookin.save(filename)
+        bookin.close()
+
+        context["template_url"] = "/static/datatemplates/manucost.xlsx"
+
+    else:
+        context["flag"] = "1"
+        context["result_msg"] = "품목코드 테이블 없음... "
+        return JsonResponse(context, content_type="application/json")
+
+
+    context["flag"] = "0"
+    context["result_msg"] = "Template downloaded... "
+
+    return JsonResponse(context, content_type="application/json")
+
+@csrf_exempt
+def manucostdata_upload(request):
+    context = {}
+
+    if request.method == "POST":
+
+        try:
+            uploaded_file = request.FILES['ufile']
+            name_old = uploaded_file.name
+            # name_ext = os.path.splitext(name_old)[1]
+            # name_new = "cc_manucost"
+        except:
+            print("파일선택x")
+            return redirect('board:cc_manucost_if')
+        file_name = name_old
+        # file_name = name_new + name_ext
+
+        fs = FileSystemStorage(location='static/dataupload/cc_manucost')
+        # if (fs.exists(file_name)):
+        #     fs.delete(file_name)
+        name = fs.save(file_name, uploaded_file)
+
+        context['upload_url'] = fs.url(name)
+        context['upload_flag'] = 'USuccess'
+
+    else:
+        return redirect('board:cc_manucost_if')
+
+    strsql1 = "SHOW TABLES LIKE 'cc_manucost_if'"
+
+    cursor1 = dbCon.cursor()
+    cursor1.execute(strsql1)
+    rsTmp = cursor1.fetchone()
+    cursor1.close()
+
+    rsColumns = None
+    if rsTmp:
+        strsql1 = "SHOW COLUMNS FROM cc_manucost_if"
+
+        cursor2 = dbCon.cursor()
+        cursor2.execute(strsql1)
+        rsColumns = cursor2.fetchall()
+        cursor2.close()
+
+    else:
+        print("테이블 없음")
+        return redirect('board:cc_manucost_if')
+
+    max_col = len(rsColumns)
+
+    timenow = datetime.now()
+
+    filename = 'static/dataupload/cc_manucost/' + file_name
+
+    if not os.path.isfile(filename):
+        print("저장안됨")
+        return redirect('board:cc_manucost_if')
+    else:
+        book = openpyxl.load_workbook(filename, read_only=True)
+        sheet = book.active
+        max_row = sheet.max_row
+
+    if max_row > 2:
+
+        for j in range(3, max_row + 1):
+            lstTmp = []
+            strbottom = ""
+
+            for i in range(1, max_col + 1):
+                valTmp = sheet.cell(row=j, column=i).value
+
+                lstTmp.append(valTmp)
+
+                if valTmp == '':
+                    strbottom += "default,"
+                elif valTmp == None:
+                    strbottom += "default,"
+                else:
+                    strbottom += "'" + str(valTmp) + "',"
+
+            strbottom = strbottom[:-1]
+
+            strSql = "INSERT INTO cc_manucost_if VALUES (" + strbottom + ")"
+
+            cursor = dbCon.cursor()
+            cursor.execute(strSql)
+            rows = cursor.fetchone()
+            cursor.close()
+
+        dbCon.commit()
+        book.close()
+    else:
+        print("데이터x")
+        return redirect('board:cc_manucost_if')
+
+    return redirect('board:cc_manucost_if')
+
+# *********************************************************************************************************************
+# 제조비용 코드 끝
+# *********************************************************************************************************************
+
+
+# *********************************************************************************************************************
+# 재료비 코드 시작
+# *********************************************************************************************************************
+
+def cc_materialcost_if(request):
+    context = {}
+
+    strSql = "SELECT  a.*, b.*, c.*, d.* " \
+             "FROM (SELECT * FROM cc_materialcost_if) a " \
+             "LEFT JOIN b_factory b ON a.factory_id = b.id " \
+             "LEFT JOIN b_co c ON a.co_id = c.id " \
+             "LEFT JOIN b_workcenter d ON a.workcenter_id = d.id "
+    rsMaterialcost = CcMaterialcostIf.objects.raw(strSql)
+    context["rsMaterialcost"] = rsMaterialcost
+
+    rsCo = BCo.objects.filter(usage_fg='Y')
+    rsFactory = BFactory.objects.filter(usage_fg='Y')
+    rsWrkctr = BWorkcenter.objects.filter(usage_fg='Y')
+
+    context["rsCo"] = rsCo
+    context["rsFactory"] = rsFactory
+    context["rsWrkctr"] = rsWrkctr
+
+    return render(request, 'board2/cc_materialcost_if.html', context)
+
+@csrf_exempt
+def materialcosttemplate_download(request):
+    context = {}
+
+    strsql1 = "SHOW TABLES LIKE 'cc_materialcost_if'"
+
+    cursor1 = dbCon.cursor()
+    cursor1.execute(strsql1)
+    rsTmp = cursor1.fetchone()
+    cursor1.close()
+
+    rsColumns = None
+    if rsTmp:
+        strsql1 = "SHOW COLUMNS FROM cc_materialcost_if"
+
+        cursor2 = dbCon.cursor()
+        cursor2.execute(strsql1)
+        rsColumns = cursor2.fetchall()
+        cursor2.close()
+
+        idx = 1
+
+        bookin = Workbook()
+        sheet_in = bookin.active
+
+        for i in rsColumns:
+            sheet_in.cell(row=1, column=idx).value = i[1]
+            sheet_in.cell(row=2, column=idx).value = i[0]
+            idx += 1
+
+        filename = "static/datatemplates/materialcost.xlsx"
+        bookin.save(filename)
+        bookin.close()
+
+        context["template_url"] = "/static/datatemplates/materialcost.xlsx"
+
+    else:
+        context["flag"] = "1"
+        context["result_msg"] = "품목코드 테이블 없음... "
+        return JsonResponse(context, content_type="application/json")
+
+
+    context["flag"] = "0"
+    context["result_msg"] = "Template downloaded... "
+
+    return JsonResponse(context, content_type="application/json")
+
+# *********************************************************************************************************************
+# 재료비 코드 끝
+# *********************************************************************************************************************
+
+# *********************************************************************************************************************
+# 품목별 제조비용 코드 시작
+# *********************************************************************************************************************
+
+def cc_itempermanucost_if(request):
+    context = {}
+
+    strSql = "SELECT  a.*, b.*, c.* " \
+             "FROM (SELECT * FROM cc_itempermanucost_if) a " \
+             "LEFT JOIN b_co b ON a.co_id = b.id " \
+             "LEFT JOIN b_itemaccnt c ON a.itemaccnt_id = c.id "
+
+    rsItempermanucost = CcItempermanucostIf.objects.raw(strSql)
+    context["rsItempermanucost"] = rsItempermanucost
+
+    rsCo = BCo.objects.filter(usage_fg='Y')
+    rsItemaccnt = BItemaccnt.objects.filter(usage_fg='Y')
+
+    context["rsCo"] = rsCo
+    context["rsItemaccnt"] = rsItemaccnt
+
+    return render(request, 'board2/cc_itempermanucost_if.html', context)
+
+@csrf_exempt
+def itempermanucosttemplate_download(request):
+    context = {}
+
+    strsql1 = "SHOW TABLES LIKE 'cc_itempermanucost_if'"
+
+    cursor1 = dbCon.cursor()
+    cursor1.execute(strsql1)
+    rsTmp = cursor1.fetchone()
+    cursor1.close()
+
+    rsColumns = None
+    if rsTmp:
+        strsql1 = "SHOW COLUMNS FROM cc_itempermanucost_if"
+
+        cursor2 = dbCon.cursor()
+        cursor2.execute(strsql1)
+        rsColumns = cursor2.fetchall()
+        cursor2.close()
+
+        idx = 1
+
+        bookin = Workbook()
+        sheet_in = bookin.active
+
+        for i in rsColumns:
+            sheet_in.cell(row=1, column=idx).value = i[1]
+            sheet_in.cell(row=2, column=idx).value = i[0]
+            idx += 1
+
+        filename = "static/datatemplates/itempermanucost.xlsx"
+        bookin.save(filename)
+        bookin.close()
+
+        context["template_url"] = "/static/datatemplates/itempermanucost.xlsx"
+
+    else:
+        context["flag"] = "1"
+        context["result_msg"] = "품목코드 테이블 없음... "
+        return JsonResponse(context, content_type="application/json")
+
+
+    context["flag"] = "0"
+    context["result_msg"] = "Template downloaded... "
+
+    return JsonResponse(context, content_type="application/json")
+
+# *********************************************************************************************************************
+# 품목별 제조비용 코드 끝
+# *********************************************************************************************************************
+
+# *********************************************************************************************************************
+# 제품원가수불 코드 시작
+# *********************************************************************************************************************
+
+def cc_productcostpayment_if(request):
+    context = {}
+
+    strSql = "SELECT  a.*, b.* " \
+             "FROM (SELECT * FROM cc_productcostpayment_if) a " \
+             "LEFT JOIN b_factory b ON a.factory_id = b.id "
+
+    rsProductcostpayment = CcProductcostpaymentIf.objects.raw(strSql)
+    context["rsProductcostpayment"] = rsProductcostpayment
+
+    rsFactory = BFactory.objects.filter(usage_fg='Y')
+
+    context["rsFactory"] = rsFactory
+
+    return render(request, 'board2/cc_productcostpayment_if.html', context)
+
+@csrf_exempt
+def productcostpaymenttemplate_download(request):
+    context = {}
+
+    strsql1 = "SHOW TABLES LIKE 'cc_productcostpayment_if'"
+
+    cursor1 = dbCon.cursor()
+    cursor1.execute(strsql1)
+    rsTmp = cursor1.fetchone()
+    cursor1.close()
+
+    rsColumns = None
+    if rsTmp:
+        strsql1 = "SHOW COLUMNS FROM cc_productcostpayment_if"
+
+        cursor2 = dbCon.cursor()
+        cursor2.execute(strsql1)
+        rsColumns = cursor2.fetchall()
+        cursor2.close()
+
+        idx = 1
+
+        bookin = Workbook()
+        sheet_in = bookin.active
+
+        for i in rsColumns:
+            sheet_in.cell(row=1, column=idx).value = i[1]
+            sheet_in.cell(row=2, column=idx).value = i[0]
+            idx += 1
+
+        filename = "static/datatemplates/productcostpayment.xlsx"
+        bookin.save(filename)
+        bookin.close()
+
+        context["template_url"] = "/static/datatemplates/productcostpayment.xlsx"
+
+    else:
+        context["flag"] = "1"
+        context["result_msg"] = "품목코드 테이블 없음... "
+        return JsonResponse(context, content_type="application/json")
+
+
+    context["flag"] = "0"
+    context["result_msg"] = "Template downloaded... "
+
+    return JsonResponse(context, content_type="application/json")
+
+
+# *********************************************************************************************************************
+# 제품원가수불 코드 끝
 # *********************************************************************************************************************

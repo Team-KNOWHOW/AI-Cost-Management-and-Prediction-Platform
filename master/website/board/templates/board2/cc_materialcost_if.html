@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+{{ block.super }}
+    <script>
+      // https://docs.djangoproject.com/en/3.1/ref/csrf/
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    var xhr;
+
+    function downloadTemplate()
+    {
+        var strurl = "cc_materialcost_if/materialcosttemplate_download"
+
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                var data = xhr.responseText;
+
+                var obj = JSON.parse(data);
+                if(obj.flag == '0') {
+                    //alert(obj.template_url);
+                    location.href = obj.template_url;
+                }
+                else {
+                    alert(obj.result_msg);
+                }
+
+            }
+        };
+        xhr.open("POST", strurl);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.send(null);
+    }
+
+    </script>
+
+{% endblock %}
+
+{% block body %}
+
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-table"></i>재료비 I/F</h3>
+            </div>
+        </div>
+        <div align="right" style="margin-right:2px">
+            <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="downloadTemplate()" title="Bootstrap 3 themes generator">Template 다운로드</a>
+        </div>
+        <div align="right" style="margin-top:2px">
+            <form method="POST" enctype="multipart/form-data" action="">
+                {% csrf_token %}
+                <table>
+                    <tr>
+                        <td>
+                            <input type="file" name="ufile" accept=".xlsx" style="width:200px">
+                        </td>
+                        <td>
+                            <button type="submit"class="btn btn-primary btn-sm" >액셀업로드</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <div class="table-responsive">
+                        {% if rsMaterialcost %}
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>법인코드</th>
+                                <th>법인명</th>
+                                <th>년월</th>
+                                <th>version</th>
+                                <th>자재코드</th>
+                                <th>자재명</th>
+                                <th>작업장</th>
+                                <th>작업장명</th>
+                                <th>모품목코드</th>
+                                <th>모품목명</th>
+                                <th>수량</th>
+                                <th>금액</th>
+                            </tr>
+                            </thead>
+                            {% for i in rsMaterialcost %}
+                            <tbody>
+                            <tr>
+                                <td>
+                                    {{ i.co_cd }}
+                                </td>
+                                <td>
+                                    {{ i.co_nm }}
+                                </td>
+                                <td>
+                                    {{ i.mc_ym }}
+                                </td>
+                                <td>
+                                    {{ i.mc_version }}
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+                                    {{ i.workcenter_cd }}
+                                </td>
+                                <td>
+                                    {{ i.workcenter_nm }}
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+                                    {{ i.mc_amount }}
+                                </td>
+                                <td>
+                                    {{ i.mc_price }}
+                                </td>
+                            </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
+                        {% else %}
+                        <div> 데이터를 업로드 해주세요</div>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">*code information</header>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>
+                                    법인코드
+                                </th>
+                                <th>
+                                    공장코드
+                                </th>
+                                <th>
+                                    사업장코드
+                                </th>
+                            </tr>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    {% for i in rsCo %}
+                                    <div>{{ i.id }}.{{ i.co_cd }} - {{ i.co_nm }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in rsFactory %}
+                                    <div>{{ i.id }}.{{ i.factory_cd }} - {{ i.factory_nm }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in rsWrkctr %}
+                                    <div>{{ i.id }}.{{ i.workcenter_cd }} - {{ i.workcenter_nm }}</div>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </section>
+            </div>
+        </div>
+
+    </section>
+    <!--main content end-->
+</section>
+<!-- container section start -->
+{% endblock %}
