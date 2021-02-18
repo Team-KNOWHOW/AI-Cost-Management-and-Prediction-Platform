@@ -90,7 +90,7 @@
                             {% for i in rsCo %}
                             <tbody >
                             <tr>
-                                <td>{{ i.co_cd }}</td>
+                                <td id="co_cd{{ i.id }}" value="{{ i.co_cd }}">{{ i.co_cd }}</td>
                                 <td>
                                     <input type="text" class="form-control" id="co_nm{{ i.id }}" value="{{ i.co_nm }}"/>
                                 </td>
@@ -220,30 +220,48 @@
                 }
 
                 var unitCurSelect = document.querySelector('.cur');
-                var unitcurid = unitCurSelect.options[unitCurSelect.selectedIndex].value;
+                var unitCurId = unitCurSelect.options[unitCurSelect.selectedIndex].value;
 
                 var unitCnSelect = document.querySelector('.cn');
-                var unitcnid = unitCnSelect.options[unitCnSelect.selectedIndex].value;
+                var unitCnId = unitCnSelect.options[unitCnSelect.selectedIndex].value;
 
-                var strurl = "co_element_insert?co_cd=" + coCd + "&co_nm=" + coNm + "&co_shnm=" + coShnm +
-                    "&co_rpr=" + coRpr +"&co_type=" + coType +"&co_div=" + coDiv + "&unitcurid=" +unitcurid+ "&unitcnid="+ unitcnid;
+                var payload = {
+                    "co_cd": coCd,
+                    "co_nm": coNm,
+                    "co_shnm": coShnm,
+                    "co_rpr": coRpr,
+                    "co_type": coType,
+                    "co_div": coDiv,
+                    "unitcur_id": unitCurId,
+                    "unitcn_id": unitCnId
+                };
 
                 xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4) {
-                        var data = xhr.responseText;
+                        if(xhr.status==201)
+                            alert("생성이 완료되었습니다.");
+                        location.reload();
+                    }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
 
-                        var obj = JSON.parse(data);
-                        alert(obj.result_msg);
-
-                        if(obj.flag =='0') {
-                            location.reload();
+                            if (obj.detail == "DuplicateCode") {
+                                alert("법인코드가 이미 존재합니다.");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
                         }
                     }
                 };
-                xhr.open("POST", strurl);
+                var strurl = "http://127.0.0.1:8080/rest_api/corporations";
+                xhr.open("POST", strurl, true);
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                xhr.send(null);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
             }
 
             function update_element(elem) {
@@ -255,49 +273,81 @@
                 var unitCurSelect = document.querySelector('.unitcur_id' + coId);
                 var unitCurId = unitCurSelect.options[unitCurSelect.selectedIndex].value;
 
+                var coCd = document.getElementById('co_cd' + coId).value;
                 var coNm = document.getElementById('co_nm' + coId).value;
                 var coShnm = document.getElementById('co_shnm' + coId).value;
                 var coRpr = document.getElementById('co_rpr' + coId).value;
                 var coType = document.getElementById('co_type' + coId).value;
                 var coDiv = document.getElementById('co_div' + coId).value;
 
-                var strurl = "co_element_update?id=" + coId +"&co_nm=" + coNm + "&co_shnm=" + coShnm + "&co_rpr=" + coRpr +
-                "&co_type=" + coType + "&co_div=" + coDiv + "&unitcn_id=" + unitCnId + "&unitcur_id=" + unitCurId;
+                var payload = {
+                    "co_cd": coCd,
+                    "co_nm": coNm,
+                    "co_shnm": coShnm,
+                    "co_rpr": coRpr,
+                    "co_type": coType,
+                    "co_div": coDiv,
+                    "unitcur_id": unitCurId,
+                    "unitcn_id": unitCnId
+                };
 
                 xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4) {
-                        var data = xhr.responseText;
-
-                        var obj = JSON.parse(data);
-                        alert(obj.result_msg);
+                        if(xhr.status==200)
+                            alert("수정이 완료되었습니다.");
                         location.reload();
+                    }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
 
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
                     }
                 };
-                xhr.open("POST", strurl);
+                var strurl = "http://127.0.0.1:8080/rest_api/corporations/" + coId;
+                xhr.open("PUT", strurl, true);
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                xhr.send(null);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
             }
 
             function delete_element(elem) {
 
                 var coId = elem.getAttribute('name');
 
-                var strurl = "co_element_delete?id=" + coId;
-
                 xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4) {
-                        var data = xhr.responseText;
-
-                        var obj = JSON.parse(data);
-                        alert(obj.result_msg);
+                        if(xhr.status==204)
+                            alert("삭제가 완료되었습니다.");
                         location.reload();
                     }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
+
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
                 };
-                xhr.open("POST", strurl);
+                var strurl = "http://127.0.0.1:8080/rest_api/corporations/" + coId;
+                xhr.open("DELETE", strurl, true);
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(null);
             }
         </script>

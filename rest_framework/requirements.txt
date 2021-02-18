@@ -2,12 +2,17 @@ asgiref==3.3.1
 certifi==2020.6.20
 Django==3.1.5
 django-classy-tags==2.0.0
+django-cors-headers==3.7.0
 django-taggit==1.3.0
 django-taggit-templatetags2==1.6.1
 django-widget-tweaks==1.4.8
 djangorestframework==3.12.2
+et-xmlfile==1.0.1
+jdcal==1.4.1
 mysqlclient==2.0.2
+openpyxl==3.0.6
 Pillow==8.0.1
+PyMySQL==1.0.2
 pytz==2020.1
 sqlparse==0.4.1
 wincertstore==0.2
