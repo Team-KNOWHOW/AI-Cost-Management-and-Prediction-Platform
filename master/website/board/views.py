@@ -2281,34 +2281,37 @@ def manucostdata_upload(request):
         max_row = sheet.max_row
 
     if max_row > 2:
+        try:
+            for j in range(3, max_row + 1):
+                lstTmp = []
+                strbottom = ""
 
-        for j in range(3, max_row + 1):
-            lstTmp = []
-            strbottom = ""
+                for i in range(1, max_col + 1):
+                    valTmp = sheet.cell(row=j, column=i).value
 
-            for i in range(1, max_col + 1):
-                valTmp = sheet.cell(row=j, column=i).value
+                    lstTmp.append(valTmp)
 
-                lstTmp.append(valTmp)
+                    if valTmp == '':
+                        strbottom += "default,"
+                    elif valTmp == None:
+                        strbottom += "default,"
+                    else:
+                        strbottom += "'" + str(valTmp) + "',"
 
-                if valTmp == '':
-                    strbottom += "default,"
-                elif valTmp == None:
-                    strbottom += "default,"
-                else:
-                    strbottom += "'" + str(valTmp) + "',"
+                strbottom = strbottom[:-1]
 
-            strbottom = strbottom[:-1]
+                strSql = "INSERT INTO cc_manucost_if VALUES (" + strbottom + ")"
 
-            strSql = "INSERT INTO cc_manucost_if VALUES (" + strbottom + ")"
+                cursor = dbCon.cursor()
+                cursor.execute(strSql)
+                rows = cursor.fetchone()
+                cursor.close()
 
-            cursor = dbCon.cursor()
-            cursor.execute(strSql)
-            rows = cursor.fetchone()
-            cursor.close()
-
-        dbCon.commit()
-        book.close()
+            dbCon.commit()
+            book.close()
+        except:
+            print("엑셀오류")
+            return redirect('board:cc_manucost_if')
     else:
         print("데이터x")
         return redirect('board:cc_manucost_if')
@@ -2392,6 +2395,106 @@ def materialcosttemplate_download(request):
 
     return JsonResponse(context, content_type="application/json")
 
+@csrf_exempt
+def materialcostdata_upload(request):
+    context = {}
+
+    if request.method == "POST":
+
+        try:
+            uploaded_file = request.FILES['ufile']
+            name_old = uploaded_file.name
+            # name_ext = os.path.splitext(name_old)[1]
+            # name_new = "cc_manucost"
+        except:
+            print("파일선택x")
+            return redirect('board:cc_materialcost_if')
+        file_name = name_old
+        # file_name = name_new + name_ext
+
+        fs = FileSystemStorage(location='static/dataupload/cc_materialcost')
+        # if (fs.exists(file_name)):
+        #     fs.delete(file_name)
+        name = fs.save(file_name, uploaded_file)
+
+        context['upload_url'] = fs.url(name)
+        context['upload_flag'] = 'USuccess'
+
+    else:
+        return redirect('board:cc_materialcost_if')
+
+    strsql1 = "SHOW TABLES LIKE 'cc_materialcost_if'"
+
+    cursor1 = dbCon.cursor()
+    cursor1.execute(strsql1)
+    rsTmp = cursor1.fetchone()
+    cursor1.close()
+
+    rsColumns = None
+    if rsTmp:
+        strsql1 = "SHOW COLUMNS FROM cc_materialcost_if"
+
+        cursor2 = dbCon.cursor()
+        cursor2.execute(strsql1)
+        rsColumns = cursor2.fetchall()
+        cursor2.close()
+
+    else:
+        print("테이블 없음")
+        return redirect('board:cc_materialcost_if')
+
+    max_col = len(rsColumns)
+
+    timenow = datetime.now()
+
+    filename = 'static/dataupload/cc_materialcost/' + file_name
+
+    if not os.path.isfile(filename):
+        print("저장안됨")
+        return redirect('board:cc_materialcost_if')
+    else:
+        book = openpyxl.load_workbook(filename, read_only=True)
+        sheet = book.active
+        max_row = sheet.max_row
+
+    if max_row > 2:
+        try:
+            for j in range(3, max_row + 1):
+                lstTmp = []
+                strbottom = ""
+    
+                for i in range(1, max_col + 1):
+                    valTmp = sheet.cell(row=j, column=i).value
+    
+                    lstTmp.append(valTmp)
+    
+                    if valTmp == '':
+                        strbottom += "default,"
+                    elif valTmp == None:
+                        strbottom += "default,"
+                    else:
+                        strbottom += "'" + str(valTmp) + "',"
+    
+                strbottom = strbottom[:-1]
+    
+                strSql = "INSERT INTO cc_materialcost_if VALUES (" + strbottom + ")"
+    
+                cursor = dbCon.cursor()
+                cursor.execute(strSql)
+                rows = cursor.fetchone()
+                cursor.close()
+    
+            dbCon.commit()
+            book.close()
+        except:
+            print("엑셀오류")
+            return redirect('board:cc_materialcost_if')
+    else:
+        print("데이터x")
+        return redirect('board:cc_materialcost_if')
+
+    return redirect('board:cc_materialcost_if')
+
 # *********************************************************************************************************************
 # 재료비 코드 끝
 # *********************************************************************************************************************
@@ -2466,6 +2569,109 @@ def itempermanucosttemplate_download(request):
 
     return JsonResponse(context, content_type="application/json")
 
+@csrf_exempt
+def itempermanucostdata_upload(request):
+    context = {}
+
+    if request.method == "POST":
+
+        try:
+            uploaded_file = request.FILES['ufile']
+            name_old = uploaded_file.name
+            # name_ext = os.path.splitext(name_old)[1]
+            # name_new = "cc_manucost"
+        except:
+            print("파일선택x")
+            return redirect('board:cc_itempermanucost_if')
+        file_name = name_old
+        # file_name = name_new + name_ext
+
+        fs = FileSystemStorage(location='static/dataupload/cc_itempermanucost')
+        # if (fs.exists(file_name)):
+        #     fs.delete(file_name)
+        name = fs.save(file_name, uploaded_file)
+
+        context['upload_url'] = fs.url(name)
+        context['upload_flag'] = 'USuccess'
+
+    else:
+        return redirect('board:cc_itempermanucost_if')
+
+    strsql1 = "SHOW TABLES LIKE 'cc_itempermanucost_if'"
+
+    cursor1 = dbCon.cursor()
+    cursor1.execute(strsql1)
+    rsTmp = cursor1.fetchone()
+    cursor1.close()
+
+    rsColumns = None
+    if rsTmp:
+        strsql1 = "SHOW COLUMNS FROM cc_itempermanucost_if"
+
+        cursor2 = dbCon.cursor()
+        cursor2.execute(strsql1)
+        rsColumns = cursor2.fetchall()
+        cursor2.close()
+
+    else:
+        print("테이블 없음")
+        return redirect('board:cc_itempermanucost_if')
+
+    max_col = len(rsColumns)
+
+    #timenow = datetime.now()
+
+    filename = 'static/dataupload/cc_itempermanucost/' + file_name
+
+    if not os.path.isfile(filename):
+        print("저장안됨")
+        return redirect('board:cc_itempermanucost_if')
+    else:
+        book = openpyxl.load_workbook(filename, read_only=True)
+        sheet = book.active
+        max_row = sheet.max_row
+
+    if max_row > 2:
+        
+        try:
+            for j in range(3, max_row + 1):
+                lstTmp = []
+                strbottom = ""
+    
+                for i in range(1, max_col + 1):
+                    valTmp = sheet.cell(row=j, column=i).value
+    
+                    lstTmp.append(valTmp)
+    
+                    if valTmp == '':
+                        strbottom += "default,"
+                    elif valTmp == None:
+                        strbottom += "default,"
+                    else:
+                        strbottom += "'" + str(valTmp) + "',"
+    
+                strbottom = strbottom[:-1]
+    
+                strSql = "INSERT INTO cc_itempermanucost_if VALUES (" + strbottom + ")"
+    
+                cursor = dbCon.cursor()
+                cursor.execute(strSql)
+                rows = cursor.fetchone()
+                cursor.close()
+    
+            dbCon.commit()
+            book.close()
+        
+        except:
+            print("엑셀오류")
+            return redirect('board:cc_itempermanucost_if')
+    else:
+        print("데이터x")
+        return redirect('board:cc_itempermanucost_if')
+
+    return redirect('board:cc_itempermanucost_if')
+
+
 # *********************************************************************************************************************
 # 품목별 제조비용 코드 끝
 # *********************************************************************************************************************
@@ -2536,6 +2742,107 @@ def productcostpaymenttemplate_download(request):
     context["result_msg"] = "Template downloaded... "
 
     return JsonResponse(context, content_type="application/json")
+
+
+@csrf_exempt
+def productcostpaymentdata_upload(request):
+    context = {}
+
+    if request.method == "POST":
+
+        try:
+            uploaded_file = request.FILES['ufile']
+            name_old = uploaded_file.name
+            # name_ext = os.path.splitext(name_old)[1]
+            # name_new = "cc_manucost"
+        except:
+            print("파일선택x")
+            return redirect('board:cc_productcostpayment_if')
+        file_name = name_old
+        # file_name = name_new + name_ext
+
+        fs = FileSystemStorage(location='static/dataupload/cc_productcostpayment')
+        # if (fs.exists(file_name)):
+        #     fs.delete(file_name)
+        name = fs.save(file_name, uploaded_file)
+
+        context['upload_url'] = fs.url(name)
+        context['upload_flag'] = 'USuccess'
+
+    else:
+        return redirect('board:cc_productcostpayment_if')
+
+    strsql1 = "SHOW TABLES LIKE 'cc_productcostpayment_if'"
+
+    cursor1 = dbCon.cursor()
+    cursor1.execute(strsql1)
+    rsTmp = cursor1.fetchone()
+    cursor1.close()
+
+    rsColumns = None
+    if rsTmp:
+        strsql1 = "SHOW COLUMNS FROM cc_productcostpayment_if"
+
+        cursor2 = dbCon.cursor()
+        cursor2.execute(strsql1)
+        rsColumns = cursor2.fetchall()
+        cursor2.close()
+
+    else:
+        print("테이블 없음")
+        return redirect('board:cc_productcostpayment_if')
+
+    max_col = len(rsColumns)
+
+    #timenow = datetime.now()
+
+    filename = 'static/dataupload/cc_productcostpayment/' + file_name
+
+    if not os.path.isfile(filename):
+        print("저장안됨")
+        return redirect('board:cc_productcostpayment_if')
+    else:
+        book = openpyxl.load_workbook(filename, read_only=True)
+        sheet = book.active
+        max_row = sheet.max_row
+
+    if max_row > 2:
+        try:
+            for j in range(3, max_row + 1):
+                lstTmp = []
+                strbottom = ""
+    
+                for i in range(1, max_col + 1):
+                    valTmp = sheet.cell(row=j, column=i).value
+    
+                    lstTmp.append(valTmp)
+    
+                    if valTmp == '':
+                        strbottom += "default,"
+                    elif valTmp == None:
+                        strbottom += "default,"
+                    else:
+                        strbottom += "'" + str(valTmp) + "',"
+    
+                strbottom = strbottom[:-1]
+    
+                strSql = "INSERT INTO cc_productcostpayment_if VALUES (" + strbottom + ")"
+    
+                cursor = dbCon.cursor()
+                cursor.execute(strSql)
+                rows = cursor.fetchone()
+                cursor.close()
+    
+            dbCon.commit()
+            book.close()
+        except:
+            print("엑셀오류")
+            return redirect('board:cc_productcostpayment_if')
+    else:
+        print("데이터x")
+        return redirect('board:cc_productcostpayment_if')
+
+    return redirect('board:cc_productcostpayment_if')
 
 
 # *********************************************************************************************************************
