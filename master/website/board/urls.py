@@ -20,6 +20,8 @@ urlpatterns = [
     path('b_itemgrp/', views.b_itemgrp, name='b_itemgrp'),
     path('cc_manucost_if', views.cc_manucost_if, name='cc_manucost_if'),
     path('cc_materialcost_if', views.cc_materialcost_if, name='cc_materialcost_if'),
+    path('cc_itempermanucost_if', views.cc_itempermanucost_if, name='cc_itempermanucost_if'),
+    path('cc_productcostpayment_if', views.cc_productcostpayment_if, name='cc_productcostpayment_if'),
 
     # 사용자 관리
     path('member_register', views.member_register, name="member_register"),
@@ -97,5 +99,24 @@ urlpatterns = [
     # 코스트센터 기능 항목
     path('cb_cost_center/costcenter_element_insert', views.costcenter_element_insert, name="costcenter_element_insert"),
     path('cb_cost_center/costcenter_element_update', views.costcenter_element_update, name="costcenter_element_update"),
-    path('cb_cost_center/costcenter_element_delete', views.costcenter_element_delete, name="costcenter_element_delete")
+    path('cb_cost_center/costcenter_element_delete', views.costcenter_element_delete, name="costcenter_element_delete"),
+
+    # 제조비용 기능 항목
+    path('cc_manucost_if/manucosttemplate_download', views.manucosttemplate_download, name='manucosttemplate_download'),
+    path('cc_manucost_if/manucostdata_upload', views.manucostdata_upload, name='manucostdata_upload'),
+
+    # 재료비용 기능항목
+    path('cc_materialcost_if/materialcosttemplate_download', views.materialcosttemplate_download,
+         name='materialcosttemplate_download'),
+    path('cc_materialcost_if/materialcostdata_upload', views.materialcostdata_upload, name='materialcostdata_upload'),
+
+    # 품목별제조비용 기능항목
+    path('cc_itempermanucost_if/itempermanucosttemplate_download', views.itempermanucosttemplate_download,
+         name='itempermanucosttemplate_download'),
+    path('cc_itempermanucost_if/itempermanucostdata_upload', views.itempermanucostdata_upload, name='itempermanucost_upload'),
+
+    # 제품원가수불 기능항목
+    path('cc_productcostpayment_if/productcostpaymenttemplate_download', views.productcostpaymenttemplate_download,
+         name='productcostpaymenttemplate_download'),
+    path('cc_productcostpayment_if/productcostpaymentdata_upload', views.productcostpaymentdata_upload, name='productcostpayment_upload'),
 ]

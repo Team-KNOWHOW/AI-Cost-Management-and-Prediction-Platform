@@ -3,7 +3,7 @@
 
 {% block scripts %}
 {{ block.super }}
-    <script>
+<script>
       // https://docs.djangoproject.com/en/3.1/ref/csrf/
     function getCookie(name) {
         let cookieValue = null;
@@ -26,7 +26,7 @@
 
     function downloadTemplate()
     {
-        var strurl = "cc_materialcost_if/materialcosttemplate_download"
+        var strurl = "cc_productcostpayment_if/productcostpaymenttemplate_download"
 
         xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -49,8 +49,8 @@
         xhr.send(null);
     }
 
-    </script>
 
+</script>
 {% endblock %}
 
 {% block body %}
@@ -63,14 +63,14 @@
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h3 class="page-header"><i class="fa fa-table"></i>재료비 I/F</h3>
+                <h3 class="page-header"><i class="fa fa-table"></i>제품원가수불 I/F</h3>
             </div>
         </div>
         <div align="right" style="margin-right:2px">
             <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="downloadTemplate()" title="Bootstrap 3 themes generator">Template 다운로드</a>
         </div>
         <div align="right" style="margin-top:2px">
-            <form method="POST" enctype="multipart/form-data" action="cc_materialcost_if/materialcostdata_upload">
+            <form method="POST" enctype="multipart/form-data" action="cc_productcostpayment_if/productcostpaymentdata_upload">
                 {% csrf_token %}
                 <table>
                     <tr>
@@ -78,7 +78,7 @@
                             <input type="file" name="ufile" accept=".xlsx" style="width:200px">
                         </td>
                         <td>
-                            <button type="submit"class="btn btn-primary btn-sm" >액셀업로드</button>
+                            <button type="submit" class="btn btn-primary btn-sm" >액셀업로드</button>
                         </td>
                     </tr>
                 </table>
@@ -89,62 +89,70 @@
             <div class="col-lg-12">
                 <section class="panel">
                     <div class="table-responsive">
-                        {% if rsMaterialcost %}
+                        {% if rsProductcostpayment %}
                         <table class="table">
                             <thead>
                             <tr>
-                                <th>법인코드</th>
-                                <th>법인명</th>
-                                <th>년월</th>
-                                <th>version</th>
-                                <th>자재코드</th>
-                                <th>자재명</th>
-                                <th>작업장</th>
-                                <th>작업장명</th>
-                                <th>모품목코드</th>
-                                <th>모품목명</th>
-                                <th>수량</th>
-                                <th>금액</th>
+                                <th>공장코드</th>
+                                <th>공장명</th>
+                                <th>b수량</th>
+                                <th>b금액</th>
+                                <th>p수량</th>
+                                <th>p금액</th>
+                                <th>s수량</th>
+                                <th>s금액</th>
+                                <th>l수량</th>
+                                <th>l금액</th>
+                                <th>d수량</th>
+                                <th>d금액</th>
+                                <th>e수량</th>
+                                <th>e금액</th>
                             </tr>
                             </thead>
-                            {% for i in rsMaterialcost %}
+                            {% for i in rsProductcostpayment %}
                             <tbody>
                             <tr>
                                 <td>
-                                    {{ i.co_cd }}
+                                    {{ i.factory_cd }}
                                 </td>
                                 <td>
-                                    {{ i.co_nm }}
+                                    {{ i.factory_nm }}
                                 </td>
                                 <td>
-                                    {{ i.mc_ym }}
+                                    {{ i.basisicstoc_amt }}
                                 </td>
                                 <td>
-                                    {{ i.mc_version }}
+                                    {{ i.basisicstoc_price }}
                                 </td>
                                 <td>
-
+                                    {{ i.productionreceipt_amt }}
                                 </td>
                                 <td>
-
+                                    {{ i.productionreceipt_price }}
                                 </td>
                                 <td>
-                                    {{ i.workcenter_cd }}
+                                    {{ i.sell_amt }}
                                 </td>
                                 <td>
-                                    {{ i.workcenter_nm }}
+                                    {{ i.sell_cost }}
                                 </td>
                                 <td>
-
+                                    {{ i.loss_amt }}
                                 </td>
                                 <td>
-
+                                    {{ i.loss_cost }}
                                 </td>
                                 <td>
-                                    {{ i.mc_amount }}
+                                    {{ i.development_amt }}
                                 </td>
                                 <td>
-                                    {{ i.mc_price }}
+                                    {{ i.development_cost }}
+                                </td>
+                                <td>
+                                    {{ i.endingstock_amt }}
+                                </td>
+                                <td>
+                                    {{ i.endingstock_cost }}
                                 </td>
                             </tr>
                             </tbody>
@@ -167,30 +175,14 @@
                             <thead>
                             <tr>
                                 <th>
-                                    법인코드
-                                </th>
-                                <th>
                                     공장코드
-                                </th>
-                                <th>
-                                    사업장코드
                                 </th>
                             </tr>
                             <tbody>
                             <tr>
                                 <td>
-                                    {% for i in rsCo %}
-                                    <div>{{ i.id }}.{{ i.co_cd }} - {{ i.co_nm }}</div>
-                                    {% endfor %}
-                                </td>
-                                <td>
                                     {% for i in rsFactory %}
                                     <div>{{ i.id }}.{{ i.factory_cd }} - {{ i.factory_nm }}</div>
-                                    {% endfor %}
-                                </td>
-                                <td>
-                                    {% for i in rsWrkctr %}
-                                    <div>{{ i.id }}.{{ i.workcenter_cd }} - {{ i.workcenter_nm }}</div>
                                     {% endfor %}
                                 </td>
                             </tr>
