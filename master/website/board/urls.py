@@ -108,12 +108,15 @@ urlpatterns = [
     # 재료비용 기능항목
     path('cc_materialcost_if/materialcosttemplate_download', views.materialcosttemplate_download,
          name='materialcosttemplate_download'),
+    path('cc_materialcost_if/materialcostdata_upload', views.materialcostdata_upload, name='materialcostdata_upload'),
 
     # 품목별제조비용 기능항목
     path('cc_itempermanucost_if/itempermanucosttemplate_download', views.itempermanucosttemplate_download,
          name='itempermanucosttemplate_download'),
+    path('cc_itempermanucost_if/itempermanucostdata_upload', views.itempermanucostdata_upload, name='itempermanucost_upload'),
 
     # 제품원가수불 기능항목
     path('cc_productcostpayment_if/productcostpaymenttemplate_download', views.productcostpaymenttemplate_download,
          name='productcostpaymenttemplate_download'),
+    path('cc_productcostpayment_if/productcostpaymentdata_upload', views.productcostpaymentdata_upload, name='productcostpayment_upload'),
 ]
