@@ -19,6 +19,6 @@ from . import views
 app_name = 'rest_api'
 
 urlpatterns = [
-    path('/corporations', views.co_list, name='co_list'),
-    path('/corporations/<int:pk>', views.co_detail, name='co_detail'),
+    path('corporations', views.co_list, name='co_list'),
+    path('corporations/<int:pk>', views.co_detail, name='co_detail'),
 ]

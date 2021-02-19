@@ -5,6 +5,7 @@ from .models import *
 from .serializers import *
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
+from rest_framework import exceptions
 
 
 @api_view(['GET', 'POST'])
@@ -17,6 +18,10 @@ def co_list(request):
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
+
+        if BCo.objects.filter(co_cd=data['co_cd'], usage_fg='Y').exists():
+            raise exceptions.ParseError("DuplicateCode")
+
         serializer = BcoSerializer(data=data)
 
         if serializer.is_valid():
@@ -40,10 +45,11 @@ def co_detail(request, pk):
         serializer = BcoSerializer(obj, data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
+            return JsonResponse(serializer.data, status=200)
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
-        obj.delete()
+        obj.usage_fg = 'N'
+        obj.save()
         return HttpResponse(status=204)
 
