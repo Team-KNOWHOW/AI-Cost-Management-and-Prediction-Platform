@@ -353,6 +353,15 @@ class CbCostCenter(models.Model):  # 코스트센터
         managed = False
         db_table = 'cb_cost_center'
 
+class BVersion(models.Model):
+    id = models.IntegerField(primary_key=True)
+    insrt = models.ForeignKey(BUser,related_name='+', on_delete=models.CASCADE)
+    version_cd = models.CharField(max_length=50, blank=True, null=True)
+    version_dt = models.CharField(max_length=8, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'b_version'
 
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
@@ -390,12 +399,13 @@ class DjangoMigrations(models.Model):
 class CcManucostIf(models.Model): #제조비용
     id = models.AutoField(db_column='id', primary_key=True)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
-    manucost_ym = models.DateTimeField(db_column='manucost_ym', blank=True, null=True)
+    manucost_ym = models.CharField(db_column='manucost_ym', blank=True, null=True)
     cstctr = models.ForeignKey(CbCostCenter, on_delete=models.CASCADE)
     itemaccnt = models.ForeignKey(BItemaccnt, on_delete=models.CASCADE)
     manucost_price = models.IntegerField(db_column='manucost_price', default=0)
     mngmt_1 = models.CharField(db_column='mngmt_1', max_length=50, default='0')
-
+    version_id = models.ForeignKey(BVersion, on_delete=models.CASCADE)
+    
     class Meta:
         managed = False
         db_table = 'cc_manucost_if'
@@ -405,8 +415,8 @@ class CcMaterialcostIf(models.Model): #제조비용
     id = models.AutoField(db_column='id', primary_key=True)
     factory = models.ForeignKey(BFactory, on_delete=models.CASCADE)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
-    mc_ym = models.DateTimeField(db_column='mc_ym', blank=True, null=True)
-    mc_version = models.CharField(db_column='mc_version', max_length=50)
+    mc_ym = models.CharField(db_column='mc_ym', max_length=8, blank=True, null=True)
+    version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
     jaiitem_id = models.IntegerField(db_column='jaiitem_id', default=0)
     workcenter = models.ForeignKey(BWorkcenter, on_delete=models.CASCADE)
     moitem_id = models.IntegerField(db_column='moitem_id', default=0)
@@ -421,8 +431,8 @@ class CcMaterialcostIf(models.Model): #제조비용
 class CcItempermanucostIf(models.Model): #품목별제조비용
     id = models.AutoField(db_column='id', primary_key=True)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
-    ipmc_ym = models.DateTimeField(db_column='ipmc_ym', blank=True, null=True)
-    ipmc_version = models.CharField(db_column='ipmc_version', max_length=50)
+    ipmc_ym = models.CharField(db_column='ipmc_ym', max_length=8 , blank=True, null=True)
+    version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
     moitem_id = models.IntegerField(db_column='moitem_id', default=0)
     itemaccnt = models.ForeignKey(BItemaccnt, on_delete=models.CASCADE)
     ipmc_cost = models.IntegerField(db_column='ipmc_cost', default=0)
@@ -447,6 +457,8 @@ class CcProductcostpaymentIf(models.Model): #제품원가수불
     development_cost = models.IntegerField(db_column='development_cost', default=0)
     endingstock_amt = models.IntegerField(db_column='endingstock_amt', default=0)
     endingstock_cost = models.IntegerField(db_column='endingstock_cost', default=0)
+    pcp_ym = models.CharField(db_column='pcp_ym', max_length=8 , blank=True, null=True)
+    version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
 
     class Meta:
         managed = False
