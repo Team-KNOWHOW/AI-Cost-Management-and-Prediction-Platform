@@ -93,20 +93,31 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th>공장코드</th>
-                                <th>공장명</th>
-                                <th>b수량</th>
-                                <th>b금액</th>
-                                <th>p수량</th>
-                                <th>p금액</th>
-                                <th>s수량</th>
-                                <th>s금액</th>
-                                <th>l수량</th>
-                                <th>l금액</th>
-                                <th>d수량</th>
-                                <th>d금액</th>
-                                <th>e수량</th>
-                                <th>e금액</th>
+                                <th rowspan="3">공장코드</th>
+                                <th rowspan="3">공장명</th>
+                                <td rowspan="2" colspan="2" align="center">기초재고</td>
+                                <td rowspan="2" colspan="2" align="center">생산입고</td>
+                                <td colspan="6" align="center">당기출고</td>
+                                <td rowspan="2" colspan="2" align="center">기말재고</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="center">판매출고</td>
+                                <td colspan="2" align="center">LOSS출고</td>
+                                <td colspan="2" align="center">개발출고</td>
+                            </tr>
+                            <tr>
+                                <th>수량</th>
+                                <th>금액</th>
+                                <th>수량</th>
+                                <th>금액</th>
+                                <th>수량</th>
+                                <th>금액</th>
+                                <th>수량</th>
+                                <th>금액</th>
+                                <th>수량</th>
+                                <th>금액</th>
+                                <th>수량</th>
+                                <th>금액</th>
                             </tr>
                             </thead>
                             {% for i in rsProductcostpayment %}
