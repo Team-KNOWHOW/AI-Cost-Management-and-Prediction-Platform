@@ -21,4 +21,25 @@ app_name = 'rest_api'
 urlpatterns = [
     path('corporations', views.co_list, name='co_list'),
     path('corporations/<int:pk>', views.co_detail, name='co_detail'),
+
+    path('bizareas', views.bizarea_list, name='bizarea_list'),
+    path('bizareas/<int:pk>', views.bizarea_detail, name='bizarea_detail'),
+
+    path('bizunits', views.bizunit_list, name='bizunit_list'),
+    path('bizunits/<int:pk>', views.bizunit_detail, name='bizunit_detail'),
+
+    path('factories', views.factory_list, name='factory_list'),
+    path('factories/<int:pk>', views.factory_detail, name='factory_detail'),
+
+    path('workcenters', views.workcenter_list, name='workcenter_list'),
+    path('workcenters/<int:pk>', views.workcenter_detail, name='workcenter_detail'),
+
+    path('bizpartners', views.bizpartner_list, name='bizpartner_list'),
+    path('bizpartners/<int:pk>', views.bizpartner_detail, name='bizpartner_detail'),
+
+    path('item-accounts', views.itemaccnt_list, name='itemaccnt_list'),
+    path('item-accounts/<int:pk>', views.itemaccnt_detail, name='itemaccnt_detail'),
+
+    path('item-groups', views.itemgrp_list, name='itemgrp_list'),
+    path('item-groups/<int:pk>', views.itemgrp_detail, name='itemgrp_detail'),
 ]
