@@ -226,7 +226,7 @@ class CbCostCenter(models.Model):  # 코스트센터
 class BWorkcenter(models.Model):  # 작업장
     workcenter_cd = models.CharField(max_length=50, blank=True, null=True)
     workcenter_nm = models.CharField(max_length=50, blank=True, null=True)
-    cstctr_id = models.ForeignKey(CbCostCenter, related_name='+', on_delete=models.CASCADE)
+    cstctr = models.ForeignKey(CbCostCenter, related_name='+', on_delete=models.CASCADE)
     insrt_dt = models.DateTimeField(blank=True, null=True)
     updt_dt = models.DateTimeField(blank=True, null=True)
     usage_fg = models.CharField(max_length=1, blank=True, null=True)
