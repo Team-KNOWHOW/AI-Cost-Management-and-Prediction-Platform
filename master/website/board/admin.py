@@ -19,9 +19,6 @@ from .models import *
 @admin.register(CbCodeDtl)
 @admin.register(CbCodeHdr)
 @admin.register(CbCostCenter)
-@admin.register(DjangoAdminLog)
-@admin.register(DjangoContentType)
-@admin.register(DjangoMigrations)
 class BBizareaAdmin(admin.ModelAdmin):
     list_display = ('id',)
     #list_filter = ('updt_dt',)

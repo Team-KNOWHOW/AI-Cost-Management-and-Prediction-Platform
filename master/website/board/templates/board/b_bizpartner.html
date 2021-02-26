@@ -46,8 +46,6 @@
                                 <th width="6%">국가코드</th>
                                 <th width="6%">통화코드</th>
                                 <th width="7%">거래처상태</th>
-                                <th>생성일자</th>
-                                <th>수정일자</th>
                                 <th></th>
                                 <th></th>
                                 <!--                                    <th>등록/수정자</th>-->
@@ -57,18 +55,18 @@
 
                             <tbody>
                             <tr bgcolor="#F7F7F7">
-                                <td align="center">
+                                <td align="left">
                                     <select>
                                         {% for ii in rsCo %}
                                         <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
                                         {% endfor %}
                                     </select>
                                 </td>
-                                <td align="center">
+                                <td align="left">
                                     <input type="text" id="bizpartner_cd" class="form-control" value="" >
 
                                 </td>
-                                <td align="center">
+                                <td align="left">
                                     <select class="bizpartnertype" >
                                         <option value="법인"> 법인 </option>
                                         <option value="개인"> 개인 </option>
@@ -82,14 +80,14 @@
                                     <input type="text" class="form-control" id="bizpartner_nm" value="" >
 
                                 </td>
-                                <td align="center">
+                                <td align="left">
                                     <select class="cncd" >
                                         {% for ii in rsCncd %}
                                         <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
                                         {% endfor %}
                                     </select>
                                 </td>
-                                <td align="center">
+                                <td align="left">
                                     <select class="curcd" >
                                         {% for ii in rsCurcd %}
                                         <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
@@ -97,16 +95,14 @@
                                     </select>
 
                                 </td>
-                                <td align="center">
+                                <td align="left">
                                     <select class="bizpartnerstat" >
                                         <option value="정상"> 정상 </option>
                                         <option value="중지"> 중지 </option>
 
                                     </select>
                                 </td>
-                                <td></td>
-                                <td></td>
-                                <td align="center"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insert_element();" title="Bootstrap 3 themes generator">등록</a></td>
+                                <td align="left"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insert_element();" title="Bootstrap 3 themes generator">등록</a></td>
                                 <td></td>
                             </tr>
                             </tbody>
@@ -168,15 +164,6 @@
                                         <option value="중지"> 중지 </option>
                                     </select>
                                 </td>
-                                <td>
-                                    {{ i.insrt_dt }}
-                                </td>
-                                <td>
-                                    {{ i.updt_dt }}
-                                </td>
-                                <!--                                        <td>-->
-                                <!--                                            {{ i.user_id }}-->
-                                <!--                                        </td>-->
                                 <td width="5%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator">수정</a></td>
                                 <td width="5%"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator">삭제</a></td>
 
