@@ -1,73 +1,8 @@
 from django.db import models
-from . import *
 
 
 # Create your models here.
 
-class AuthGroup(models.Model):
-    name = models.CharField(unique=True, max_length=150)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group'
-
-
-class AuthGroupPermissions(models.Model):
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
-
-
-class AuthPermission(models.Model):
-    name = models.CharField(max_length=255)
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
-    codename = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
-
-
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.IntegerField()
-    username = models.CharField(unique=True, max_length=150)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    date_joined = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
-
-
-class AuthUserGroups(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_groups'
-        unique_together = (('user', 'group'),)
-
-
-class AuthUserUserPermissions(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
 
 class BUser(models.Model):  # 사용자관리
     id = models.AutoField(db_column='id', primary_key=True)
@@ -86,6 +21,7 @@ class BUser(models.Model):  # 사용자관리
         managed = False
         db_table = 'b_user'
 
+
 class CbCodeHdr(models.Model):  # 코드 헤더
     id = models.AutoField(db_column='id', primary_key=True)
     type_cd = models.CharField(db_column='type_cd', max_length=20)
@@ -100,6 +36,7 @@ class CbCodeHdr(models.Model):  # 코드 헤더
     class Meta:
         managed = False
         db_table = 'cb_code_hdr'
+
 
 class CbCodeDtl(models.Model):  # 코드 detail
     id = models.AutoField(db_column='id', primary_key=True)
@@ -150,8 +87,8 @@ class BBizarea(models.Model):  # 사업장
     biz_no = models.CharField(db_column='biz_no', max_length=50, blank=True, null=True)
     biz_rpr = models.CharField(db_column='biz_rpr', max_length=50, blank=True, null=True)
     str_dt = models.DateTimeField(db_column='str_dt', blank=True, null=True)
-    unitcur= models.ForeignKey(CbCodeDtl, related_name='+', on_delete=models.CASCADE)
-    unitcn= models.ForeignKey(CbCodeDtl, related_name='+', on_delete=models.CASCADE)
+    unitcur = models.ForeignKey(CbCodeDtl, related_name='+', on_delete=models.CASCADE)
+    unitcn = models.ForeignKey(CbCodeDtl, related_name='+', on_delete=models.CASCADE)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, blank=True, null=True)
     insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
     updt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
@@ -266,10 +203,30 @@ class BItem(models.Model):  # 품목마스터
         db_table = 'b_item'
 
 
+class CbCostCenter(models.Model):  # 코스트센터
+    id = models.IntegerField(primary_key=True)
+    cstctr_cd = models.CharField(max_length=50, blank=True, null=True)
+    cstctr_nm = models.CharField(max_length=50, blank=True, null=True)
+    bizarea_id = models.IntegerField(blank=True, null=True)
+    bizunit_id = models.IntegerField(blank=True, null=True)
+    factory_id = models.IntegerField(blank=True, null=True)
+    cstctr_type = models.CharField(max_length=50, blank=True, null=True)
+    cstctr_dir_div = models.CharField(max_length=50, blank=True, null=True)
+    updt_dt = models.DateTimeField(blank=True, null=True)
+    insrt_dt = models.DateTimeField(blank=True, null=True)
+    usage_fg = models.CharField(max_length=1, blank=True, null=True)
+    insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
+    updt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
+
+    class Meta:
+        managed = False
+        db_table = 'cb_cost_center'
+
+
 class BWorkcenter(models.Model):  # 작업장
     workcenter_cd = models.CharField(max_length=50, blank=True, null=True)
     workcenter_nm = models.CharField(max_length=50, blank=True, null=True)
-    cstctr_id = models.CharField(max_length=50, blank=True, null=True)
+    cstctr = models.ForeignKey(CbCostCenter, related_name='+', on_delete=models.CASCADE)
     insrt_dt = models.DateTimeField(blank=True, null=True)
     updt_dt = models.DateTimeField(blank=True, null=True)
     usage_fg = models.CharField(max_length=1, blank=True, null=True)
@@ -334,79 +291,39 @@ class BBom(models.Model):  # BOM 메인
     def __str__(self):
         return "BOM id : " + str(self.id) + " Type : " + self.bom_type
 
-class CbCostCenter(models.Model):  # 코스트센터
+
+class BVersion(models.Model):
     id = models.IntegerField(primary_key=True)
-    cstctr_cd = models.CharField(max_length=50, blank=True, null=True)
-    cstctr_nm = models.CharField(max_length=50, blank=True, null=True)
-    bizarea_id = models.IntegerField(blank=True, null=True)
-    bizunit_id = models.IntegerField(blank=True, null=True)
-    factory_id = models.IntegerField(blank=True, null=True)
-    cstctr_type = models.CharField(max_length=50, blank=True, null=True)
-    cstctr_dir_div = models.CharField(max_length=50, blank=True, null=True)
-    updt_dt = models.DateTimeField(blank=True, null=True)
-    insrt_dt = models.DateTimeField(blank=True, null=True)
-    usage_fg = models.CharField(max_length=1, blank=True, null=True)
     insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
-    updt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
+    version_cd = models.CharField(max_length=50, blank=True, null=True)
+    version_dt = models.CharField(max_length=8, blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'cb_cost_center'
+        db_table = 'b_version'
 
 
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    action_flag = models.PositiveSmallIntegerField()
-    change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'django_admin_log'
-
-
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_migrations'
-
-class CcManucostIf(models.Model): #제조비용
+class CcManucostIf(models.Model):  # 제조비용
     id = models.AutoField(db_column='id', primary_key=True)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
-    manucost_ym = models.DateTimeField(db_column='manucost_ym', blank=True, null=True)
+    manucost_ym = models.CharField(db_column='manucost_ym', max_length=50, blank=True, null=True)
     cstctr = models.ForeignKey(CbCostCenter, on_delete=models.CASCADE)
     itemaccnt = models.ForeignKey(BItemaccnt, on_delete=models.CASCADE)
     manucost_price = models.IntegerField(db_column='manucost_price', default=0)
     mngmt_1 = models.CharField(db_column='mngmt_1', max_length=50, default='0')
+    version_id = models.ForeignKey(BVersion, on_delete=models.CASCADE)
 
     class Meta:
         managed = False
         db_table = 'cc_manucost_if'
 
 
-class CcMaterialcostIf(models.Model): #제조비용
+class CcMaterialcostIf(models.Model):  # 제조비용
     id = models.AutoField(db_column='id', primary_key=True)
     factory = models.ForeignKey(BFactory, on_delete=models.CASCADE)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
-    mc_ym = models.DateTimeField(db_column='mc_ym', blank=True, null=True)
-    mc_version = models.CharField(db_column='mc_version', max_length=50)
+    mc_ym = models.CharField(db_column='mc_ym', max_length=8, blank=True, null=True)
+    version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
     jaiitem_id = models.IntegerField(db_column='jaiitem_id', default=0)
     workcenter = models.ForeignKey(BWorkcenter, on_delete=models.CASCADE)
     moitem_id = models.IntegerField(db_column='moitem_id', default=0)
@@ -418,11 +335,11 @@ class CcMaterialcostIf(models.Model): #제조비용
         db_table = 'cc_materialcost_if'
 
 
-class CcItempermanucostIf(models.Model): #품목별제조비용
+class CcItempermanucostIf(models.Model):  # 품목별제조비용
     id = models.AutoField(db_column='id', primary_key=True)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
-    ipmc_ym = models.DateTimeField(db_column='ipmc_ym', blank=True, null=True)
-    ipmc_version = models.CharField(db_column='ipmc_version', max_length=50)
+    ipmc_ym = models.CharField(db_column='ipmc_ym', max_length=8, blank=True, null=True)
+    version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
     moitem_id = models.IntegerField(db_column='moitem_id', default=0)
     itemaccnt = models.ForeignKey(BItemaccnt, on_delete=models.CASCADE)
     ipmc_cost = models.IntegerField(db_column='ipmc_cost', default=0)
@@ -431,7 +348,8 @@ class CcItempermanucostIf(models.Model): #품목별제조비용
         managed = False
         db_table = 'cc_itempermanucost_if'
 
-class CcProductcostpaymentIf(models.Model): #제품원가수불
+
+class CcProductcostpaymentIf(models.Model):  # 제품원가수불
     id = models.AutoField(db_column='id', primary_key=True)
     factory = models.ForeignKey(BFactory, on_delete=models.CASCADE)
     wanitem_id = models.IntegerField(db_column='wanitem_id', default=0)
@@ -447,6 +365,8 @@ class CcProductcostpaymentIf(models.Model): #제품원가수불
     development_cost = models.IntegerField(db_column='development_cost', default=0)
     endingstock_amt = models.IntegerField(db_column='endingstock_amt', default=0)
     endingstock_cost = models.IntegerField(db_column='endingstock_cost', default=0)
+    pcp_ym = models.CharField(db_column='pcp_ym', max_length=8, blank=True, null=True)
+    version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
 
     class Meta:
         managed = False
