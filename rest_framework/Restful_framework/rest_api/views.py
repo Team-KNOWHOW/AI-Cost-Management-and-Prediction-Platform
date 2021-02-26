@@ -65,7 +65,7 @@ def bizarea_list(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
 
-        if BBizarea.objects.filter(co_cd=data['co_cd'], usage_fg='Y').exists():
+        if BBizarea.objects.filter(bizarea_cd=data['bizarea_cd'], usage_fg='Y').exists():
             raise exceptions.ParseError("DuplicateCode")
 
         serializer = BBizareaSerializer(data=data)
@@ -111,7 +111,7 @@ def bizunit_list(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
 
-        if BBizunit.objects.filter(co_cd=data['co_cd'], usage_fg='Y').exists():
+        if BBizunit.objects.filter(bizunit_cd=data['bizunit_cd'], usage_fg='Y').exists():
             raise exceptions.ParseError("DuplicateCode")
 
         serializer = BBizunitSerializer(data=data)
@@ -157,7 +157,7 @@ def factory_list(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
 
-        if BFactory.objects.filter(co_cd=data['co_cd'], usage_fg='Y').exists():
+        if BFactory.objects.filter(factory_cd=data['factory_cd'], usage_fg='Y').exists():
             raise exceptions.ParseError("DuplicateCode")
 
         serializer = BFactorySerializer(data=data)
@@ -203,7 +203,7 @@ def workcenter_list(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
 
-        if BWorkcenter.objects.filter(co_cd=data['co_cd'], usage_fg='Y').exists():
+        if BWorkcenter.objects.filter(workcenter_cd=data['workcenter_cd'], usage_fg='Y').exists():
             raise exceptions.ParseError("DuplicateCode")
 
         serializer = BWorkcenterSerializer(data=data)
@@ -249,7 +249,7 @@ def bizpartner_list(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
 
-        if BBizpartner.objects.filter(co_cd=data['co_cd'], usage_fg='Y').exists():
+        if BBizpartner.objects.filter(bizpartner_cd=data['bizpartner_cd'], usage_fg='Y').exists():
             raise exceptions.ParseError("DuplicateCode")
 
         serializer = BBizpartnerSerializer(data=data)
@@ -295,7 +295,7 @@ def itemaccnt_list(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
 
-        if BItemaccnt.objects.filter(co_cd=data['co_cd'], usage_fg='Y').exists():
+        if BItemaccnt.objects.filter(itemaccnt_cd=data['itemaccnt_cd'], usage_fg='Y').exists():
             raise exceptions.ParseError("DuplicateCode")
 
         serializer = BItemaccntSerializer(data=data)
@@ -341,7 +341,7 @@ def itemgrp_list(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
 
-        if BItemgrp.objects.filter(co_cd=data['co_cd'], usage_fg='Y').exists():
+        if BItemgrp.objects.filter(itemgrp_cd=data['itemgrp_cd'], usage_fg='Y').exists():
             raise exceptions.ParseError("DuplicateCode")
 
         serializer = BItemgrpSerializer(data=data)
