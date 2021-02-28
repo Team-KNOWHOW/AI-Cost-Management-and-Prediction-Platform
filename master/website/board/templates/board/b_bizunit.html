@@ -77,7 +77,7 @@
                                 </td>
 
                                 <td>
-                                    {{ i.bizunit_nm }}
+                                    <input type="text" class="bizunitrmrk form-control" id="bizunitnm{{ i.id }}" value="{{ i.bizunit_nm }}" placeholder="bizunitrmrk"/>
                                 </td>
                                 <td>
                                     <input type="text" class="bizunitrmrk form-control" id="bizunitrmrk{{ i.id }}" value="{{ i.bizunit_rmrk }}" placeholder="bizunitrmrk"/>
@@ -171,8 +171,8 @@
         function update_element(elem) {
             var value = elem.getAttribute('value');
             var bizunitrmrk = $('#bizunitrmrk' + value).val();
-
-            var strurl = "bizunit_element_update?value=" + value + "&bizunitrmrk="+bizunitrmrk;
+            var biznunitnm = $('#bizunitnm'+ value).val();
+            var strurl = "bizunit_element_update?value=" + value + "&bizunitrmrk="+bizunitrmrk + "&bizunitnm="+biznunitnm;
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {

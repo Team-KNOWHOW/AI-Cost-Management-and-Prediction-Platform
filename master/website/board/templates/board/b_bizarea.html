@@ -100,8 +100,24 @@
                             {% for i in rsBizarea %}
                             <tbody >
                             <tr>
-                                <td>{{ i.bizarea_cd }}</td>
                                 <td>{{ i.co_nm }}</td>
+                                                                <td>
+                                    {% if not rsCo %}
+                                    <p class="text-center">지정법인 없음</p>
+                                    {% else %}
+                                    <select class="coid{{ i.id }}" style="width:100%;padding:3px;">
+                                        <!--                    <select name="unitcn" id="unitcn_{{ i.id }}" style="width:100%;padding:3px;">-->
+                                        {% for ii in rsCo %}
+                                        {% if i.co_id == ii.id %}
+                                        <option value="{{ ii.id }}" selected> {{ ii.co_nm }} </option>
+                                        {% else %}
+                                        <option value="{{ ii.id }}"> {{ ii.co_nm }} </option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    </select>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <input type="text" class="form-control" id="bizareanm{{ i.id }}" value="{{ i.bizarea_nm }}" placeholder="bizareanm" />
                                 </td>
@@ -265,6 +281,9 @@
             var unitcurSelect = document.querySelector('.unitcurid' + typeid);
             var unitcurid = unitcurSelect.options[unitcurSelect.selectedIndex].value;
 
+            var coselect = document.querySelector('.coid' + typeid);
+            var coid = coselect.options[coselect.selectedIndex].value;
+
             var bizareanm = $('#bizareanm' + typeid).val();
             var bizareashnm = $('#bizareashnm' + typeid).val();
             var bizno = $('#bizno' + typeid).val();
@@ -272,7 +291,7 @@
 
 
             var strurl = "bizarea_element_update?typeid=" + typeid +"&bizareanm="+bizareanm +"&bizareashnm="+bizareashnm +
-                "&bizno="+bizno + "&bizrpr="+bizrpr+ "&unitcnid="+ unitcnid + "&unitcurid="+ unitcurid;
+                "&bizno="+bizno + "&bizrpr="+bizrpr+ "&unitcnid="+ unitcnid + "&unitcurid="+ unitcurid + "&coid=" + coid;
             // + "&e_value=" + e_value
             //alert(strurl);
             //return false;
@@ -316,7 +335,7 @@
             };
             xhr.open("POST", strurl);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
+            // xhr.send(null);
         }
     </script>
 
