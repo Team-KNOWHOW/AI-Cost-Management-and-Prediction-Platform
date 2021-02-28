@@ -42,4 +42,10 @@ urlpatterns = [
 
     path('item-groups', views.itemgrp_list, name='itemgrp_list'),
     path('item-groups/<int:pk>', views.itemgrp_detail, name='itemgrp_detail'),
+
+    path('code-headers', views.code_hdr_list, name='code_hdr_list'),
+    path('code-headers/<int:pk>', views.code_hdr_detail, name='code_hdr_detail'),
+
+    path('code-details', views.code_dtl_list, name='code_dtl_list'),
+    path('code-details/<int:pk>', views.code_dtl_detail, name='code_dtl_detail'),
 ]

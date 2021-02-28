@@ -49,3 +49,16 @@ class BItemgrpSerializer(serializers.ModelSerializer):
         model = BItemgrp
         fields = ('itemgrp_cd', 'itemgrp_nm')
 
+
+class CbCodeHdrSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CbCodeHdr
+        fields = ('type_cd', 'type_nm')
+
+
+class CbCodeDtlSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CbCodeDtl
+        fields = ('type_cd', 'code_cd', 'code_nm')
+
+
