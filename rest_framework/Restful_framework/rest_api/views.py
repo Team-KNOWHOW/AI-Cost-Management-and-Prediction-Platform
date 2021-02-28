@@ -376,6 +376,121 @@ def itemgrp_detail(request, pk):
         return HttpResponse(status=204)
 
 
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def code_hdr_list(request):
+    if request.method == 'GET':
+        query_set = CbCodeHdr.objects.all()
+        serializer = CbCodeHdrSerializer(query_set, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+
+        if CbCodeHdr.objects.filter(type_cd=data['type_cd'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Type Code")
+
+        if CbCodeHdr.objects.filter(type_nm=data['type_nm'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Type Name")
+
+        serializer = CbCodeHdrSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+
+    return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@csrf_exempt
+def code_hdr_detail(request, pk):
+    obj = CbCodeHdr.objects.get(id=pk)
+
+    if request.method == 'GET':  # 현재 화면에선 개별조회 미지원.
+        serializer = CbCodeHdrSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+
+        if CbCodeHdr.objects.filter(type_nm=data['type_nm'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Type Name")
+
+        serializer = CbCodeHdrSerializer(obj, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+
+        data = JSONParser().parse(request)
+
+        if CbCodeDtl.objects.filter(type_cd=data['type_cd'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Can't delete root code")
+
+        obj.usage_fg = 'N'
+        obj.save()
+        return HttpResponse(status=204)
+
+
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def code_dtl_list(request):
+    if request.method == 'GET':
+        query_set = CbCodeDtl.objects.all()
+        serializer = CbCodeDtlSerializer(query_set, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+
+        if CbCodeDtl.objects.filter(type_cd=data['type_cd'], code_cd=data['code_cd'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Code")
+
+        if CbCodeDtl.objects.filter(type_cd=data['type_cd'], code_nm=data['code_nm'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Code Name")
+
+        serializer = CbCodeDtlSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+
+    return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@csrf_exempt
+def code_dtl_detail(request, pk):
+    obj = CbCodeDtl.objects.get(id=pk)
+
+    if request.method == 'GET':  # 현재 화면에선 개별조회 미지원.
+        serializer = CbCodeDtlSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+
+        if CbCodeDtl.objects.filter(type_cd=data['type_cd'], code_nm=data['code_nm'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Code Name")
+
+        serializer = CbCodeDtlSerializer(obj, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        obj.usage_fg = 'N'
+        obj.save()
+        return HttpResponse(status=204)
+
+
+
 
 
 
