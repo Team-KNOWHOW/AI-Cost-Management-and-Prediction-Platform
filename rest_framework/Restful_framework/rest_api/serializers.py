@@ -62,3 +62,9 @@ class CbCodeDtlSerializer(serializers.ModelSerializer):
         fields = ('type_cd', 'code_cd', 'code_nm')
 
 
+class CbCostCenterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CbCostCenter
+        fields = ('cstctr_cd', 'cstctr_nm', 'bizarea_id', 'bizunit_id', 'factory_id', 'cstctr_type', 'cstctr_dir_div')
+
+
