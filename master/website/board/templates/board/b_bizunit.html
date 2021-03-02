@@ -47,10 +47,10 @@
                     </td>
                 </tr>
                 </tbody>
-
             </table>
         </div>
         <br>
+
         </div>
         <div class="row">
             <div class="col-lg-12">
@@ -59,42 +59,41 @@
                         {% if rsHeader %}
                         <table class="table" width="100%">
                             <thead>
-                            <tr>
-                                <th>사업부코드</th>
-                                <th>사업부명</th>
-                                <th>비고</th>
-                                <th></th>
-                                <th></th>
-
-                                <!--                                    <th>사용구분</th>-->
-                            </tr>
+                                <tr>
+                                    <th>사업부코드</th>
+                                    <th>사업부명</th>
+                                    <th>비고</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
                             </thead>
-                            {% for i in rsHeader %}
+
                             <tbody >
-                            <tr>
-                                <td>
-                                    {{ i.bizunit_cd }}
-                                </td>
-
-                                <td>
-                                    {{ i.bizunit_nm }}
-                                </td>
-                                <td>
-                                    <input type="text" class="bizunitrmrk form-control" id="bizunitrmrk{{ i.id }}" value="{{ i.bizunit_rmrk }}" placeholder="bizunitrmrk"/>
-                                </td>
-                                <td width="45%" align="right"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator">수정</a></td>
-                                <td width="5%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator">삭제</a></td>
-                                </td>
-
-                            </tr>
+                                {% for i in rsHeader %}
+                                <tr>
+                                    <td id="bizunitcd{{ i.id }}">
+                                        {{ i.bizunit_cd }}
+                                    </td>
+                                    <td>
+                                        <input type="text" class="bizunitrmrk form-control" id="bizunitnm{{ i.id }}" value="{{ i.bizunit_nm }}" placeholder="bizunitrmrk"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="bizunitrmrk form-control" id="bizunitrmrk{{ i.id }}" value="{{ i.bizunit_rmrk }}" placeholder="bizunitrmrk"/>
+                                    </td>
+                                    <td width="45%" align="right">
+                                        <button class="btn btn-default btn-sm" id="update_{{i.id}}" name="{{i.id}}" onclick="update_element(this);">수정</button>
+                                    </td>
+                                    <td width="5%">
+                                        <button class="btn btn-default btn-sm" id="delete_{{i.id}}" name="{{i.id}}" onclick="delete_element(this);">삭제</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
-                            {% endfor %}
                         </table>
                         {% else %}
                         <span>내용이 없습니다.</span>
                         {% endif %}
                     </div>
-
                 </section>
             </div>
         </div>
@@ -119,104 +118,129 @@
         var xhr;
 
         function insert_element() {
-//변수 리스트
-            var bizunitcd = document.getElementById("bizunit_cd").value;
-            var bizunitnm = document.getElementById("bizunit_nm").value;
-            var bizunitrmrk = document.getElementById("bizunit_rmrk").value;
+            var bizunitCd = document.getElementById("bizunit_cd").value;
+            var bizunitNm = document.getElementById("bizunit_nm").value;
+            var bizunitRmrk = document.getElementById("bizunit_rmrk").value;
 
-//예외 처리
             // 사업부 코드 항목
-            if(bizunitcd == '') {
+            if (bizunitCd == '') {
                 alert('사업부 코드가 비었습니다.');
                 document.getElementById("bizunit_cd").focus();
                 return false;
             }
             // 사업부명 항목
-            if(bizunitnm == '') {
+            if (bizunitNm == '') {
                 alert('사업부명이 비었습니다.');
                 document.getElementById("bizunit_nm").focus();
                 return false;
             }
             // 비고 항목
-            if(bizunitrmrk == '') {
+            if (bizunitRmrk == '') {
                 alert('사업부 비고가 비었습니다.');
                 document.getElementById("bizunit_rmrk").focus();
                 return false;
             }
 
-//예외 처리 끝
-
-            var strurl = "bizunit_element_insert?bizunitcd=" + bizunitcd + "&bizunitnm=" + bizunitnm+ "&bizunitrmrk=" + bizunitrmrk;
-            //alert(strurl);
-            //return false;
+            var payload = {
+                "bizunit_cd": bizunitCd,
+                "bizunit_nm": bizunitNm,
+                "bizunit_rmrk": bizunitRmrk
+            };
 
             xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+                    if (xhr.status == 201)
+                        alert("생성이 완료되었습니다.");
+                    location.reload();
+                } else {
+                    if (xhr.status == 400) {
+                        var data = xhr.responseText;
+                        var obj = JSON.parse(data);
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    if(obj.flag =='0') {
-                        location.reload();
+                        if (obj.detail == "DuplicateCode") {
+                            alert("법인코드가 이미 존재합니다.");
+                        } else {
+                            alert("400 Bad Request");
+                        }
                     }
                 }
             };
-            xhr.open("POST", strurl);
+
+            var strurl = "http://127.0.0.1:8080/rest_api/bizunits";
+            xhr.open("POST", strurl, true);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(payload));
         }
 
         function update_element(elem) {
-            var value = elem.getAttribute('value');
-            var bizunitrmrk = $('#bizunitrmrk' + value).val();
+            var id = elem.getAttribute('name');
 
-            var strurl = "bizunit_element_update?value=" + value + "&bizunitrmrk="+bizunitrmrk;
+            var bizunitCd = $('#bizunitcd' + id).text();
+            var bizunitNm = $('#bizunitnm' + id).val();
+            var bizunitRmrk = $('#bizunitrmrk' + id).val();
+
+            var payload = {
+                "bizunit_cd": bizunitCd,
+                "bizunit_nm": bizunitNm,
+                "bizunit_rmrk": bizunitRmrk
+            };
 
             xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+                    if (xhr.status == 200)
+                        alert("수정이 완료되었습니다.");
+                    location.reload();
+                } else {
+                    if (xhr.status == 400) {
+                        var data = xhr.responseText;
+                        var obj = JSON.parse(data);
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    if(obj.flag =='0') {
-                        location.reload();
+                        if (obj.detail == "") {//추후 에러처리 추가시 사용
+                            alert("에러코드");
+                        } else {
+                            alert("400 Bad Request");
+                        }
                     }
                 }
             };
-            xhr.open("POST", strurl);
+
+            var strurl = "http://127.0.0.1:8080/rest_api/bizunits/" + id;
+            xhr.open("PUT", strurl, true);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(payload));
         }
 
         function delete_element(elem) {
-
-            var id = elem.getAttribute('id');
-
-            var strurl = "bizunit_element_delete?id=" + id;
-            // alert(strurl);
-            // return false;
+            var id = elem.getAttribute('name');
 
             xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+                    if (xhr.status == 204)
+                        alert("삭제가 완료되었습니다.");
+                    location.reload();
+                } else {
+                    if (xhr.status == 400) {
+                        var data = xhr.responseText;
+                        var obj = JSON.parse(data);
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-                        location.reload();
-
-                    if(obj.flag =='1') {
-                        document.getElementById('typebox_' + id).remove();
+                        if (obj.detail == "") {//추후 에러처리 추가시 사용
+                            alert("에러코드");
+                        } else {
+                            alert("400 Bad Request");
+                        }
                     }
                 }
             };
 
-            xhr.open("POST", strurl);
+            var strurl = "http://127.0.0.1:8080/rest_api/bizunits/" + id;
+            xhr.open("DELETE", strurl, true);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(null);
         }
     </script>

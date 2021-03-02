@@ -23,40 +23,39 @@
             </div>
 
             <div>
-                    <div>
-                        <table>
-                            <tr>
-                                <td width="" align="center">작업장코드</td>
-                                <td width="" align="center">작업장명</td>
-                                <td width="" align="center">코스트센터</td>
-                                <td width="" align="center"></td>
-                            </tr>
-
-                            <tbody>
-                            <tr>
-                                <td>
-                                    <input type="text" class="form-control" id="workcenter_cd" placeholder="Code">
-                                </td>
-                                <td>
+                <table>
+                    <thead>
+                    <tr>
+                        <td width="" align="center">작업장코드</td>
+                        <td width="" align="center">작업장명</td>
+                        <td width="" align="center">코스트센터</td>
+                        <td width="" align="center"></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="text" class="form-control" id="workcenter_cd" placeholder="Code">
+                            </td>
+                            <td>
                                     <input type="text" class="form-control" id="workcenter_nm" placeholder="Name">
-                                </td>
-                                <td>
-                                    <select id="cstctr" class="form-control">
-                                        {% for i in rsCostcenter %}
-                                            <option value="{{i.id}}">{{ i.cstctr_nm }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    <button onclick="insert_element();" class="btn btn-primary btn-sm" >등록</button>
-                                </td>
-                            </tr>
-                            </tbody>
-                       </table>
-                   </div>
+                            </td>
+                            <td>
+                                <select id="cstctr" class="form-control">
+                                    {% for i in rsCostcenter %}
+                                    <option value="{{i.id}}">{{ i.cstctr_nm }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <button onclick="insert_element();" class="btn btn-primary btn-sm" >등록</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
             <br>
+
             <div class="row" >
                 <div class="col-lg-12">
                     <section class="panel">
@@ -64,7 +63,6 @@
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>작업장코드</th>
                                     <th>작업장명</th>
                                     <th>코스트센터명</th>
@@ -74,13 +72,10 @@
                                 </tr>
                                 </thead>
 
-                                {% for i in rsWorkcenter %}
                                 <tbody>
+                                    {% for i in rsWorkcenter %}
                                     <tr>
-                                        <td>
-                                            {{ i.id }}
-                                        </td>
-                                        <td>
+                                        <td id="workcenter_cd{{i.id}}">
                                             {{ i.workcenter_cd }}
                                         </td>
                                         <td>
@@ -90,22 +85,22 @@
                                             <select id="cstctr_id{{i.id}}"  style="padding:3px;">
                                                 {% for ii in rsCostcenter %}
                                                     {% if i.cstctr_id == ii.id %}
-                                                        <option selected value="{{ ii.id }}">{{ ii.cstctr_nm }}</option>
+                                                    <option selected value="{{ ii.id }}">{{ ii.cstctr_nm }}</option>
                                                     {% else %}
-                                                        <option value="{{ ii.id }}">{{ ii.cstctr_nm }}</option>
+                                                    <option value="{{ ii.id }}">{{ ii.cstctr_nm }}</option>
                                                     {% endif %}
                                                 {% endfor %}
                                             </select>
                                         </td>
                                         <td width="40%" align="right" >
-                                            <a value="{{ i.id }}" class="btn btn-default btn-sm" onclick="update_element(this)">수정</a>
+                                            <a name="{{ i.id }}" class="btn btn-default btn-sm" onclick="update_element(this)">수정</a>
                                         </td>
                                         <td width="5%">
-                                            <a value="{{ i.id }}" class="btn btn-default btn-sm" onclick="delete_element(this)">삭제</a>
+                                            <a name="{{ i.id }}" class="btn btn-default btn-sm" onclick="delete_element(this)">삭제</a>
                                         </td>
                                     </tr>
+                                    {% endfor %}
                                 </tbody>
-                                {% endfor %}
                             </table>
                         </div>
                     </section>
@@ -137,109 +132,131 @@
 
                 function insert_element() {
                     //변수 리스트
-                    var cstctr_selected = document.getElementById('cstctr');
-                    var cstctrid = cstctr_selected.options[cstctr_selected.selectedIndex].value;
+                    var cstctrSelected = document.getElementById('cstctr');
+                    var cstctrId = cstctrSelected.options[cstctrSelected.selectedIndex].value;
 
-                    var workcentercd = document.getElementById("workcenter_cd").value;
-                    var workcenternm = document.getElementById("workcenter_nm").value;
+                    var workcenterCd = document.getElementById("workcenter_cd").value;
+                    var workcenterNm = document.getElementById("workcenter_nm").value;
 
                     //예외 처리
 
                     // 작업장 코드 항목
-                    if(workcentercd == '') {
+                    if (workcenterCd == '') {
                         alert('작업장 코드가 비었습니다.');
                         document.getElementById("workcenter_cd").focus();
                         return false;
                     }
 
                     // 작업장명 항목
-                    if(workcenternm == '') {
+                    if (workcenterNm == '') {
                         alert('작업장명이 비었습니다.');
                         document.getElementById("workcenter_nm").focus();
                         return false;
                     }
 
-                    //예외 처리 끝
-
-                    var strurl = "workcenter_element_insert?cstctrid=" + cstctrid
-                        + "&workcentercd=" + workcentercd
-                        + "&workcenternm=" + workcenternm;
+                    var payload = {
+                        "workcenter_cd": workcenterCd,
+                        "workcenter_nm": workcenterNm,
+                        "cstctr_id": cstctrId
+                    };
 
                     xhr = new XMLHttpRequest();
-                    xhr.onreadystatechange = function() {
+                    xhr.onreadystatechange = function () {
                         if (xhr.readyState == 4) {
-                            var data = xhr.responseText;
+                            if (xhr.status == 201)
+                                alert("생성이 완료되었습니다.");
+                            location.reload();
+                        } else {
+                            if (xhr.status == 400) {
+                                var data = xhr.responseText;
+                                var obj = JSON.parse(data);
 
-                            var obj = JSON.parse(data);
-                            alert(obj.result_msg);
-
-                            if(obj.flag =='0') {
-                                location.reload();
+                                if (obj.detail == "DuplicateCode") {
+                                    alert("법인코드가 이미 존재합니다.");
+                                } else {
+                                    alert("400 Bad Request");
+                                }
                             }
                         }
                     };
 
-                    xhr.open("POST", strurl);
+                    var strurl = "http://127.0.0.1:8080/rest_api/workcenters";
+                    xhr.open("POST", strurl, true);
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    xhr.send(null);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(JSON.stringify(payload));
                 }
 
                 function update_element(elem) {
-                    var id = elem.getAttribute('value');
-                    var workcenternm = document.getElementById('workcenter_nm' + id).value;
+                    var id = elem.getAttribute('name');
 
-                    var cstctr_selected = document.getElementById('cstctr_id' + id);
-                    var cstctrid = cstctr_selected.options[cstctr_selected.selectedIndex].value;
+                    var workcenterCd = document.getElementById('workcenter_cd' + id).value;
+                    var workcenterNm = document.getElementById('workcenter_nm' + id).value;
 
-                    var e_value = elem.value;
-                    if(e_value == ''){
-                        alert('Value empty');
-                        elem.focus();
-                        return false;
-                    }
+                    var cstctrSelected = document.getElementById('cstctr_id' + id);
+                    var cstctrId = cstctrSelected.options[cstctrSelected.selectedIndex].value;
 
-                    var strurl = "workcenter_element_update?id=" + id
-                        + "&workcenternm=" + workcenternm
-                        + "&cstctrid=" + cstctrid;
-
-                    xhr = new XMLHttpRequest();
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState == 4) {
-                            var data = xhr.responseText;
-
-                            var obj = JSON.parse(data);
-                            alert(obj.result_msg);
-
-                        }
+                    var payload = {
+                        "workcenter_cd": workcenterCd,
+                        "workcenter_nm": workcenterNm,
+                        "cstctr_id": cstctrId
                     };
-                    xhr.open("POST", strurl);
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    xhr.send(null);
-                    location.reload();
-                }
-
-                function delete_element(elem) {
-                    var id = elem.getAttribute('value');
-                    var strurl = "workcenter_element_delete?id=" + id;
 
                     xhr = new XMLHttpRequest();
-                    xhr.onreadystatechange = function() {
+                    xhr.onreadystatechange = function () {
                         if (xhr.readyState == 4) {
-                            var data = xhr.responseText;
+                            if (xhr.status == 200)
+                                alert("수정이 완료되었습니다.");
+                            location.reload();
+                        } else {
+                            if (xhr.status == 400) {
+                                var data = xhr.responseText;
+                                var obj = JSON.parse(data);
 
-                            var obj = JSON.parse(data);
-                            alert(obj.result_msg);
-
-                            if(obj.flag =='1') {
-                                document.getElementById('typebox_' + id).remove();
+                                if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                    alert("에러코드");
+                                } else {
+                                    alert("400 Bad Request");
+                                }
                             }
                         }
                     };
 
-                    xhr.open("POST", strurl);
+                    var strurl = "http://127.0.0.1:8080/rest_api/workcenters/" + id;
+                    xhr.open("PUT", strurl, true);
                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(JSON.stringify(payload));
+                }
+
+                function delete_element(elem) {
+                    var id = elem.getAttribute('name');
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4) {
+                            if (xhr.status == 204)
+                                alert("삭제가 완료되었습니다.");
+                            location.reload();
+                        } else {
+                            if (xhr.status == 400) {
+                                var data = xhr.responseText;
+                                var obj = JSON.parse(data);
+
+                                if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                    alert("에러코드");
+                                } else {
+                                    alert("400 Bad Request");
+                                }
+                            }
+                        }
+                    };
+
+                    var strurl = "http://127.0.0.1:8080/rest_api/workcenters/" + id;
+                    xhr.open("DELETE", strurl, true);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.setRequestHeader("Content-Type", "application/json");
                     xhr.send(null);
-                    location.reload();
                 }
             </script>
         </section>
