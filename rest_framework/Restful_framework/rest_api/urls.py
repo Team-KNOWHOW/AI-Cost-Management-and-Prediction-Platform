@@ -48,4 +48,7 @@ urlpatterns = [
 
     path('code-details', views.code_dtl_list, name='code_dtl_list'),
     path('code-details/<int:pk>', views.code_dtl_detail, name='code_dtl_detail'),
+
+    path('costcenters', views.cstctr_list, name='cstctr_list'),
+    path('costcenters/<int:pk>', views.cstctr_detail, name='cstctr_detail'),
 ]
