@@ -20,70 +20,82 @@
             }
             return cookieValue;
         }
-        var csrftoken = getCookie('csrftoken');
 
+        var csrftoken = getCookie('csrftoken');
         var xhr;
 
-        function insertItem()
-        {
-
+        function insertItem() {
             var factorySelect = document.querySelector('.factory');
-            var factoryid = factorySelect.options[factorySelect.selectedIndex].value;
+            var factoryId = factorySelect.options[factorySelect.selectedIndex].value;
 
-            var itemcd = document.getElementById('item_cd').value;
-            if(itemcd == ''){
+            var itemCd = document.getElementById('item_cd').value;
+            if (itemCd == '') {
                 alert('Code empty');
                 document.getElementById('item_cd').focus();
                 return false;
             }
 
-            var itemnm = document.getElementById('item_nm').value;
-            if(itemnm == ''){
+            var itemNm = document.getElementById('item_nm').value;
+            if (itemnm == '') {
                 alert('Name empty');
                 document.getElementById('itemnm_cd').focus();
                 return false;
             }
-            var itemspec = document.getElementById('item_spec').value;
-            if(itemspec == ''){
+            var itemSpec = document.getElementById('item_spec').value;
+            if (itemSpec == '') {
                 alert('Spec empty');
                 document.getElementById('item_spec').focus();
                 return false;
             }
 
             var unitSelect = document.querySelector('.unit');
-            var unitid = unitSelect.options[unitSelect.selectedIndex].value;
+            var unitId = unitSelect.options[unitSelect.selectedIndex].value;
 
             var itemgrpSelect = document.querySelector('.itemgrp');
-            var itemgrpid = itemgrpSelect.options[itemgrpSelect.selectedIndex].value;
+            var itemgrpId = itemgrpSelect.options[itemgrpSelect.selectedIndex].value;
 
             var itemaccntSelect = document.querySelector('.itemaccnt');
-            var itemaccntid = itemaccntSelect.options[itemaccntSelect.selectedIndex].value;
+            var itemaccntId = itemaccntSelect.options[itemaccntSelect.selectedIndex].value;
 
-            var strurl = "item_insert?factoryid=" + factoryid + "&itemcd=" + itemcd + "&itemnm=" + itemnm +
-                         "&itemspec=" + itemspec + "&unitid=" + unitid + "&itemgrpid=" + itemgrpid + "&itemaccntid=" + itemaccntid;
-            //alert(strurl);
-            //return false;
+            var payload = {
+                "co_cd": coCd,
+                "co_nm": coNm,
+                "co_shnm": coShnm,
+                "co_rpr": coRpr,
+                "co_type": coType,
+                "co_div": coDiv,
+                "unitcur": unitCurId,
+                "unitcn": unitCnId
+            };
 
             xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+                    if (xhr.status == 201)
+                        alert("생성이 완료되었습니다.");
+                    location.reload();
+                } else {
+                    if (xhr.status == 400) {
+                        var data = xhr.responseText;
+                        var obj = JSON.parse(data);
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    if(obj.flag =='0') {
-                        location.reload();
+                        if (obj.detail == "DuplicateCode") {
+                            alert("법인코드가 이미 존재합니다.");
+                        } else {
+                            alert("400 Bad Request");
+                        }
                     }
                 }
             };
-            xhr.open("POST", strurl);
+
+            var strurl = "http://127.0.0.1:8080/rest_api/corporations";
+            xhr.open("POST", strurl, true);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(payload));
         }
 
-        function updateItem(elem)
-        {
+        function updateItem(elem) {
             var id = elem.getAttribute('id');
 
             var itemname = $('#name' + id).val();
@@ -120,10 +132,8 @@
             xhr.open("POST", strurl);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
             xhr.send(null);
-
         }
-        function deleteItem(elem)
-        {
+        function deleteItem(elem) {
              var id = elem.getAttribute('value');
 
              if (!confirm("삭제 하시겠습니까")) {
@@ -147,8 +157,7 @@
              xhr.setRequestHeader("X-CSRFToken", csrftoken);
              xhr.send(null);
         }
-        function searchItem()
-        {
+        function searchItem() {
             var itemcode = document.getElementById('search_cd').value;
             var itemname = document.getElementById('search_nm').value;
             var itemspec = document.getElementById('search_spec').value;
@@ -197,6 +206,7 @@
             </table>
         </div>
         <br>
+
         <div class="row">
             <div class="col-lg-12">
                 <section class="panel">
@@ -220,114 +230,111 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr bgcolor="#F7F7F7">
-                                <td width="8%"></td>
-                                <td width="12%">
-                                    <select class="factory">
-                                        {% for ii in rsFactory %}
-                                        <option value="{{ ii.id }}"> {{ ii.factory_nm }} </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td width="8%"> <input type="text" id="item_cd" class="form-control" placeholder="itemcd"></td>
-                                <td width="12%"> <input type="text" id="item_nm" class="form-control" placeholder="itemname"></td>
-                                <td width="12%"> <input type="text" id="item_spec" class="form-control" placeholder="spec"></td>
-                                <td width="12%">
-                                    <select class="unit">
-                                        {% for ii in rsUnit %}
-                                        <option value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td width="8%"></td>
-                                <td width="12%">
-                                    <select class="itemgrp">
-                                        {% for ii in rsItemgrp %}
-                                        <option value="{{ii.id}}"> {{ ii.itemgrp_nm }} </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td width="12%">
-                                    <select class="itemaccnt">
-                                        {% for ii in rsItemaccnt %}
-                                        <option value="{{ii.id}}"> {{ ii.itemaccnt_nm }} </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td width="8%"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insertItem();" title="Bootstrap 3 themes generator">등록</a></td>
-                                <td></td>
-                            </tr>
-                            </tbody>
-                            {% for i in rsItem %}
-                            <tbody>
-                            <tr>
-                                <td width="8%">
-                                    {{ i.factory_cd }}
-                                </td>
-                                <td width="12%">
-                                    <select class="factory{{i.id}}">
-                                        {% for ii in rsFactory %}
-                                        {% if i.factory_id == ii.id %}
-                                        <option selected value="{{ ii.id }}"> {{ ii.factory_nm }} </option>
-                                        {% else %}
-                                        <option value="{{ii.id}}"> {{ ii.factory_nm }} </option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td width="8%">{{ i.item_cd }}</td>
-                                <td width="12%">
-                                    <input type="text" class="form-control" id="name{{ i.id }}" value="{{ i.item_nm }}"/>
-                                </td>
-                                <td width="12%">
-                                    <input type="text" class="form-control" id="spec{{ i.id }}" value="{{ i.item_spec }}"/>
-                                </td>
-                                <td width="12%">
-                                    <select class="unit{{i.id}}">
-                                        {% for ii in rsUnit %}
-                                        {% if i.unit_id == ii.id %}
-                                        <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
-                                        {% else %}
-                                        <option value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td width="8%">{{ i.itemgrp_cd }}</td>
-                                <td width="12%">
-                                    <select class="itemgrp{{i.id}}">
-                                        {% for ii in rsItemgrp %}
-                                        {% if i.itemgrp_id == ii.id %}
-                                        <option selected value="{{ ii.id }}"> {{ ii.itemgrp_nm }} </option>
-                                        {% else %}
-                                        <option value="{{ ii.id }}"> {{ ii.itemgrp_nm }} </option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td width="12%">
-                                    <select class="itemaccnt{{i.id}}">
-                                        {% for ii in rsItemaccnt %}
-                                        {% if i.itemaccnt_id == ii.id %}
-                                        <option selected value="{{ ii.id }}"> {{ ii.itemaccnt_nm }} </option>
-                                        {% else %}
-                                        <option value="{{ ii.id }}"> {{ ii.itemaccnt_nm }} </option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td width="8%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="updateItem(this);" title="Bootstrap 3 themes generator">수정</a></td>
-                                <td width="8%"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="deleteItem(this);" title="Bootstrap 3 themes generator">삭제</a></td>
-                            </tr>
-                            </tbody>
-                            {% endfor %}
+                                <tr bgcolor="#F7F7F7">
+                                    <td width="8%"></td>
+                                    <td width="12%">
+                                        <select class="factory">
+                                            {% for ii in rsFactory %}
+                                            <option value="{{ ii.id }}"> {{ ii.factory_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td width="8%"> <input type="text" id="item_cd" class="form-control" placeholder="itemcd"></td>
+                                    <td width="12%"> <input type="text" id="item_nm" class="form-control" placeholder="itemname"></td>
+                                    <td width="12%"> <input type="text" id="item_spec" class="form-control" placeholder="spec"></td>
+                                    <td width="12%">
+                                        <select class="unit">
+                                            {% for ii in rsUnit %}
+                                            <option value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td width="8%"></td>
+                                    <td width="12%">
+                                        <select class="itemgrp">
+                                            {% for ii in rsItemgrp %}
+                                            <option value="{{ii.id}}"> {{ ii.itemgrp_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td width="12%">
+                                        <select class="itemaccnt">
+                                            {% for ii in rsItemaccnt %}
+                                            <option value="{{ii.id}}"> {{ ii.itemaccnt_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td width="8%"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insertItem();" title="Bootstrap 3 themes generator">등록</a></td>
+                                    <td></td>
+                                </tr>
 
+                                {% for i in rsItem %}
+                                <tr>
+                                    <td width="8%">
+                                        {{ i.factory_cd }}
+                                    </td>
+                                    <td width="12%">
+                                        <select class="factory{{i.id}}">
+                                            {% for ii in rsFactory %}
+                                            {% if i.factory_id == ii.id %}
+                                            <option selected value="{{ ii.id }}"> {{ ii.factory_nm }} </option>
+                                            {% else %}
+                                            <option value="{{ii.id}}"> {{ ii.factory_nm }} </option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td width="8%">{{ i.item_cd }}</td>
+                                    <td width="12%">
+                                        <input type="text" class="form-control" id="name{{ i.id }}" value="{{ i.item_nm }}"/>
+                                    </td>
+                                    <td width="12%">
+                                        <input type="text" class="form-control" id="spec{{ i.id }}" value="{{ i.item_spec }}"/>
+                                    </td>
+                                    <td width="12%">
+                                        <select class="unit{{i.id}}">
+                                            {% for ii in rsUnit %}
+                                            {% if i.unit_id == ii.id %}
+                                            <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
+                                            {% else %}
+                                            <option value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td width="8%">{{ i.itemgrp_cd }}</td>
+                                    <td width="12%">
+                                        <select class="itemgrp{{i.id}}">
+                                            {% for ii in rsItemgrp %}
+                                            {% if i.itemgrp_id == ii.id %}
+                                            <option selected value="{{ ii.id }}"> {{ ii.itemgrp_nm }} </option>
+                                            {% else %}
+                                            <option value="{{ ii.id }}"> {{ ii.itemgrp_nm }} </option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td width="12%">
+                                        <select class="itemaccnt{{i.id}}">
+                                            {% for ii in rsItemaccnt %}
+                                            {% if i.itemaccnt_id == ii.id %}
+                                            <option selected value="{{ ii.id }}"> {{ ii.itemaccnt_nm }} </option>
+                                            {% else %}
+                                            <option value="{{ ii.id }}"> {{ ii.itemaccnt_nm }} </option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td width="8%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="updateItem(this);" title="Bootstrap 3 themes generator">수정</a></td>
+                                    <td width="8%"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="deleteItem(this);" title="Bootstrap 3 themes generator">삭제</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                         {% else %}
                         <span>Item이 없습니다.</span>
                         {% endif %}
                     </div>
-
                 </section>
             </div>
         </div>
@@ -339,47 +346,47 @@
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th>
-                                    공장코드
-                                </th>
-                                <th>
-                                    단위코드
-                                </th>
-                                <th>
-                                    품목그룹
-                                </th>
-                                <th>
-                                    품목계정
-                                </th>
-                            </tr>
+                                <tr>
+                                    <th>
+                                        공장코드
+                                    </th>
+                                    <th>
+                                        단위코드
+                                    </th>
+                                    <th>
+                                        품목그룹
+                                    </th>
+                                    <th>
+                                        품목계정
+                                    </th>
+                                </tr>
+                            </thead>
                             <tbody>
-                            <tr>
-                                <td width="25%">
-                                    {% for i in rsFactory %}
-                                    <div>{{ i.id }}.{{ i.factory_cd }} - {{ i.factory_nm }}</div>
-                                    {% endfor %}
-                                </td>
-                                <td width="25%">
-                                    {% for i in rsUnit %}
-                                    <div>{{ i.id }}.{{ i.code_cd }} - {{ i.cd_nm }}</div>
-                                    {% endfor %}
-                                </td>
-                                <td width="25%">
-                                    {% for i in rsItemgrp %}
-                                    <div>{{ i.id }}.{{ i.itemgrp_cd }} - {{ i.itemgrp_nm }}</div>
-                                    {% endfor %}
-                                </td>
-                                <td width="25%">
-                                    {% for i in rsItemaccnt %}
-                                    <div>{{ i.id }}.{{ i.itemaccnt_cd }} - {{ i.itemaccnt_nm }}</div>
-                                    {% endfor %}
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td width="25%">
+                                        {% for i in rsFactory %}
+                                        <div>{{ i.id }}.{{ i.factory_cd }} - {{ i.factory_nm }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td width="25%">
+                                        {% for i in rsUnit %}
+                                        <div>{{ i.id }}.{{ i.code_cd }} - {{ i.cd_nm }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td width="25%">
+                                        {% for i in rsItemgrp %}
+                                        <div>{{ i.id }}.{{ i.itemgrp_cd }} - {{ i.itemgrp_nm }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td width="25%">
+                                        {% for i in rsItemaccnt %}
+                                        <div>{{ i.id }}.{{ i.itemaccnt_cd }} - {{ i.itemaccnt_nm }}</div>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-
                 </section>
             </div>
         </div>
