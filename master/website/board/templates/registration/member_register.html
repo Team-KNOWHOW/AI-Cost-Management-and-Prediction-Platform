@@ -1,0 +1,229 @@
+{% load static %}
+
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Creative - Bootstrap 3 Responsive Admin Template">
+  <meta name="author" content="GeeksLabs">
+  <meta name="keyword" content="Creative, Dashboard, Admin, Template, Theme, Bootstrap, Responsive, Retina, Minimal">
+  <link rel="shortcut icon" href="{% static 'img/favicon.png' %}">
+
+  <title>
+      {% block title %}
+        회원가입
+      {% endblock %}
+  </title>
+
+  <!-- Bootstrap CSS -->
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+  <!-- bootstrap theme -->
+  <link href="{% static 'css/bootstrap-theme.css' %}" rel="stylesheet">
+  <!--external css-->
+  <!-- font icon -->
+  <link href="{% static 'css/elegant-icons-style.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/font-awesome.css" rel="stylesheet' %}" />
+  <!-- Custom styles -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  <link href="{% static 'css/style-responsive.css'%}" rel="stylesheet" />
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 -->
+  <!--[if lt IE 9]>
+    <script src="{% static 'js/html5shiv.js' %}"></script>
+    <script src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+  <script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+</head>
+<body class="login-img-body">
+<input type="hidden" id="idcheck" value="0"/>
+    <div class="row" style="width: 60%;">
+      <div class="col-lg-12">
+        <section class="panel">
+          <header class="panel-heading">
+            회원가입
+          </header>
+          <div class="panel-body">
+            <div class="form">
+              <form class="form-validate form-horizontal " id="register_form">
+                <div class="form-group ">
+                  <label for="user_id" class="control-label col-lg-2">ID <span class="required">*</span></label>
+                  <div class="col-lg-10">
+                    <input class="form-control " id="user_id" name="user_id" type="text" required/>
+                  </div>
+                  <br><br>
+                  <div class="col-lg-offset-2 col-lg-10">
+                    <button class="btn btn-primary" type="button" onclick="checkId()">중복검사</button>
+                  </div>
+                </div>
+                <div class="form-group ">
+                  <label for="password" class="control-label col-lg-2">비밀번호 <span class="required">*</span></label>
+                  <div class="col-lg-10">
+                    <input class="form-control " id="password" name="password" type="password" required/>
+                  </div>
+                </div>
+                <div class="form-group ">
+                  <label for="confirm_password" class="control-label col-lg-2">비밀번호 확인 <span class="required">*</span></label>
+                  <div class="col-lg-10">
+                    <input class="form-control " id="confirm_password" name="confirm_password" type="password" required/>
+                  </div>
+                </div>
+                <div class="form-group ">
+                  <label for="name" class="control-label col-lg-2">이름 </label>
+                  <div class="col-lg-10">
+                    <input class=" form-control" id="name" name="name" type="text" />
+                  </div>
+                </div>
+                <div class="form-group ">
+                  <label for="phoneno" class="control-label col-lg-2">전화번호 </label>
+                  <div class="col-lg-10">
+                    <input class=" form-control" id="phoneno" name="phoneno" type="text" placeholder="010-1234-5678"/>
+                  </div>
+                </div>
+                <div class="form-group ">
+                  <label for="email" class="control-label col-lg-2">Email </label>
+                  <div class="col-lg-10">
+                    <input class="form-control " id="email" name="email" type="email" placeholder="example@email.com"/>
+                  </div>
+                </div>
+                <div class="form-group ">
+                  <label for="clause" class="control-label col-lg-2 col-sm-3">약관 동의 <span class="required">*</span></label>
+                  <div class="col-lg-10 col-sm-9">
+                    <input type="checkbox" style="width: 20px" class="checkbox form-control" id="clause" name="clause" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-lg-offset-2 col-lg-10">
+                    <button class="btn btn-primary" type="button" onclick="registerMember()">가입</button>
+                    <button class="btn btn-default" type="button" onclick="location.href='/'">취소</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script src="{% static 'js/sha1.js' %}"></script>
+ <script>
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+        var xhr;
+
+        function registerMember() {//회원가입
+
+          user_id = document.getElementById("user_id").value;
+          if(user_id == "") {
+            alert("아이디를 입력해주세요.");
+            document.getElementById("user_id").focus();
+            return false;
+          }
+
+          password = document.getElementById("password").value;
+          if(password == "") {
+            alert("비밀번호를 입력해주세요.");
+            document.getElementById("password").focus();
+            return false;
+          }
+
+          confirm_password = document.getElementById("confirm_password").value;
+          if(confirm_password == "") {
+            alert("비밀번호가 일치하지 않습니다.");
+            document.getElementById("confirm_password").focus();
+            return false;
+          }
+
+          if(password != confirm_password) { //비밀번호 칸과 비밀번호 확인칸 일치하는지 체크
+            alert("비밀번호가 일치하지 않습니다.");
+            document.getElementById("confirm_password").focus();
+            return false;
+          }
+
+          encpwd = hex_sha1(password); //비밀번호 암호화
+
+          name = document.getElementById("name").value;
+          email = document.getElementById("email").value;
+          phone_num = document.getElementById("phoneno").value;
+
+          wflag = document.getElementById("clause").checked; //약관 동의여부 체크
+          if(wflag == false) {
+            alert("약관에 동의하여주십시오.");
+            return false;
+          }
+
+          idchk = document.getElementById("idcheck").value; //아이디 중복확인 했는지 체크
+          if(idchk != "1") {
+            alert("아이디 중복확인을 하십시오.");
+            return false;
+          }
+
+          var strurl = "member_insert?user_id=" + user_id + "&psswd=" + encpwd + "&user_nm=" + name +
+          "&phoneno=" + phone_num + "&email=" + email;
+
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if(xhr.readyState == 4) {
+              var data = xhr.responseText;
+
+              var obj = JSON.parse(data);
+              alert(obj.result_msg);
+              location.href = "/";
+            }
+          };
+          xhr.open("POST", strurl);
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          xhr.send(null);
+        }
+
+        function checkId() { //아이디 중복체크
+
+          user_id = document.getElementById("user_id").value;
+          if(user_id == "") {
+            alert("아이디를 입력해주세요.");
+            document.getElementById("user_id").focus();
+            return false;
+          }
+
+          var strurl = "member_id_check?user_id=" + user_id;
+
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if(xhr.readyState == 4) {
+              var data = xhr.responseText;
+
+              var obj = JSON.parse(data);
+
+              if(obj.flag == "1") { //중복된 아이디가 있는 경우
+                alert(obj.result_msg);
+                document.getElementById("user_id").focus();
+              }
+              else { //사용가능한 아이디인 경우
+                alert(obj.result_msg);
+                document.getElementById("idcheck").value = "1";
+                document.getElementById("user_id").disabled = true;
+              }
+            }
+          };
+          xhr.open("POST", strurl);
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          xhr.send(null);
+        }
+    </script>
+</body>
+</html>

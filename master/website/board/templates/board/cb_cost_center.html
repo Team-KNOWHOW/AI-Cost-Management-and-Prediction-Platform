@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-table"></i> Cost Center</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>코스트센터 코드</th>
+                                <th>코스트센터명</th>
+                                <th>사업장</th>
+                                <th>사업부</th>
+                                <th>공장</th>
+                                <th>코스트타입</th>
+                                <th>직간접구분</th>
+                                <th></th>
+                                <th></th>
+                                <!-- <th>사용구분</th> -->
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr bgcolor="#F7F7F7">
+                                <td></td>
+                                <td>
+                                    <input type="text" class="form-control" id="cstctr_cd">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="cstctr_nm">
+                                </td>
+                                <td>
+                                    <select id="bizarea_id">
+                                        {% for i in rsBizarea %}
+                                        <option value="{{i.id}}">{{i.bizarea_nm}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="bizunit_id">
+                                        {% for i in rsBizunit %}
+                                        <option value="{{i.id}}">{{i.bizunit_nm}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="factory_id">
+                                        {% for i in rsFactory %}
+                                        <option value="{{i.id}}">{{i.factory_nm}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select type="text" id="cstctr_type" >
+                                        <option>
+                                            A(보조)
+                                        </option>
+                                        <option>
+                                            C(공통)
+                                        </option>
+                                        <option>
+                                            M(제조)
+                                        </option>
+                                        <option>
+                                            S(판관)
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select type="text" id="cstctr_dir_div" >
+                                        <option>
+                                            D(직접)
+                                        </option>
+                                        <option>
+                                            I(간접)
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button onclick="insert_element();" class="btn btn-default btn-sm">저장</button>
+                                </td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+
+                            {% for i in rsCostcenter %}
+                            <tbody>
+                            <tr>
+                                <td>
+                                    {{ i.id }}
+                                </td>
+                                <td>
+                                    {{ i.cstctr_cd }}
+                                </td>
+                                <td>
+                                    <input id="cstctr_nm{{i.id}}" class="form-control" type="text" value="{{ i.cstctr_nm }}">
+                                </td>
+                                <td>
+                                    <select id="bizarea_id{{i.id}}">
+                                        {% for ii in rsBizarea %}
+                                        {% if i.bizarea_id == ii.id %}
+                                        <option selected value="{{ii.id}}">{{ii.bizarea_nm}}</option>
+                                        {% else %}
+                                        <option value="{{ii.id}}">{{ii.bizarea_nm}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="bizunit_id{{i.id}}">
+                                        {% for ii in rsBizunit %}
+                                        {% if i.bizunit_id == ii.id %}
+                                        <option selected value="{{ii.id}}">{{ ii.bizunit_nm }}</option>
+                                        {% else %}
+                                        <option value="{{ii.id}}">{{ ii.bizunit_nm }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="factory_id{{i.id}}">
+                                        {% for ii in rsFactory %}
+                                        {% if i.factory_id == ii.id %}
+                                        <option selected value="{{ii.id}}">{{ ii.factory_nm }}</option>
+                                        {% else %}
+                                        <option value="{{ii.id}}">{{ ii.factory_nm }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="cstctr_type{{i.id}}">
+                                        {% if i.cstctr_type == "A(보조)" %}
+                                        <option selected>A(보조)</option>
+                                        {% else %}
+                                        <option>A(보조)</option>
+                                        {% endif %}
+
+                                        {% if i.cstctr_type == "C(공통)" %}
+                                        <option selected>C(공통)</option>
+                                        {% else %}
+                                        <option>C(공통)</option>
+                                        {% endif %}
+
+                                        {% if i.cstctr_type == "M(제조)" %}
+                                        <option selected>M(제조)</option>
+                                        {% else %}
+                                        <option>M(제조)</option>
+                                        {% endif %}
+
+                                        {% if i.cstctr_type == "S(판관)" %}
+                                        <option selected>S(판관)</option>
+                                        {% else %}
+                                        <option>S(판관)</option>
+                                        {% endif %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="cstctr_dir_div{{i.id}}">
+                                        {% if i.cstctr_dir_div == "D(직접)" %}
+                                        <option selected>D(직접)</option>
+                                        {% else %}
+                                        <option>D(직접)</option>
+                                        {% endif %}
+
+                                        {% if i.cstctr_dir_div == "I(간접)" %}
+                                        <option selected>I(간접)</option>
+                                        {% else %}
+                                        <option>I(간접)</option>
+                                        {% endif %}
+                                    </select>
+                                </td>
+                                <td width="5%" align="center" style="padding:5px 0;" >
+                                    <a value="{{ i.id }}" class="btn btn-default btn-sm" onclick="update_element(this)">수정</a>
+                                </td>
+                                <td width="5%" align="center" style="padding:5px 0;" >
+                                    <a value="{{ i.id }}" class="btn btn-default btn-sm" onclick="delete_element(this)">삭제</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <script>
+                function getCookie(name) {
+                    var cookieValue = null;
+
+                    if (document.cookie && document.cookie !== '') {
+                        var cookies = document.cookie.split(';');
+
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+                var csrftoken = getCookie('csrftoken');
+                var xhr;
+
+                function insert_element() {
+                    //변수 리스트
+                    var cstctrcd = document.getElementById("cstctr_cd").value;
+                    var cstctrnm = document.getElementById("cstctr_nm").value;
+
+                    var bizarea_selected = document.getElementById("bizarea_id");
+                    var bizareaid = bizarea_selected.options[bizarea_selected.selectedIndex].value;
+
+                    var bizunit_selected = document.getElementById("bizunit_id");
+                    var bizunitid = bizunit_selected.options[bizunit_selected.selectedIndex].value;
+
+                    var factory_selected = document.getElementById("factory_id");
+                    var factoryid = factory_selected.options[factory_selected.selectedIndex].value;
+
+                    var cstctrtype = document.getElementById("cstctr_type").value;
+                    var cstctrdirdiv = document.getElementById("cstctr_dir_div").value;
+                    //예외 처리
+
+
+                    // 코스트센터 항목
+                    if(cstctrcd == '') {
+                        alert('코스트센터 코드가 비었습니다.');
+                        document.getElementById("cstctr_cd").focus();
+                        return false;
+                    }
+
+                    if(cstctrnm == '') {
+                        alert('코스트센터명이 비었습니다.');
+                        document.getElementById("cstctr_nm").focus();
+                        return false;
+                    }
+                    //예외 처리 끝
+
+                    var strurl = "costcenter_element_insert?cstctrcd=" + cstctrcd
+                        + "&cstctrnm=" + cstctrnm
+                        + "&bizareaid=" + bizareaid
+                        + "&bizunitid=" + bizunitid
+                        + "&factoryid=" + factoryid
+                        + "&cstctrtype=" + cstctrtype
+                        + "&cstctrdirdiv=" + cstctrdirdiv
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                            var data = xhr.responseText;
+
+                            var obj = JSON.parse(data);
+                            alert(obj.result_msg);
+
+                            if(obj.flag =='0') {
+                                location.reload();
+                            }
+                        }
+                    };
+
+                    xhr.open("POST", strurl);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.send(null);
+                }
+
+                function update_element(elem) {
+                    var id = elem.getAttribute('value');
+                    var cstctrnm = document.getElementById('cstctr_nm' + id).value;
+
+                    var bizarea_selected = document.getElementById('bizarea_id' + id);
+                    var bizareaid = bizarea_selected.options[bizarea_selected.selectedIndex].value;
+
+                    var bizunit_selected = document.getElementById('bizunit_id' + id);
+                    var bizunitid = bizunit_selected.options[bizunit_selected.selectedIndex].value;
+
+                    var factory_selected = document.getElementById('factory_id' + id);
+                    var factoryid = factory_selected.options[factory_selected.selectedIndex].value;
+
+                    var cstctrtype = $('#cstctr_type' + id).val();
+                    var cstctrdirdiv = $('#cstctr_dir_div' + id).val();
+
+
+                    var e_value = elem.value;
+                    if(e_value == ''){
+                        alert('Value empty');
+                        elem.focus();
+                        return false;
+                    }
+
+                    var strurl = "costcenter_element_update?id=" + id
+                        + "&cstctrnm=" + cstctrnm
+                        + "&bizareaid=" + bizareaid
+                        + "&bizunitid=" + bizunitid
+                        + "&factoryid=" + factoryid
+                        + "&cstctrtype=" + cstctrtype
+                        + "&cstctrdirdiv=" + cstctrdirdiv
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                            var data = xhr.responseText;
+
+                            var obj = JSON.parse(data);
+                            alert(obj.result_msg);
+
+                        }
+                    };
+                    xhr.open("POST", strurl);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.send(null);
+                    location.reload();
+                }
+
+                function delete_element(elem) {
+                    var id = elem.getAttribute('value');
+                    var strurl = "costcenter_element_delete?id=" + id;
+
+                    xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == 4) {
+                            var data = xhr.responseText;
+
+                            var obj = JSON.parse(data);
+                            alert(obj.result_msg);
+
+                            if(obj.flag =='1') {
+                                document.getElementById('typebox_' + id).remove();
+                            }
+                        }
+                    };
+
+                    xhr.open("POST", strurl);
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    xhr.send(null);
+                    location.reload();
+                }
+            </script>
+    </section>
+    <!--main content end-->
+</section>
+<!-- container section start -->
+
+{% endblock %}

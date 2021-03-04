@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+         // https://docs.djangoproject.com/en/3.1/ref/csrf/
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+
+        var xhr;
+
+        function insertItemgrp() {
+
+            var itemgrpcd = document.getElementById('itemgrp_cd').value;
+            if(itemgrpcd == ''){
+                alert('Code empty');
+                document.getElementById('itemgrp_cd').focus();
+                return false;
+            }
+            var itemgrpnm = document.getElementById('itemgrp_nm').value;
+            if(itemgrpnm == ''){
+                alert('Name empty');
+                document.getElementById('itemgrp_nm').focus();
+                return false;
+            }
+
+            var strurl = "itemgrp_insert?itemgrpcd=" + itemgrpcd + "&itemgrpnm=" + itemgrpnm;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    alert(obj.result_msg);
+
+                    if(obj.flag =='0') {
+                        location.reload();
+                    }
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+
+        function delete_element(elem) {
+
+            var id = elem.getAttribute('id');
+
+            if (!confirm("삭제 하시겠습니까")) {
+                return false;
+            }
+
+            var strurl = "itemgrp_delete?id=" + id;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    alert(obj.result_msg);
+
+                    location.reload();
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+
+        function updateName(elem) {
+
+            var grpid = elem.getAttribute('grpid');
+            var value = elem.value;
+            if(value == ''){
+                alert('Value empty');
+                elem.focus();
+                return false;
+            }
+
+            var strurl = "itemgrp_update?grpid=" + grpid + "&value=" + value;
+            //alert(strurl);
+            //return false;
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    var data = xhr.responseText;
+
+                    var obj = JSON.parse(data);
+                    alert(obj.result_msg);
+
+                }
+            };
+            xhr.open("POST", strurl);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.send(null);
+        }
+</script>
+{% endblock %}
+
+{% block body %}
+
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-table"></i>품목그룹</h3>
+            </div>
+        </div>
+        <div>
+            <table>
+                <tr>
+                    <td width="" align="center">품목그룹코드</td>
+                    <td width="" align="center">품목그룹명</td>
+                    </td>
+                </tr>
+                <tbody >
+                <tr>
+                    <td>
+                        <input type="text" id="itemgrp_cd" class="form-control" placeholder="Itemgrp Code">
+
+                    </td>
+                    <td>
+                        <input type="text" id="itemgrp_nm" class="form-control" placeholder="Itemgrp Name">
+
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="insertItemgrp();" title="Bootstrap 3 themes generator">등록</a>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <div class="table-responsive">
+                        {% if rsItemgrp %}
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>품목그룹코드</th>
+                                <th>품목그룹명</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            {% for i in rsItemgrp %}
+                            <tbody>
+                            <tr>
+                                <td width="20%">{{ i.itemgrp_cd }}</td>
+                                <td width="20%">
+                                    <input type="text" class="form-control" grpid="{{ i.id }}" value="{{ i.itemgrp_nm }}" onchange="updateName(this)"/>
+                                </td>
+                                <td align="right">
+                                    <a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this)" title="Bootstrap 3 themes generator">삭제</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
+                        {% else %}
+                        <span>품목그룹이 없습니다.</span>
+                        {% endif %}
+                    </div>
+
+                </section>
+            </div>
+        </div>
+
+    </section>
+    <!--main content end-->
+</section>
+<!-- container section start -->
+
+{% endblock %}
