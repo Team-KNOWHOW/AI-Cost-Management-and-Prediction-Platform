@@ -4,119 +4,133 @@
 {% block scripts %}
 {{ block.super }}
 <script>
-         // https://docs.djangoproject.com/en/3.1/ref/csrf/
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+    // https://docs.djangoproject.com/en/3.1/ref/csrf/
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+    var xhr;
+
+    function insertItemgrp() {
+        var itemgrpCd = document.getElementById('itemgrp_cd').value;
+        if (itemgrpCd == '') {
+            alert('Code empty');
+            document.getElementById('itemgrp_cd').focus();
+            return false;
+        }
+
+        var itemgrpNm = document.getElementById('itemgrp_nm').value;
+        if (itemgrpNm == '') {
+            alert('Name empty');
+            document.getElementById('itemgrp_nm').focus();
+            return false;
+        }
+        var payload = {
+            "itemgrp_cd": itemgrpCd,
+            "itemgrp_nm": itemgrpNm
+        };
+
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 201)
+                    alert("생성이 완료되었습니다.");
+                location.reload();
+            } else {
+                if (xhr.status == 400) {
+                    var data = xhr.responseText;
+                    var obj = JSON.parse(data);
+
+                    if (obj.detail == "DuplicateCode") {
+                        alert("법인코드가 이미 존재합니다.");
+                    } else {
+                        alert("400 Bad Request");
                     }
                 }
             }
-            return cookieValue;
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/item-groups";
+        xhr.open("POST", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
+    }
+
+    function delete_element(elem) {
+        var id = elem.getAttribute('name');
+
+        if (!confirm("삭제 하시겠습니까")) {
+            return false;
         }
-        var csrftoken = getCookie('csrftoken');
 
-        var xhr;
-
-        function insertItemgrp() {
-
-            var itemgrpcd = document.getElementById('itemgrp_cd').value;
-            if(itemgrpcd == ''){
-                alert('Code empty');
-                document.getElementById('itemgrp_cd').focus();
-                return false;
-            }
-            var itemgrpnm = document.getElementById('itemgrp_nm').value;
-            if(itemgrpnm == ''){
-                alert('Name empty');
-                document.getElementById('itemgrp_nm').focus();
-                return false;
-            }
-
-            var strurl = "itemgrp_insert?itemgrpcd=" + itemgrpcd + "&itemgrpnm=" + itemgrpnm;
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 204)
+                    alert("삭제가 완료되었습니다.");
+                location.reload();
+            } else {
+                if (xhr.status == 400) {
                     var data = xhr.responseText;
-
                     var obj = JSON.parse(data);
-                    alert(obj.result_msg);
 
-                    if(obj.flag =='0') {
-                        location.reload();
+                    if (obj.detail == "") {//추후 에러처리 추가시 사용
+                        alert("에러코드");
+                    } else {
+                        alert("400 Bad Request");
                     }
                 }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
-
-        function delete_element(elem) {
-
-            var id = elem.getAttribute('id');
-
-            if (!confirm("삭제 하시겠습니까")) {
-                return false;
             }
+        };
 
-            var strurl = "itemgrp_delete?id=" + id;
-            //alert(strurl);
-            //return false;
+        var strurl = "http://127.0.0.1:8080/rest_api/item-groups/" + id;
+        xhr.open("DELETE", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(null);
+    }
 
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    location.reload();
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
+    function updateName(elem) {
+        var grpId = elem.getAttribute('name');
+        var value = elem.value;
+        if (value == '') {
+            alert('Value empty');
+            elem.focus();
+            return false;
         }
 
-        function updateName(elem) {
+        var strurl = "itemgrp_update?grpid=" + grpid + "&value=" + value;
+        //alert(strurl);
+        //return false;
 
-            var grpid = elem.getAttribute('grpid');
-            var value = elem.value;
-            if(value == ''){
-                alert('Value empty');
-                elem.focus();
-                return false;
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                var data = xhr.responseText;
+
+                var obj = JSON.parse(data);
+                alert(obj.result_msg);
+
             }
-
-            var strurl = "itemgrp_update?grpid=" + grpid + "&value=" + value;
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
+        };
+        xhr.open("POST", strurl);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.send(null);
+    }
 </script>
 {% endblock %}
 
@@ -135,27 +149,26 @@
         </div>
         <div>
             <table>
-                <tr>
-                    <td width="" align="center">품목그룹코드</td>
-                    <td width="" align="center">품목그룹명</td>
-                    </td>
-                </tr>
-                <tbody >
-                <tr>
-                    <td>
-                        <input type="text" id="itemgrp_cd" class="form-control" placeholder="Itemgrp Code">
-
-                    </td>
-                    <td>
-                        <input type="text" id="itemgrp_nm" class="form-control" placeholder="Itemgrp Name">
-
-                    </td>
-                    <td>
-                        <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="insertItemgrp();" title="Bootstrap 3 themes generator">등록</a>
-                    </td>
-                </tr>
+                <thead>
+                    <tr>
+                        <td width="" align="center">품목그룹코드</td>
+                        <td width="" align="center">품목그룹명</td>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" id="itemgrp_cd" class="form-control" placeholder="Itemgrp Code">
+                        </td>
+                        <td>
+                            <input type="text" id="itemgrp_nm" class="form-control" placeholder="Itemgrp Name">
+                        </td>
+                        <td>
+                            <button onclick="insertItemgrp();" class="btn btn-primary btn-sm">등록</button>
+                        </td>
+                    </tr>
                 </tbody>
-
             </table>
         </div>
         <br>
@@ -167,35 +180,34 @@
                         {% if rsItemgrp %}
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th>품목그룹코드</th>
-                                <th>품목그룹명</th>
-                                <th></th>
-                            </tr>
+                                <tr>
+                                    <th>품목그룹코드</th>
+                                    <th>품목그룹명</th>
+                                    <th></th>
+                                </tr>
                             </thead>
-                            {% for i in rsItemgrp %}
+
                             <tbody>
-                            <tr>
-                                <td width="20%">{{ i.itemgrp_cd }}</td>
-                                <td width="20%">
-                                    <input type="text" class="form-control" grpid="{{ i.id }}" value="{{ i.itemgrp_nm }}" onchange="updateName(this)"/>
-                                </td>
-                                <td align="right">
-                                    <a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this)" title="Bootstrap 3 themes generator">삭제</a>
-                                </td>
-                            </tr>
+                                {% for i in rsItemgrp %}
+                                <tr>
+                                    <td width="20%">{{ i.itemgrp_cd }}</td>
+                                    <td width="20%">
+                                        <input type="text" class="form-control" grpid="{{ i.id }}" value="{{ i.itemgrp_nm }}" onchange="updateName(this)"/>
+                                    </td>
+                                    <td align="right">
+                                        <button name="{{ i.id }}" class="btn btn-default btn-sm" onclick="delete_element(this)">삭제</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
-                            {% endfor %}
                         </table>
                         {% else %}
                         <span>품목그룹이 없습니다.</span>
                         {% endif %}
                     </div>
-
                 </section>
             </div>
         </div>
-
     </section>
     <!--main content end-->
 </section>
