@@ -38,6 +38,7 @@
             document.getElementById('itemgrp_nm').focus();
             return false;
         }
+
         var payload = {
             "itemgrp_cd": itemgrpCd,
             "itemgrp_nm": itemgrpNm
@@ -106,30 +107,46 @@
 
     function updateName(elem) {
         var grpId = elem.getAttribute('name');
+
+        var itemgrpCd = document.getElementById('itemgrp_cd' + grpId).innerText;
         var value = elem.value;
+
         if (value == '') {
             alert('Value empty');
             elem.focus();
             return false;
         }
 
-        var strurl = "itemgrp_update?grpid=" + grpid + "&value=" + value;
-        //alert(strurl);
-        //return false;
+        var payload = {
+            "itemgrp_cd": itemgrpCd,
+            "itemgrp_nm": value
+        };
 
         xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
-                var data = xhr.responseText;
+                if (xhr.status == 200)
+                    alert("수정이 완료되었습니다.");
+                location.reload();
+            } else {
+                if (xhr.status == 400) {
+                    var data = xhr.responseText;
+                    var obj = JSON.parse(data);
 
-                var obj = JSON.parse(data);
-                alert(obj.result_msg);
-
+                    if (obj.detail == "") {//추후 에러처리 추가시 사용
+                        alert("에러코드");
+                    } else {
+                        alert("400 Bad Request");
+                    }
+                }
             }
         };
-        xhr.open("POST", strurl);
+
+        var strurl = "http://127.0.0.1:8080/rest_api/item-groups/" + grpId;
+        xhr.open("PUT", strurl, true);
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        xhr.send(null);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
     }
 </script>
 {% endblock %}
@@ -190,9 +207,9 @@
                             <tbody>
                                 {% for i in rsItemgrp %}
                                 <tr>
-                                    <td width="20%">{{ i.itemgrp_cd }}</td>
+                                    <td id="itemgrp_cd{{i.id}}" width="20%">{{ i.itemgrp_cd }}</td>
                                     <td width="20%">
-                                        <input type="text" class="form-control" grpid="{{ i.id }}" value="{{ i.itemgrp_nm }}" onchange="updateName(this)"/>
+                                        <input type="text" class="form-control" name="{{ i.id }}" value="{{ i.itemgrp_nm }}" onchange="updateName(this)"/>
                                     </td>
                                     <td align="right">
                                         <button name="{{ i.id }}" class="btn btn-default btn-sm" onclick="delete_element(this)">삭제</button>
