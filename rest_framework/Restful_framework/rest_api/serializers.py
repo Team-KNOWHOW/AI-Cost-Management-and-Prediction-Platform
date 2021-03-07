@@ -68,3 +68,9 @@ class CbCostCenterSerializer(serializers.ModelSerializer):
         fields = ('cstctr_cd', 'cstctr_nm', 'bizarea_id', 'bizunit_id', 'factory_id', 'cstctr_type', 'cstctr_dir_div')
 
 
+class BItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BItem
+        fields = ('factory', 'item_cd', 'item_nm', 'item_spec', 'unit_id', 'itemgrp', 'itemaccnt')
+
+

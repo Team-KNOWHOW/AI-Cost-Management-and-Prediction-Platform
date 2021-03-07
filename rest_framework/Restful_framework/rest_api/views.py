@@ -544,7 +544,55 @@ def cstctr_detail(request, pk):
         return HttpResponse(status=204)
 
 
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def item_list(request):
+    if request.method == 'GET':
 
+        item_code = request.GET.get('item_cd')
+        item_name = request.GET.get('item_nm')
+        item_spec = request.GET.get('item_spec')
+
+        BItem.objects.filter(item_cd=item_code, usage_fg='Y')
+        query_set = BItem.objects.all()
+        serializer = BItemSerializer(query_set, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+
+        serializer = BItemSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+
+    return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@csrf_exempt
+def item_detail(request, pk):
+    obj = BItem.objects.get(id=pk)
+
+    if request.method == 'GET':  # 현재 화면에선 개별조회 미지원.
+        serializer = BItemSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+
+        serializer = BItemSerializer(obj, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        obj.usage_fg = 'N'
+        obj.save()
+        return HttpResponse(status=204)
 
 
 
