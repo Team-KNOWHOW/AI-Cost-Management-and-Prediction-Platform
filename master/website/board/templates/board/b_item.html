@@ -58,14 +58,13 @@
             var itemaccntId = itemaccntSelect.options[itemaccntSelect.selectedIndex].value;
 
             var payload = {
-                "factory_id": factoryId,
+                "factory": factoryId,
                 "item_cd": itemCd,
                 "item_nm": itemNm,
                 "item_spec": itemSpec,
-                "unitcn": unitId,
-                "itemgrp_id": itemgrpId,
-                "itemaccnt_id": itemaccntId
-            };
+                "unit_id": unitId,
+                "itemgrp": itemgrpId,
+             };
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -114,14 +113,14 @@
             var itemaccntId = itemaccntSelect.options[itemaccntSelect.selectedIndex].value;
 
             var payload = {
-                "factory_id": factoryId,
+                "factory": factoryId,
                 "item_cd": itemCd,
                 "item_nm": itemNm,
                 "item_spec": itemSpec,
-                "unitcn": unitId,
-                "itemgrp_id": itemgrpId,
-                "itemaccnt_id": itemaccntId
-            };
+                "unit_id": unitId,
+                "itemgrp": itemgrpId,
+                "itemaccnt": itemaccntId
+             };
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -185,11 +184,11 @@
         }
 
         function searchItem() {
-            var itemcode = document.getElementById('search_cd').value;
-            var itemname = document.getElementById('search_nm').value;
-            var itemspec = document.getElementById('search_spec').value;
-            
-            var strurl = "?itemcode=" + itemcode + "&itemname=" + itemname + "&itemspec=" + itemspec;
+            var itemCode = document.getElementById('search_cd').value;
+            var itemName = document.getElementById('search_nm').value;
+            var itemSpec = document.getElementById('search_spec').value;
+
+            var strurl = "?itemcode=" + itemCode + "&itemname=" + itemName + "&itemspec=" + itemSpec;
 
             location.href = strurl;
         }
@@ -221,8 +220,8 @@
                     <td width="15%">
                         <input type="text" class="form-control" id="search_spec" placeholder="규격" onKeypress="javascript:if(event.keyCode==13) { searchItem() }"/>
                     </td>
-                    <td>
-                    <td width="5%"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="searchItem()" title="Bootstrap 3 themes generator">조회</a></td>
+                    <td width="5%">
+                        <button class="btn btn-default btn-sm" onclick="searchItem()">조회</button>
                     </td>
                     <td width="50%" align="right">
                         <a class="btn btn-primary btn-sm" href="" title="Bootstrap 3 themes generator">Template 다운로드</a>
@@ -290,7 +289,9 @@
                                             {% endfor %}
                                         </select>
                                     </td>
-                                    <td width="8%"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insertItem();" title="Bootstrap 3 themes generator">등록</a></td>
+                                    <td width="8%">
+                                        <button onclick="insertItem();" class="btn btn-default btn-sm">저장</button>
+                                    </td>
                                     <td></td>
                                 </tr>
 
