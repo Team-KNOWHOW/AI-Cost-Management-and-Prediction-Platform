@@ -71,7 +71,7 @@
             xhr.send(JSON.stringify(payload));
         }
 
-         function delete_element(elem) {
+        function delete_element(elem) {
              var id = elem.getAttribute('name');
 
              if (!confirm("삭제 하시겠습니까")) {
@@ -108,30 +108,45 @@
         function updateName(elem) {
             var accntId = elem.getAttribute('name');
 
+            var itemaccntCd = document.getElementById('itemaccnt_cd' + accntId).innerText;
             var value = elem.value;
-            if(value == ''){
+
+            if (value == '') {
                 alert('Value empty');
                 elem.focus();
                 return false;
             }
 
-            var strurl = "itemaccnt_update?accntid=" + accntId + "&value=" + value;
-            //alert(strurl);
-            //return false;
+            var payload = {
+                "itemaccnt_cd": itemaccntCd,
+                "itemaccnt_nm": value
+            };
 
             xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+                    if (xhr.status == 200)
+                        alert("수정이 완료되었습니다.");
+                    location.reload();
+                } else {
+                    if (xhr.status == 400) {
+                        var data = xhr.responseText;
+                        var obj = JSON.parse(data);
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
+                        if (obj.detail == "") {//추후 에러처리 추가시 사용
+                            alert("에러코드");
+                        } else {
+                            alert("400 Bad Request");
+                        }
+                    }
                 }
             };
-            xhr.open("POST", strurl);
+
+            var strurl = "http://127.0.0.1:8080/rest_api/item-accounts/" + accntId;
+            xhr.open("PUT", strurl, true);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(payload));
         }
 
     </script>
@@ -192,10 +207,10 @@
 
                                 <tbody>
                                     {% for i in rsItemaccnt %}
-                                    <tr id="itemaccnt_{{i}}">
-                                        <td width="20%">{{ i.itemaccnt_cd }}</td>
+                                    <tr>
+                                        <td id="itemaccnt_cd{{i.id}}" width="20%">{{ i.itemaccnt_cd }}</td>
                                         <td width="20%">
-                                            <input type="text" class="form-control" accntid="{{ i.id }}" value="{{ i.itemaccnt_nm }}" onchange="updateName(this)"/>
+                                            <input type="text" class="form-control" name="{{ i.id }}" value="{{ i.itemaccnt_nm }}" onchange="updateName(this)"/>
                                         </td>
                                         <td align="right">
                                             <button class="btn btn-default btn-sm" id="delete_{{i.id}}" name="{{i.id}}" onclick="delete_element(this);">삭제</button>
