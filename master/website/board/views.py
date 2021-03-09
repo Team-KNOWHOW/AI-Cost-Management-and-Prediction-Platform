@@ -567,6 +567,7 @@ def bizarea_element_update(request):
     bizno = request.GET['bizno']
     bizrpr = request.GET['bizrpr']
 
+    coid = request.GET['coid']
     unitcnid = request.GET['unitcnid']
     unitcurid = request.GET['unitcurid']
 
@@ -576,6 +577,7 @@ def bizarea_element_update(request):
     rs.biz_no = bizno
     rs.biz_rpr = bizrpr
 
+    rs.co_id=coid
     rs.unitcur_id = unitcurid
     rs.unitcn_id = unitcnid
     rs.save()
@@ -672,9 +674,11 @@ def bizunit_element_insert(request):
 def bizunit_element_update(request):
     context = {}
     value = request.GET['value']
+    bizunitnm = request.GET['bizunitnm']
     bizunitrmrk = request.GET['bizunitrmrk']
     rsHeader = BBizunit.objects.get(id=value)
     rsHeader.bizunit_rmrk = bizunitrmrk
+    rsHeader.bizunit_nm = bizunitnm
     rsHeader.save()
 
     context["flag"] = "0"
@@ -2847,4 +2851,18 @@ def productcostpaymentdata_upload(request):
 
 # *********************************************************************************************************************
 # 제품원가수불 코드 끝
+# *********************************************************************************************************************
+
+
+# *********************************************************************************************************************
+# costbill 코드 시작
+# *********************************************************************************************************************
+
+def cc_costbill_if(request):
+    context = {}
+
+    return render(request, 'board2/cc_costbill_if.html', context)
+
+# *********************************************************************************************************************
+# costbill 코드 끝
 # *********************************************************************************************************************
