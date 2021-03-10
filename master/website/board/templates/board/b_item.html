@@ -36,7 +36,7 @@
             }
 
             var itemNm = document.getElementById('item_nm').value;
-            if (itemnm == '') {
+            if (itemNm == '') {
                 alert('Name empty');
                 document.getElementById('itemnm_cd').focus();
                 return false;
@@ -58,15 +58,14 @@
             var itemaccntId = itemaccntSelect.options[itemaccntSelect.selectedIndex].value;
 
             var payload = {
-                "co_cd": coCd,
-                "co_nm": coNm,
-                "co_shnm": coShnm,
-                "co_rpr": coRpr,
-                "co_type": coType,
-                "co_div": coDiv,
-                "unitcur": unitCurId,
-                "unitcn": unitCnId
-            };
+                "factory": factoryId,
+                "item_cd": itemCd,
+                "item_nm": itemNm,
+                "item_spec": itemSpec,
+                "unit_id": unitId,
+                "itemgrp": itemgrpId,
+                "itemaccnt": itemaccntId
+             };
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -88,7 +87,7 @@
                 }
             };
 
-            var strurl = "http://127.0.0.1:8080/rest_api/corporations";
+            var strurl = "http://127.0.0.1:8080/rest_api/items";
             xhr.open("POST", strurl, true);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
             xhr.setRequestHeader("Content-Type", "application/json");
@@ -96,74 +95,101 @@
         }
 
         function updateItem(elem) {
-            var id = elem.getAttribute('id');
+            var id = elem.getAttribute('name');
 
-            var itemname = $('#name' + id).val();
-            var itemspec = $('#spec' + id).val();
+            var itemCd = $('#code' + id).text();
+            var itemNm = $('#name' + id).val();
+            var itemSpec = $('#spec' + id).val();
 
             var factorySelect = document.querySelector('.factory' + id);
-            var factoryid = factorySelect.options[factorySelect.selectedIndex].value;
+            var factoryId = factorySelect.options[factorySelect.selectedIndex].value;
 
             var unitSelect = document.querySelector('.unit' + id);
-            var unitid = unitSelect.options[unitSelect.selectedIndex].value;
+            var unitId = unitSelect.options[unitSelect.selectedIndex].value;
 
             var itemgrpSelect = document.querySelector('.itemgrp' + id);
-            var itemgrpid = itemgrpSelect.options[itemgrpSelect.selectedIndex].value;
+            var itemgrpId = itemgrpSelect.options[itemgrpSelect.selectedIndex].value;
 
-            var itemaccntSelect = document.querySelector('.itemaccnt' +id);
-            var itemaccntid = itemaccntSelect.options[itemaccntSelect.selectedIndex].value;
+            var itemaccntSelect = document.querySelector('.itemaccnt' + id);
+            var itemaccntId = itemaccntSelect.options[itemaccntSelect.selectedIndex].value;
 
-            var strurl = "item_update?id=" + id + "&factoryid=" + factoryid + "&unitid=" + unitid +
-                            "&itemgrpid=" + itemgrpid + "&itemaccntid=" + itemaccntid +"&itemname=" + itemname + "&itemspec=" + itemspec;
+            var payload = {
+                "factory": factoryId,
+                "item_cd": itemCd,
+                "item_nm": itemNm,
+                "item_spec": itemSpec,
+                "unit_id": unitId,
+                "itemgrp": itemgrpId,
+                "itemaccnt": itemaccntId
+             };
 
             xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
+            xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+                    if (xhr.status == 200)
+                        alert("수정이 완료되었습니다.");
+                    location.reload();
+                } else {
+                    if (xhr.status == 400) {
+                        var data = xhr.responseText;
+                        var obj = JSON.parse(data);
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    if(obj.flag =='0') {
-                        location.reload();
+                        if (obj.detail == "") {//추후 에러처리 추가시 사용
+                            alert("에러코드");
+                        } else {
+                            alert("400 Bad Request");
+                        }
                     }
                 }
             };
-            xhr.open("POST", strurl);
+
+            var strurl = "http://127.0.0.1:8080/rest_api/items/" + id;
+            xhr.open("PUT", strurl, true);
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(payload));
+        }
+
+        function deleteItem(elem) {
+            var id = elem.getAttribute('name');
+
+            if (!confirm("삭제 하시겠습니까")) {
+                return false;
+            }
+
+            xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 204)
+                        alert("삭제가 완료되었습니다.");
+                    location.reload();
+                } else {
+                    if (xhr.status == 400) {
+                        var data = xhr.responseText;
+                        var obj = JSON.parse(data);
+
+                        if (obj.detail == "") {//추후 에러처리 추가시 사용
+                            alert("에러코드");
+                        } else {
+                            alert("400 Bad Request");
+                        }
+                    }
+                }
+            };
+
+            var strurl = "http://127.0.0.1:8080/rest_api/items/" + id;
+            xhr.open("DELETE", strurl, true);
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(null);
         }
-        function deleteItem(elem) {
-             var id = elem.getAttribute('value');
 
-             if (!confirm("삭제 하시겠습니까")) {
-                return false;
-             }
-
-             var strurl = "item_delete?id=" + id;
-
-             xhr = new XMLHttpRequest();
-             xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    location.reload();
-                }
-             };
-             xhr.open("POST", strurl);
-             xhr.setRequestHeader("X-CSRFToken", csrftoken);
-             xhr.send(null);
-        }
         function searchItem() {
-            var itemcode = document.getElementById('search_cd').value;
-            var itemname = document.getElementById('search_nm').value;
-            var itemspec = document.getElementById('search_spec').value;
+            var itemCode = document.getElementById('search_cd').value;
+            var itemName = document.getElementById('search_nm').value;
+            var itemSpec = document.getElementById('search_spec').value;
 
-
-            var strurl = "?itemcode=" + itemcode + "&itemname=" + itemname + "&itemspec=" + itemspec;
+            var strurl = "?itemcode=" + itemCode + "&itemname=" + itemName + "&itemspec=" + itemSpec;
 
             location.href = strurl;
         }
@@ -195,8 +221,8 @@
                     <td width="15%">
                         <input type="text" class="form-control" id="search_spec" placeholder="규격" onKeypress="javascript:if(event.keyCode==13) { searchItem() }"/>
                     </td>
-                    <td>
-                    <td width="5%"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="searchItem()" title="Bootstrap 3 themes generator">조회</a></td>
+                    <td width="5%">
+                        <button class="btn btn-default btn-sm" onclick="searchItem()">조회</button>
                     </td>
                     <td width="50%" align="right">
                         <a class="btn btn-primary btn-sm" href="" title="Bootstrap 3 themes generator">Template 다운로드</a>
@@ -264,7 +290,9 @@
                                             {% endfor %}
                                         </select>
                                     </td>
-                                    <td width="8%"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insertItem();" title="Bootstrap 3 themes generator">등록</a></td>
+                                    <td width="8%">
+                                        <button onclick="insertItem();" class="btn btn-default btn-sm">저장</button>
+                                    </td>
                                     <td></td>
                                 </tr>
 
@@ -284,7 +312,7 @@
                                             {% endfor %}
                                         </select>
                                     </td>
-                                    <td width="8%">{{ i.item_cd }}</td>
+                                    <td id="code{{ i.id }}" width="8%">{{ i.item_cd }}</td>
                                     <td width="12%">
                                         <input type="text" class="form-control" id="name{{ i.id }}" value="{{ i.item_nm }}"/>
                                     </td>
@@ -325,8 +353,12 @@
                                             {% endfor %}
                                         </select>
                                     </td>
-                                    <td width="8%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="updateItem(this);" title="Bootstrap 3 themes generator">수정</a></td>
-                                    <td width="8%"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="deleteItem(this);" title="Bootstrap 3 themes generator">삭제</a></td>
+                                    <td width="8%">
+                                        <button class="btn btn-default btn-sm" id="update_{{i.id}}" name="{{i.id}}" onclick="updateItem(this);">수정</button>
+                                    </td>
+                                    <td width="8%">
+                                        <button class="btn btn-default btn-sm" id="delete_{{i.id}}" name="{{i.id}}" onclick="deleteItem(this);">삭제</button>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
