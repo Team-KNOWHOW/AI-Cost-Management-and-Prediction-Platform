@@ -22,9 +22,7 @@
         </div>
 
         <div>
-            {% if not rsHeader %}
-            <p class="text-center">내용이 없습니다! </p>
-            {% endif %}
+
         </div>
         <br>
 
@@ -32,7 +30,6 @@
             <div class="col-lg-12">
                 <section class="panel">
                     <div class="table-responsive">
-                        {% if rsHeader %}
                         <table class="table">
                             <thead>
                                 <tr>
@@ -62,7 +59,7 @@
                                         <input type="text" id="bizpartnercd" class="form-control" value="" >
                                     </td>
                                     <td align="left">
-                                        <select id="bizpartnertype">
+                                        <select id="bizpartnertype" style="width:100%;padding:3px;">
                                             <option value="법인"> 법인 </option>
                                             <option value="개인"> 개인 </option>
                                         </select>
@@ -73,22 +70,22 @@
                                     <td align="center">
                                         <input type="text" class="form-control" id="bizpartnernm" value="" >
                                     </td>
-                                    <td align="left">
-                                        <select id="cncd">
-                                            {% for ii in rsCncd %}
-                                            <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                    <td>
+                                        <select class="cn" style="width:100%;padding:3px;">
+                                            {% for i in rsUnitCn %}
+                                            <option value="{{i.id}}"> {{ i.cd_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="cur"  style="width:100%;padding:3px;">
+                                            {% for i in rsUnitCur %}
+                                            <option value="{{i.id}}"> {{ i.cd_nm }} </option>
                                             {% endfor %}
                                         </select>
                                     </td>
                                     <td align="left">
-                                        <select id="curcd" >
-                                            {% for ii in rsCurcd %}
-                                            <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                            {% endfor %}
-                                        </select>
-                                    </td>
-                                    <td align="left">
-                                        <select id="bizpartnerstat" >
+                                        <select id="bizpartnerstat" style="width:100%;padding:3px;">
                                             <option value="정상"> 정상 </option>
                                             <option value="중지"> 중지 </option>
                                         </select>
@@ -99,6 +96,7 @@
                                     <td></td>
                                 </tr>
 
+                                {% if rsHeader %}
                                 {% for i in rsHeader %}
                                 <tr>
                                     <td>
@@ -112,11 +110,13 @@
                                             {% endfor %}
                                         </select>
                                     </td>
-                                    <td id="bizpartner_cd{{i.id}}">
-                                        {{ i.bizpartner_cd }}
+                                    <td>
+                                        <span id="bizpartner_cd{{ i.id }}" value="{{ i.bizpartner_cd }}">
+                                             {{ i.bizpartner_cd }}
+                                        </span>
                                     </td>
                                     <td>
-                                        <select class="bizpartnertype{{i.id}}">
+                                        <select class="bizpartnertype{{i.id}}" style="width:100%;padding:3px;">
                                             <option value="법인"> 법인 </option>
                                             <option value="개인"> 개인 </option>
                                         </select>
@@ -127,30 +127,38 @@
                                     <td>
                                         <input type="text" class="form-control" id="bizpartner_nm{{ i.id }}" value="{{ i.bizpartner_nm }}"/>
                                     </td>
-                                    <td>
-                                        <select class="cncd{{i.id}}">
-                                            {% for ii in rsCncd %}
-                                            {% if i.cn_cd == ii.id %}
-                                            <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
+                                   <td>
+                                        {% if not rsUnitCn %}
+                                        <p class="text-center">지정국가 없음</p>
+                                        {% else %}
+                                        <select class="unitcn_id{{ i.id }}" style="width:100%;padding:3px;">
+                                            {% for k in rsUnitCn %}
+                                            {% if i.unitcn_id == k.id %}
+                                            <option value="{{ k.id }}" selected> {{ k.cd_nm }} </option>
                                             {% else %}
-                                            <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                            <option value="{{ k.id }}"> {{ k.cd_nm }} </option>
                                             {% endif %}
                                             {% endfor %}
                                         </select>
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        <select class="curcd{{i.id}}">
-                                            {% for ii in rsCurcd %}
-                                            {% if i.cur_cd == ii.id %}
-                                            <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
+                                        {% if not rsUnitCur %}
+                                        <p class="text-center">기준통화 없음</p>
+                                        {% else %}
+                                        <select class="unitcur_id{{ i.id }}" style="width:100%;padding:3px;">
+                                            {% for k in rsUnitCur %}
+                                            {% if i.unitcur_id == k.id %}
+                                            <option value="{{ k.id }}" selected>{{ k.cd_nm }}</option>
                                             {% else %}
-                                            <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
+                                            <option value="{{ k.id }}">{{ k.cd_nm }}</option>
                                             {% endif %}
                                             {% endfor %}
                                         </select>
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        <select class="bizpartnerstat{{i.id}}">
+                                        <select class="bizpartnerstat{{i.id}}" style="width:100%;padding:3px;">
                                             <option value="정상"> 정상 </option>
                                             <option value="중지"> 중지 </option>
                                         </select>
@@ -165,8 +173,6 @@
                                 {% endfor %}
                             </tbody>
                         </table>
-                        {% else %}
-                        <span>Type이 없습니다.</span>
                         {% endif %}
                     </div>
                 </section>
@@ -274,17 +280,17 @@
             function update_element(elem) {
                 var id = elem.getAttribute('name');
 
-                var bizpartnerCd = $('#bizpartner_cd' + id).val();
+                var bizpartnerCd = document.getElementById('bizpartner_cd' + id).innerText;
                 var bizNm = $('#biz_nm' + id).val();
                 var bizpartnerNm = $('#bizpartner_nm' + id).val();
 
                 var coSelect = document.querySelector('.conm' + id);
                 var coId = coSelect.options[coSelect.selectedIndex].value;
 
-                var cnSelect = document.querySelector('.cncd' + id);
+                var cnSelect = document.querySelector('.unitcn_id' + id);
                 var cnId = cnSelect.options[cnSelect.selectedIndex].value;
 
-                var curSelect = document.querySelector('.curcd' + id);
+                var curSelect = document.querySelector('.unitcur_id' + id);
                 var curId = curSelect.options[curSelect.selectedIndex].value;
 
                 var bsSelect = document.querySelector('.bizpartnerstat' + id);
@@ -292,6 +298,8 @@
 
                 var btSelect = document.querySelector('.bizpartnertype' + id);
                 var bizpartnerType = btSelect.options[btSelect.selectedIndex].value;
+
+                alert(bizpartnerCd)
 
                 var payload = {
                     "co_id": coId,
