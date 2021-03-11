@@ -236,19 +236,25 @@ def b_bizpartner(request):
     context["id"] = member_no
     context["user_id"] = member_id
 
-    # print(typecd)
+    strsql = "SELECT a.*, b.* ,c.*, d.* " + \
+             "FROM (SELECT *FROM  b_bizpartner WHERE usage_fg='Y') a " + \
+             "LEFT JOIN b_co b ON a.co_id=b.id " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd ='country' ) c ON a.unitcn_id=c.id " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd='currency') d ON a.unitcur_id=d.id "
+    rsBizpartner = BBizpartner.objects.raw(strsql)
+    context["rsBizpartner"] = rsBizpartner
 
-    rsHeader = BBizpartner.objects.filter(usage_fg='Y')
     rsCo = BCo.objects.filter(usage_fg='Y')
-    rsCncd = CbCodeDtl.objects.filter(usage_fg='Y', type_cd='country')
-    rsCurcd = CbCodeDtl.objects.filter(usage_fg='Y', type_cd='currency')
+    rsUnitCur = CbCodeDtl.objects.filter(type_cd='currency', usage_fg='Y')
+    rsUnitCn = CbCodeDtl.objects.filter(type_cd='country', usage_fg='Y')
     rsBizpartnerstat = BBizpartner.objects.filter(usage_fg='Y')
+
     context['rsBizpartnerstat'] = rsBizpartnerstat
     context["rsCo"] = rsCo
-    context["rsCncd"] = rsCncd
-    context["rsCurcd"] = rsCurcd
+    context["rsUnitCur"] = rsUnitCur
+    context["rsUnitCn"] = rsUnitCn
 
-    context["rsHeader"] = rsHeader
+    context["rsHeader"] = rsBizpartner
 
     context["title"] = "거래처"
     context["result_msg"] = "거래처"
