@@ -47,10 +47,10 @@
                     </td>
                 </tr>
                 </tbody>
+
             </table>
         </div>
         <br>
-
         </div>
         <div class="row">
             <div class="col-lg-12">
@@ -59,41 +59,42 @@
                         {% if rsHeader %}
                         <table class="table" width="100%">
                             <thead>
-                                <tr>
-                                    <th>사업부코드</th>
-                                    <th>사업부명</th>
-                                    <th>비고</th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
+                            <tr>
+                                <th>사업부코드</th>
+                                <th>사업부명</th>
+                                <th>비고</th>
+                                <th></th>
+                                <th></th>
 
+                                <!--                                    <th>사용구분</th>-->
+                            </tr>
+                            </thead>
+                            {% for i in rsHeader %}
                             <tbody >
-                                {% for i in rsHeader %}
-                                <tr>
-                                    <td id="bizunitcd{{ i.id }}">
-                                        {{ i.bizunit_cd }}
-                                    </td>
-                                    <td>
-                                        <input type="text" class="bizunitrmrk form-control" id="bizunitnm{{ i.id }}" value="{{ i.bizunit_nm }}" placeholder="bizunitrmrk"/>
-                                    </td>
-                                    <td>
-                                        <input type="text" class="bizunitrmrk form-control" id="bizunitrmrk{{ i.id }}" value="{{ i.bizunit_rmrk }}" placeholder="bizunitrmrk"/>
-                                    </td>
-                                    <td width="45%" align="right">
-                                        <button class="btn btn-default btn-sm" id="update_{{i.id}}" name="{{i.id}}" onclick="update_element(this);">수정</button>
-                                    </td>
-                                    <td width="5%">
-                                        <button class="btn btn-default btn-sm" id="delete_{{i.id}}" name="{{i.id}}" onclick="delete_element(this);">삭제</button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
+                            <tr>
+                                <td>
+                                    {{ i.bizunit_cd }}
+                                </td>
+
+                                <td>
+                                    <input type="text" class="bizunitrmrk form-control" id="bizunitnm{{ i.id }}" value="{{ i.bizunit_nm }}" placeholder="bizunitrmrk"/>
+                                </td>
+                                <td>
+                                    <input type="text" class="bizunitrmrk form-control" id="bizunitrmrk{{ i.id }}" value="{{ i.bizunit_rmrk }}" placeholder="bizunitrmrk"/>
+                                </td>
+                                <td width="45%" align="right"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator">수정</a></td>
+                                <td width="5%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator">삭제</a></td>
+                                </td>
+
+                            </tr>
                             </tbody>
+                            {% endfor %}
                         </table>
                         {% else %}
                         <span>내용이 없습니다.</span>
                         {% endif %}
                     </div>
+
                 </section>
             </div>
         </div>

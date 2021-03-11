@@ -274,7 +274,7 @@ class BBom(models.Model):  # BOM 메인
 
 
 class CbCostCenter(models.Model):  # 코스트센터
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(db_column='id', primary_key=True)
     cstctr_cd = models.CharField(max_length=50, blank=True, null=True)
     cstctr_nm = models.CharField(max_length=50, blank=True, null=True)
     bizarea_id = models.IntegerField(blank=True, null=True)
