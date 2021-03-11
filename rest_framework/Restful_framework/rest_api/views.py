@@ -276,6 +276,7 @@ def bizpartner_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=200)
+        #print(serializer.errors.values())
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
@@ -447,10 +448,7 @@ def code_dtl_list(request):
     elif request.method == 'POST':
         data = JSONParser().parse(request)
 
-        if CbCodeDtl.objects.filter(type_cd=data['type_cd'], code_cd=data['code_cd'], usage_fg='Y').exists():
-            raise exceptions.ParseError("Duplicate Code")
-
-        if CbCodeDtl.objects.filter(type_cd=data['type_cd'], code_nm=data['code_nm'], usage_fg='Y').exists():
+        if CbCodeDtl.objects.filter(cd_nm=data['cd_nm'], usage_fg='Y').exists():
             raise exceptions.ParseError("Duplicate Code Name")
 
         serializer = CbCodeDtlSerializer(data=data)
@@ -474,7 +472,7 @@ def code_dtl_detail(request, pk):
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
 
-        if CbCodeDtl.objects.filter(type_cd=data['type_cd'], code_nm=data['code_nm'], usage_fg='Y').exists():
+        if CbCodeDtl.objects.filter(cd_nm=data['cd_nm'], usage_fg='Y').exists():
             raise exceptions.ParseError("Duplicate Code Name")
 
         serializer = CbCodeDtlSerializer(obj, data=data)
@@ -527,9 +525,6 @@ def cstctr_detail(request, pk):
 
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-
-        if CbCostCenter.objects.filter(cstctr_nm=data['cstctr_nm'], usage_fg='Y').exists():
-            raise exceptions.ParseError("Duplicate Name")
 
         serializer = CbCostCenterSerializer(obj, data=data)
 
