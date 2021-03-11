@@ -204,7 +204,7 @@ class BItem(models.Model):  # 품목마스터
 
 
 class CbCostCenter(models.Model):  # 코스트센터
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(db_column='id', primary_key=True)
     cstctr_cd = models.CharField(max_length=50, blank=True, null=True)
     cstctr_nm = models.CharField(max_length=50, blank=True, null=True)
     bizarea_id = models.IntegerField(blank=True, null=True)
@@ -224,6 +224,7 @@ class CbCostCenter(models.Model):  # 코스트센터
 
 
 class BWorkcenter(models.Model):  # 작업장
+    id = models.AutoField(db_column='id', primary_key=True)
     workcenter_cd = models.CharField(max_length=50, blank=True, null=True)
     workcenter_nm = models.CharField(max_length=50, blank=True, null=True)
     cstctr = models.ForeignKey(CbCostCenter, related_name='+', on_delete=models.CASCADE)

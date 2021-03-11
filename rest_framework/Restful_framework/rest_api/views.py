@@ -548,12 +548,6 @@ def cstctr_detail(request, pk):
 @csrf_exempt
 def item_list(request):
     if request.method == 'GET':
-
-        item_code = request.GET.get('item_cd')
-        item_name = request.GET.get('item_nm')
-        item_spec = request.GET.get('item_spec')
-
-        BItem.objects.filter(item_cd=item_code, usage_fg='Y')
         query_set = BItem.objects.all()
         serializer = BItemSerializer(query_set, many=True)
         return JsonResponse(serializer.data, safe=False)

@@ -1950,14 +1950,10 @@ def b_workcenter(request):
 def workcenter_element_insert(request):
     context = {}
 
-    id = 1
     workcentercd = request.GET['workcentercd']
     workcenternm = request.GET['workcenternm']
     cstctrid = request.GET['cstctrid']
     usagefg = 'Y'
-
-    while BWorkcenter.objects.filter(id=id).exists():
-        id += 1
 
     if BWorkcenter.objects.filter(workcenter_cd=workcentercd, usage_fg='Y').exists():
         context["flag"] = "1"
@@ -1970,8 +1966,7 @@ def workcenter_element_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
-    BWorkcenter.objects.create(id=id,
-                               workcenter_cd=workcentercd,
+    BWorkcenter.objects.create(workcenter_cd=workcentercd,
                                workcenter_nm=workcenternm,
                                cstctr_id=cstctrid,
                                insrt_dt=datetime.now(),
@@ -2064,7 +2059,6 @@ def cb_cost_center(request):
 def costcenter_element_insert(request):
     context = {}
 
-    id = 1
     cstctrcd = request.GET['cstctrcd']
     cstctrnm = request.GET['cstctrnm']
     bizareaid = request.GET['bizareaid']
@@ -2073,9 +2067,6 @@ def costcenter_element_insert(request):
     cstctrtype = request.GET['cstctrtype']
     cstctrdirdiv = request.GET['cstctrdirdiv']
     usagefg = 'Y'
-
-    while CbCostCenter.objects.filter(id=id).exists():
-        id += 1
 
     if CbCostCenter.objects.filter(cstctr_cd=cstctrcd, usage_fg='Y').exists():
         context["flag"] = "1"
@@ -2088,8 +2079,7 @@ def costcenter_element_insert(request):
         return JsonResponse(context, content_type="application/json")
 
     # 생성 부분
-    CbCostCenter.objects.create(id=id,
-                                cstctr_cd=cstctrcd,
+    CbCostCenter.objects.create(cstctr_cd=cstctrcd,
                                 cstctr_nm=cstctrnm,
                                 bizarea_id=bizareaid,
                                 bizunit_id=bizunitid,
