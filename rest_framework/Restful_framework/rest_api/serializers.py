@@ -59,7 +59,7 @@ class CbCodeHdrSerializer(serializers.ModelSerializer):
 class CbCodeDtlSerializer(serializers.ModelSerializer):
     class Meta:
         model = CbCodeDtl
-        fields = ('type_cd', 'code_cd', 'code_nm')
+        fields = ('type_cd', 'code_cd', 'cd_nm')
 
 
 class CbCostCenterSerializer(serializers.ModelSerializer):
