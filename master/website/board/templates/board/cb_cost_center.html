@@ -292,7 +292,7 @@
                 function update_element(elem) {
                     var id = elem.getAttribute('name');
 
-                    var cstctrCd = document.getElementById("cstctr_cd" + id).value;
+                    var cstctrCd = document.getElementById("cstctr_cd" + id).innerText;
                     var cstctrNm = document.getElementById("cstctr_nm" + id).value;
 
                     var bizareaSelected = document.getElementById("bizarea_id" + id);
@@ -316,6 +316,8 @@
                         "cstctr_type": cstctrType,
                         "cstctr_dir_div": cstctrDirDiv
                     };
+
+                    alert(JSON.stringify(payload));
 
                     xhr = new XMLHttpRequest();
                     xhr.onreadystatechange = function () {
