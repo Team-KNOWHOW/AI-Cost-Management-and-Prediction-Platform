@@ -426,10 +426,7 @@ def code_hdr_detail(request, pk):
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
-
-        data = JSONParser().parse(request)
-
-        if CbCodeDtl.objects.filter(type_cd=data['type_cd'], usage_fg='Y').exists():
+        if CbCodeDtl.objects.filter(type_cd=obj.type_cd, usage_fg='Y').exists():
             raise exceptions.ParseError("Can't delete root code")
 
         obj.usage_fg = 'N'
