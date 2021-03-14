@@ -71,14 +71,14 @@
                                         <input type="text" class="form-control" id="bizpartnernm" value="" >
                                     </td>
                                     <td>
-                                        <select class="cn" style="width:100%;padding:3px;">
+                                        <select id="cn" style="width:100%;padding:3px;">
                                             {% for i in rsUnitCn %}
                                             <option value="{{i.id}}"> {{ i.cd_nm }} </option>
                                             {% endfor %}
                                         </select>
                                     </td>
                                     <td>
-                                        <select class="cur"  style="width:100%;padding:3px;">
+                                        <select id="cur"  style="width:100%;padding:3px;">
                                             {% for i in rsUnitCur %}
                                             <option value="{{i.id}}"> {{ i.cd_nm }} </option>
                                             {% endfor %}
@@ -100,7 +100,7 @@
                                 {% for i in rsHeader %}
                                 <tr>
                                     <td>
-                                        <select class="conm{{i.id}}">
+                                        <select id="conm{{i.id}}">
                                             {% for ii in rsCo %}
                                             {% if i.co_id == ii.id %}
                                             <option selected value="{{ ii.id }}"> {{ ii.co_nm }} </option>
@@ -116,9 +116,18 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <select class="bizpartnertype{{i.id}}" style="width:100%;padding:3px;">
-                                            <option value="법인"> 법인 </option>
-                                            <option value="개인"> 개인 </option>
+                                        <select id="bizpartnertype{{i.id}}" style="width:100%;padding:3px;">
+                                            {% if i.bizpartner_type == "법인" %}
+                                            <option selected> 법인 </option>
+                                            {% else %}
+                                            <option> 법인 </option>
+                                            {% endif %}
+
+                                            {% if i.bizpartner_type == "개인" %}
+                                            <option selected> 개인 </option>
+                                            {% else %}
+                                            <option> 개인 </option>
+                                            {% endif %}
                                         </select>
                                     </td>
                                     <td>
@@ -131,7 +140,7 @@
                                         {% if not rsUnitCn %}
                                         <p class="text-center">지정국가 없음</p>
                                         {% else %}
-                                        <select class="unitcn_id{{ i.id }}" style="width:100%;padding:3px;">
+                                        <select id="unitcn_id{{ i.id }}" style="width:100%;padding:3px;">
                                             {% for k in rsUnitCn %}
                                             {% if i.unitcn_id == k.id %}
                                             <option value="{{ k.id }}" selected> {{ k.cd_nm }} </option>
@@ -146,7 +155,7 @@
                                         {% if not rsUnitCur %}
                                         <p class="text-center">기준통화 없음</p>
                                         {% else %}
-                                        <select class="unitcur_id{{ i.id }}" style="width:100%;padding:3px;">
+                                        <select id="unitcur_id{{ i.id }}" style="width:100%;padding:3px;">
                                             {% for k in rsUnitCur %}
                                             {% if i.unitcur_id == k.id %}
                                             <option value="{{ k.id }}" selected>{{ k.cd_nm }}</option>
@@ -158,9 +167,18 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <select class="bizpartnerstat{{i.id}}" style="width:100%;padding:3px;">
-                                            <option value="정상"> 정상 </option>
-                                            <option value="중지"> 중지 </option>
+                                        <select id="bizpartnerstat{{i.id}}" style="width:100%;padding:3px;">
+                                            {% if i.bizpartner_stat == "정상" %}
+                                            <option selected> 정상 </option>
+                                            {% else %}
+                                            <option> 정상 </option>
+                                            {% endif %}
+
+                                            {% if i.bizpartner_stat == "중지" %}
+                                            <option selected> 중지 </option>
+                                            {% else %}
+                                            <option> 중지 </option>
+                                            {% endif %}
                                         </select>
                                     </td>
                                     <td width="5%">
@@ -194,18 +212,18 @@
                 }
                 return cookieValue;
             }
+
             var csrftoken = getCookie('csrftoken');
             var xhr;
-
 
             function insert_element() {
                 var coSelect = document.querySelector('#conm');
                 var coId = coSelect.options[coSelect.selectedIndex].value;
 
-                var cnSelect = document.querySelector('#cncd');
+                var cnSelect = document.querySelector('#cn');
                 var cnId = cnSelect.options[cnSelect.selectedIndex].value;
 
-                var curSelect = document.querySelector('#curcd');
+                var curSelect = document.querySelector('#cur');
                 var curId = curSelect.options[curSelect.selectedIndex].value;
 
                 var bsSelect = document.querySelector('#bizpartnerstat');
@@ -284,22 +302,20 @@
                 var bizNm = $('#biz_nm' + id).val();
                 var bizpartnerNm = $('#bizpartner_nm' + id).val();
 
-                var coSelect = document.querySelector('.conm' + id);
+                var coSelect = document.querySelector('#conm' + id);
                 var coId = coSelect.options[coSelect.selectedIndex].value;
 
-                var cnSelect = document.querySelector('.unitcn_id' + id);
+                var cnSelect = document.querySelector('#unitcn_id' + id);
                 var cnId = cnSelect.options[cnSelect.selectedIndex].value;
 
-                var curSelect = document.querySelector('.unitcur_id' + id);
+                var curSelect = document.querySelector('#unitcur_id' + id);
                 var curId = curSelect.options[curSelect.selectedIndex].value;
 
-                var bsSelect = document.querySelector('.bizpartnerstat' + id);
+                var bsSelect = document.querySelector('#bizpartnerstat' + id);
                 var bizpartnerStat = bsSelect.options[bsSelect.selectedIndex].value;
 
-                var btSelect = document.querySelector('.bizpartnertype' + id);
+                var btSelect = document.querySelector('#bizpartnertype' + id);
                 var bizpartnerType = btSelect.options[btSelect.selectedIndex].value;
-
-                alert(bizpartnerCd)
 
                 var payload = {
                     "co_id": coId,
