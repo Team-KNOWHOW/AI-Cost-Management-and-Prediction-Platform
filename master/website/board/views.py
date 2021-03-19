@@ -2866,3 +2866,11 @@ def cc_costbill_if(request):
 # *********************************************************************************************************************
 # costbill 코드 끝
 # *********************************************************************************************************************
+
+def cc_costbill1_if(request):
+    context = {}
+
+    rsCostbill1 = CcCostbill1.objects.all()
+    context["rsCostbill1"] = rsCostbill1
+
+    return render(request, 'board3/cc_costbill1_if.html', context)

@@ -371,3 +371,24 @@ class CcProductcostpaymentIf(models.Model):  # 제품원가수불
     class Meta:
         managed = False
         db_table = 'cc_productcostpayment_if'
+
+
+class CcCostbill1(models.Model):  # 분석용
+    id = models.AutoField(db_column='id', primary_key=True)
+    version_id = models.IntegerField(db_column='version_id', default=0)
+    itemplan_id = models.IntegerField(db_column='itemplan_id', default=0)
+    ic_idlc = models.IntegerField(db_column='ic_idlc', default=0)
+    ic_dlfc = models.IntegerField(db_column='ic_dlfc', default=0)
+    ic_dlvc = models.IntegerField(db_column='ic_dlvc', default=0)
+    ic_idohc = models.IntegerField(db_column='ic_idohc', default=0)
+    ic_ohdfe = models.IntegerField(db_column='ic_ohdfe', default=0)
+    ic_ohdfd = models.IntegerField(db_column='ic_ohdfd', default=0)
+    ic_ohdvc = models.IntegerField(db_column='ic_ohdvc', default=0)
+    proamt_unit = models.IntegerField(db_column='proamt_unit', default=0)
+    proamt_acc = models.BigIntegerField(db_column='proamt_acc', default=0)
+    proq = models.IntegerField(db_column='proq', default=0)
+
+
+    class Meta:
+        managed = False
+        db_table = 'cc_costbill1'
