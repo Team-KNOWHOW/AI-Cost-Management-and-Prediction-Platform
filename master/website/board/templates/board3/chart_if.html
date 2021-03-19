@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+      // https://docs.djangoproject.com/en/3.1/ref/csrf/
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    var xhr;
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="icon_piechart"></i> Chart</h3>
+            </div>
+        </div>
+        <div class="row">
+            <!-- chart morris start -->
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <h3>General Chart</h3>
+                    </header>
+                    <div class="panel-body">
+                        <div class="tab-pane" id="chartjs">
+                            <div class="row">
+                                <!-- Line -->
+                                <div class="col-lg-6">
+                                    <section class="panel">
+                                        <header class="panel-heading">
+                                            1. 변동비 ~ 매출액
+                                        </header>
+                                        <div class="panel-body text-center">
+                                            <canvas id="line" height="300" width="450"></canvas>
+                                        </div>
+                                    </section>
+                                </div>
+                                <!-- Bar -->
+                                <div class="col-lg-6">
+                                    <section class="panel">
+                                        <header class="panel-heading">
+                                            2. 변동비 + 고정비 ~ 매출액
+                                        </header>
+                                        <div class="panel-body text-center">
+                                            <canvas id="bar" height="300" width="500"></canvas>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- chart morris start -->
+        </div>
+    </section>
+    <!--main content end-->
+</section>
+
+<script src="{%static 'js/chartjs-custom.js'%}"></script>
+
+{% endblock %}

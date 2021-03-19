@@ -2874,3 +2874,8 @@ def cc_costbill1_if(request):
     context["rsCostbill1"] = rsCostbill1
 
     return render(request, 'board3/cc_costbill1_if.html', context)
+
+def chart_if(request):
+    context = {}
+
+    return render(request, 'board3/chart_if.html', context)
