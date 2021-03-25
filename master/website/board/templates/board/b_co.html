@@ -32,120 +32,116 @@
                         {% if rsCo %}
                         <table class="table" width="100%">
                             <thead>
-                            <tr>
-                                <th>법인코드</th>
-                                <th>법인명</th>
-                                <th>법인약명</th>
-                                <th>법인대표</th>
-                                <th>법인유형</th>
-                                <th>법인구분</th>
-                                <th>국가코드</th>
-                                <th>기준통화코드</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
+                                <tr>
+                                    <th>법인코드</th>
+                                    <th>법인명</th>
+                                    <th>법인약명</th>
+                                    <th>법인대표</th>
+                                    <th>법인유형</th>
+                                    <th>법인구분</th>
+                                    <th>국가코드</th>
+                                    <th>기준통화코드</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
                             </thead>
 
                             <tbody>
-                            <tr bgcolor="#F7F7F7">
-                                <td>
-                                    <input type="text" class="form-control" id="co_cd">
-                                </td>
-                                <td >
-                                    <input type="text" class="form-control" id="co_nm">
-                                </td>
-                                <td >
-                                    <input type="text" class="form-control" id="co_shnm">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="co_rpr">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="co_type">
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="co_div">
-                                </td>
-                                <td >
-                                    <select class="cn"  style="width:100%;padding:3px;">
-                                        {% for i in rsUnitCn %}
-                                        <option value="{{i.id}}"> {{ i.cd_nm }} </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td >
-                                    <select class="cur"  style="width:100%;padding:3px;">
-                                        {% for i in rsUnitCur %}
-                                        <option value="{{i.id}}"> {{ i.cd_nm }} </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    <button onclick="insert_element();" class="btn btn-default btn-sm">저장</button>
-                                </td>
-                                <td></td>
-                            </tr>
-                            </tbody>
+                                <tr bgcolor="#F7F7F7">
+                                    <td>
+                                        <input type="text" class="form-control" id="co_cd">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="co_nm">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="co_shnm">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="co_rpr">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="co_type">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="co_div">
+                                    </td>
+                                    <td>
+                                        <select class="cn" style="width:100%;padding:3px;">
+                                            {% for i in rsUnitCn %}
+                                            <option value="{{i.id}}"> {{ i.cd_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="cur"  style="width:100%;padding:3px;">
+                                            {% for i in rsUnitCur %}
+                                            <option value="{{i.id}}"> {{ i.cd_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button onclick="insert_element();" class="btn btn-default btn-sm">저장</button>
+                                    </td>
+                                </tr>
 
-                            {% for i in rsCo %}
-                            <tbody >
-                            <tr>
-                                <td>{{ i.co_cd }}</td>
-                                <td>
-                                    <input type="text" class="form-control" id="co_nm{{ i.id }}" value="{{ i.co_nm }}"/>
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="co_shnm{{ i.id }}" value="{{ i.co_shnm }}"/>
-                                </td>
-                                <td width="15%">
-                                    <input type="text" class="form-control" id="co_rpr{{ i.id }}" value="{{ i.co_rpr }}"/>
-                                </td>
-                                <td >
-                                    <input type="text" class="form-control" id="co_type{{ i.id }}" value="{{ i.co_type }}"/>
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="co_div{{ i.id }}" value="{{ i.co_div }}"/>
-                                </td>
-                                <td>
-                                    {% if not rsUnitCn %}
-                                    <p class="text-center">지정국가 없음</p>
-                                    {% else %}
-                                    <select class="unitcn_id{{ i.id }}" style="width:100%;padding:3px;">
-                                        {% for k in rsUnitCn %}
-                                        {% if i.unitcn_id == k.id %}
-                                        <option value="{{ k.id }}" selected> {{ k.cd_nm }} </option>
+                                {% for i in rsCo %}
+                                <tr>
+                                    <td id="co_cd{{ i.id }}" value="{{ i.co_cd }}">{{ i.co_cd }}</td>
+                                    <td>
+                                        <input type="text" class="form-control" id="co_nm{{ i.id }}" value="{{ i.co_nm }}"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="co_shnm{{ i.id }}" value="{{ i.co_shnm }}"/>
+                                    </td>
+                                    <td width="15%">
+                                        <input type="text" class="form-control" id="co_rpr{{ i.id }}" value="{{ i.co_rpr }}"/>
+                                    </td>
+                                    <td >
+                                        <input type="text" class="form-control" id="co_type{{ i.id }}" value="{{ i.co_type }}"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="co_div{{ i.id }}" value="{{ i.co_div }}"/>
+                                    </td>
+                                    <td>
+                                        {% if not rsUnitCn %}
+                                        <p class="text-center">지정국가 없음</p>
                                         {% else %}
-                                        <option value="{{ k.id }}"> {{ k.cd_nm }} </option>
+                                        <select class="unitcn_id{{ i.id }}" style="width:100%;padding:3px;">
+                                            {% for k in rsUnitCn %}
+                                            {% if i.unitcn_id == k.id %}
+                                            <option value="{{ k.id }}" selected> {{ k.cd_nm }} </option>
+                                            {% else %}
+                                            <option value="{{ k.id }}"> {{ k.cd_nm }} </option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
                                         {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                    </select>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if not rsUnitCur %}
-                                    <p class="text-center">기준통화 없음</p>
-                                    {% else %}
-                                    <select class="unitcur_id{{ i.id }}" style="width:100%;padding:3px;">
-                                        {% for k in rsUnitCur %}
-                                        {% if i.unitcur_id == k.id %}
-                                        <option value="{{ k.id }}" selected>{{ k.cd_nm }}</option>
+                                    </td>
+                                    <td>
+                                        {% if not rsUnitCur %}
+                                        <p class="text-center">기준통화 없음</p>
                                         {% else %}
-                                        <option value="{{ k.id }}">{{ k.cd_nm }}</option>
+                                        <select class="unitcur_id{{ i.id }}" style="width:100%;padding:3px;">
+                                            {% for k in rsUnitCur %}
+                                            {% if i.unitcur_id == k.id %}
+                                            <option value="{{ k.id }}" selected>{{ k.cd_nm }}</option>
+                                            {% else %}
+                                            <option value="{{ k.id }}">{{ k.cd_nm }}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
                                         {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                    {% endif %}
-                                </td>
-                                <td width="5%">
-                                    <button class="btn btn-default btn-sm" id="update_{{i.id}}" name="{{i.id}}" onclick="update_element(this);">수정</button>
-                                </td>
-                                <td width="5%">
-                                    <button class="btn btn-default btn-sm" id="delete_{{i.id}}" name="{{i.id}}" onclick="delete_element(this);">삭제</button>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td width="5%">
+                                        <button class="btn btn-default btn-sm" id="update_{{i.id}}" name="{{i.id}}" onclick="update_element(this);">수정</button>
+                                    </td>
+                                    <td width="5%">
+                                        <button class="btn btn-default btn-sm" id="delete_{{i.id}}" name="{{i.id}}" onclick="delete_element(this);">삭제</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
-                            {% endfor %}
                         </table>
                         {% else %}
                         <span>내용이 없습니다.</span>
@@ -154,6 +150,7 @@
                 </section>
             </div>
         </div>
+
         <script>
             function getCookie(name) {
                 var cookieValue = null;
@@ -170,12 +167,11 @@
                 }
                 return cookieValue;
             }
-            var csrftoken = getCookie('csrftoken');
 
+            var csrftoken = getCookie('csrftoken');
             var xhr;
 
             function insert_element() {
-
                 var coCd = document.getElementById("co_cd").value;
                 var coNm = document.getElementById("co_nm").value;
                 var coShnm = document.getElementById("co_shnm").value;
@@ -220,30 +216,49 @@
                 }
 
                 var unitCurSelect = document.querySelector('.cur');
-                var unitcurid = unitCurSelect.options[unitCurSelect.selectedIndex].value;
+                var unitCurId = unitCurSelect.options[unitCurSelect.selectedIndex].value;
 
                 var unitCnSelect = document.querySelector('.cn');
-                var unitcnid = unitCnSelect.options[unitCnSelect.selectedIndex].value;
+                var unitCnId = unitCnSelect.options[unitCnSelect.selectedIndex].value;
 
-                var strurl = "co_element_insert?co_cd=" + coCd + "&co_nm=" + coNm + "&co_shnm=" + coShnm +
-                    "&co_rpr=" + coRpr +"&co_type=" + coType +"&co_div=" + coDiv + "&unitcurid=" +unitcurid+ "&unitcnid="+ unitcnid;
+                var payload = {
+                    "co_cd": coCd,
+                    "co_nm": coNm,
+                    "co_shnm": coShnm,
+                    "co_rpr": coRpr,
+                    "co_type": coType,
+                    "co_div": coDiv,
+                    "unitcur": unitCurId,
+                    "unitcn": unitCnId
+                };
 
                 xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4) {
-                        var data = xhr.responseText;
+                        if(xhr.status==201)
+                            alert("생성이 완료되었습니다.");
+                        location.reload();
+                    }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
 
-                        var obj = JSON.parse(data);
-                        alert(obj.result_msg);
-
-                        if(obj.flag =='0') {
-                            location.reload();
+                            if (obj.detail == "DuplicateCode") {
+                                alert("법인코드가 이미 존재합니다.");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
                         }
                     }
                 };
-                xhr.open("POST", strurl);
+
+                var strurl = "http://127.0.0.1:8080/rest_api/corporations";
+                xhr.open("POST", strurl, true);
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                xhr.send(null);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
             }
 
             function update_element(elem) {
@@ -255,53 +270,85 @@
                 var unitCurSelect = document.querySelector('.unitcur_id' + coId);
                 var unitCurId = unitCurSelect.options[unitCurSelect.selectedIndex].value;
 
+                var coCd = document.getElementById('co_cd' + coId).value;
                 var coNm = document.getElementById('co_nm' + coId).value;
                 var coShnm = document.getElementById('co_shnm' + coId).value;
                 var coRpr = document.getElementById('co_rpr' + coId).value;
                 var coType = document.getElementById('co_type' + coId).value;
                 var coDiv = document.getElementById('co_div' + coId).value;
 
-                var strurl = "co_element_update?id=" + coId +"&co_nm=" + coNm + "&co_shnm=" + coShnm + "&co_rpr=" + coRpr +
-                "&co_type=" + coType + "&co_div=" + coDiv + "&unitcn_id=" + unitCnId + "&unitcur_id=" + unitCurId;
+                var payload = {
+                    "co_cd": coCd,
+                    "co_nm": coNm,
+                    "co_shnm": coShnm,
+                    "co_rpr": coRpr,
+                    "co_type": coType,
+                    "co_div": coDiv,
+                    "unitcur": unitCurId,
+                    "unitcn": unitCnId
+                };
 
                 xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4) {
-                        var data = xhr.responseText;
-
-                        var obj = JSON.parse(data);
-                        alert(obj.result_msg);
+                        if(xhr.status==200)
+                            alert("수정이 완료되었습니다.");
                         location.reload();
+                    }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
 
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
                     }
                 };
-                xhr.open("POST", strurl);
+
+                var strurl = "http://127.0.0.1:8080/rest_api/corporations/" + coId;
+                xhr.open("PUT", strurl, true);
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                xhr.send(null);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
             }
 
             function delete_element(elem) {
-
                 var coId = elem.getAttribute('name');
-
-                var strurl = "co_element_delete?id=" + coId;
 
                 xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4) {
-                        var data = xhr.responseText;
-
-                        var obj = JSON.parse(data);
-                        alert(obj.result_msg);
+                        if(xhr.status==204)
+                            alert("삭제가 완료되었습니다.");
                         location.reload();
                     }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
+
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
                 };
-                xhr.open("POST", strurl);
+
+                var strurl = "http://127.0.0.1:8080/rest_api/corporations/" + coId;
+                xhr.open("DELETE", strurl, true);
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(null);
             }
         </script>
-
     </section>
     <!--main content end-->
 </section>

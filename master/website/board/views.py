@@ -13,6 +13,7 @@ from datetime import datetime
 
 import pymysql
 from django.conf import settings
+
 MYDB = getattr(settings, "DATABASES", None)
 MYDB_NAME = MYDB["default"]["NAME"]
 MYDB_USER = MYDB["default"]["USER"]
@@ -236,127 +237,30 @@ def b_bizpartner(request):
     context["id"] = member_no
     context["user_id"] = member_id
 
-    # print(typecd)
+    strsql = "SELECT a.*, b.* ,c.*, d.* " + \
+             "FROM (SELECT *FROM  b_bizpartner WHERE usage_fg='Y') a " + \
+             "LEFT JOIN b_co b ON a.co_id=b.id " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd ='country' ) c ON a.unitcn_id=c.id " + \
+             "LEFT JOIN (SELECT id, code_cd, cd_nm FROM cb_code_dtl WHERE type_cd='currency') d ON a.unitcur_id=d.id "
+    rsBizpartner = BBizpartner.objects.raw(strsql)
+    context["rsBizpartner"] = rsBizpartner
 
-    rsHeader = BBizpartner.objects.filter(usage_fg='Y')
     rsCo = BCo.objects.filter(usage_fg='Y')
-    rsCncd = CbCodeDtl.objects.filter(usage_fg='Y', type_cd='country')
-    rsCurcd = CbCodeDtl.objects.filter(usage_fg='Y', type_cd='currency')
+    rsUnitCur = CbCodeDtl.objects.filter(type_cd='currency', usage_fg='Y')
+    rsUnitCn = CbCodeDtl.objects.filter(type_cd='country', usage_fg='Y')
     rsBizpartnerstat = BBizpartner.objects.filter(usage_fg='Y')
+
     context['rsBizpartnerstat'] = rsBizpartnerstat
     context["rsCo"] = rsCo
-    context["rsCncd"] = rsCncd
-    context["rsCurcd"] = rsCurcd
+    context["rsUnitCur"] = rsUnitCur
+    context["rsUnitCn"] = rsUnitCn
 
-    context["rsHeader"] = rsHeader
+    context["rsHeader"] = rsBizpartner
 
     context["title"] = "거래처"
     context["result_msg"] = "거래처"
 
     return render(request, board_path + "b_bizpartner.html", context)
-
-
-@csrf_exempt
-def bizpartner_element_insert(request):
-    context = {}
-
-    # ##########나중에 admin연결 후 삭제 할 거#############
-    # if request.session.has_key('id'):
-    #     member_id = request.session['user_id']
-    # else:
-    #     member_id = None
-    # #######################
-    # context["user_id"] = member_id
-
-    bizpartnercd = request.GET['bizpartnercd']
-    coid = request.GET['coid']
-    bizpartnertype = request.GET['bizpartnertype']
-    biznm = request.GET['biznm']
-    bizpartnernm = request.GET['bizpartnernm']
-    cncd = request.GET['cncd']
-    curcd = request.GET['curcd']
-    bizpartnerstat = request.GET['bizpartnerstat']
-    # user_id = request.session['user_id']
-    usagefg = 'Y'
-
-    if BBizpartner.objects.filter(bizpartner_cd=bizpartnercd).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizpartner_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(biz_nm=biznm).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "biz_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizpartner.objects.filter(bizpartner_nm=bizpartnernm).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizpartner_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    BBizpartner.objects.create(bizpartner_cd=bizpartnercd,
-                               co_id=coid,
-                               bizpartner_type=bizpartnertype,
-                               biz_nm=biznm,
-                               bizpartner_nm=bizpartnernm,
-                               cn_cd=cncd,
-                               cur_cd=curcd,
-                               bizpartner_stat=bizpartnerstat,
-                               usage_fg=usagefg,
-
-                               )
-
-    context["flag"] = "0"
-    context["result_msg"] = "bizpartner insert success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def bizpartner_element_update(request):
-    context = {}
-
-    id = request.GET['id']
-    biznm = request.GET['biznm']
-    bizpartnernm = request.GET['bizpartnernm']
-    coid = request.GET['coid']
-    cncd = request.GET['cncd']
-    curcd = request.GET['curcd']
-    bizpartnerstat = request.GET['bizpartnerstat']
-    bizpartnertype = request.GET['bizpartnertype']
-
-    rs = BBizpartner.objects.get(id=id)
-    rs.biz_nm = biznm
-    rs.bizpartner_nm = bizpartnernm
-    rs.co_id = coid
-    rs.cn_cd = cncd
-    rs.cur_cd = curcd
-    rs.bizpartner_stat = bizpartnerstat
-    rs.bizpartner_type = bizpartnertype
-    rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = " update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def bizpartner_element_delete(request):
-    context = {}
-
-    id = request.GET['id']
-
-    rsHeader = BBizpartner.objects.get(id=id)
-    rsHeader.usage_fg = 'N'
-    rsHeader.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Type delete success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-# *********************************************************************************************************************
-# 거래처 코드 끝
-# *********************************************************************************************************************
 
 
 def b_co(request):  # 법인정보
@@ -389,92 +293,7 @@ def b_co(request):  # 법인정보
     return render(request, board_path + "b_co.html", context)
 
 
-@csrf_exempt
-def co_element_insert(request):
-    context = {}
-    unitCnid = request.GET['unitcnid']
-    unitCurid = request.GET['unitcurid']
-    coCd = request.GET['co_cd']
-    coNm = request.GET['co_nm']
-    coShnm = request.GET['co_shnm']
-    coRpr = request.GET['co_rpr']
-    coType = request.GET['co_type']
-    coDiv = request.GET['co_div']
-    usage_fg = 'Y'
-
-    if BCo.objects.filter(co_cd=coCd, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "이미 존재하는 법인코드입니다."
-
-    else:
-        BCo.objects.create(
-            co_cd=coCd,
-            co_nm=coNm,
-            co_shnm=coShnm,
-            co_rpr=coRpr,
-            co_type=coType,
-            co_div=coDiv,
-            unitcur_id=unitCurid,
-            unitcn_id=unitCnid,
-            usage_fg=usage_fg
-        )
-
-        context["flag"] = "0"
-        context["result_msg"] = "데이터 입력이 완료되었습니다."
-
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def co_element_update(request):
-    context = {}
-
-    coId = request.GET['id']
-    coNm = request.GET['co_nm']
-    coShnm = request.GET['co_shnm']
-    coRpr = request.GET['co_rpr']
-    coType = request.GET['co_type']
-    coDiv = request.GET['co_div']
-
-    unitCnId = request.GET['unitcn_id']
-    unitCurId = request.GET['unitcur_id']
-
-    rs = BCo.objects.get(id=coId)
-    rs.co_nm = coNm
-    rs.co_shnm = coShnm
-    rs.co_rpr = coRpr
-    rs.co_type = coType
-    rs.co_div = coDiv
-
-    rs.unitcn_id = unitCnId
-    rs.unitcur_id = unitCurId
-    rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "수정이 완료되었습니다."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def co_element_delete(request):
-    context = {}
-
-    coId = request.GET['id']
-
-    rsHeader = BCo.objects.get(id=coId)
-    rsHeader.usage_fg = 'N'
-    rsHeader.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "삭제가 완료되었습니다."
-    return JsonResponse(context, content_type="application/json")
-
-
-# **********************************************************************************************************************
-# 사업장 코드 시작
-# **********************************************************************************************************************
-
-def b_bizarea(request):
+def b_bizarea(request):  # 사업장
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -506,109 +325,6 @@ def b_bizarea(request):
     return render(request, board_path + "b_bizarea.html", context)
 
 
-@csrf_exempt
-def bizarea_element_insert(request):
-    context = {}
-    unitcnid = request.GET['unitcnid']
-    unitcurid = request.GET['unitcurid']
-    conm = request.GET['conm']
-    bizareacd = request.GET['bizareacd']
-    bizareashnm = request.GET['bizareashnm']
-    bizareanm = request.GET['bizareanm']
-    bizrpr = request.GET['bizrpr']
-    bizno = request.GET['bizno']
-    usagefg = 'Y'
-
-    if BBizarea.objects.filter(bizarea_shnm=bizareashnm, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizarea_shnm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizarea.objects.filter(biz_rpr=bizrpr, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "biz_rpr exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizarea.objects.filter(bizarea_nm=bizareanm, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizarea_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizarea.objects.filter(biz_no=bizno, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "biz_no exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    BBizarea.objects.create(
-        bizarea_cd=bizareacd,
-        bizarea_shnm=bizareashnm,
-        bizarea_nm=bizareanm,
-        biz_rpr=bizrpr,
-        biz_no=bizno,
-        co_id=conm,
-        unitcur_id=unitcurid,
-        unitcn_id=unitcnid,
-        usage_fg=usagefg
-    )
-
-    context["flag"] = "0"
-    context["result_msg"] = "bizarea insert success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def bizarea_element_update(request):
-    context = {}
-
-    typeid = request.GET['typeid']
-
-    bizareanm = request.GET['bizareanm']
-    bizareashnm = request.GET['bizareashnm']
-    bizno = request.GET['bizno']
-    bizrpr = request.GET['bizrpr']
-
-    coid = request.GET['coid']
-    unitcnid = request.GET['unitcnid']
-    unitcurid = request.GET['unitcurid']
-
-    rs = BBizarea.objects.get(id=typeid)
-    rs.bizarea_nm = bizareanm
-    rs.bizarea_shnm = bizareashnm
-    rs.biz_no = bizno
-    rs.biz_rpr = bizrpr
-
-    rs.co_id=coid
-    rs.unitcur_id = unitcurid
-    rs.unitcn_id = unitcnid
-    rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def bizarea_element_delete(request):
-    context = {}
-
-    id = request.GET['id']
-
-    rsHeader = BBizarea.objects.get(id=id)
-    rsHeader.usage_fg = 'N'
-    rsHeader.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Type delete success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-# **********************************************************************************************************************
-# 사업장 코드 끝
-# ****************************************************************************************************
-
-# *****************************************************************************************
-# 사업부 코드 시작
-# ****************************************************************************************
 def b_bizunit(request):  # 사업부
     context = {}
 
@@ -633,83 +349,7 @@ def b_bizunit(request):  # 사업부
     return render(request, board_path + "b_bizunit.html", context)
 
 
-# 정보삽입
-@csrf_exempt
-def bizunit_element_insert(request):
-    context = {}
-
-    bizunitcd = request.GET['bizunitcd']
-    bizunitnm = request.GET['bizunitnm']
-    bizunitrmrk = request.GET['bizunitrmrk']
-    usagefg = 'Y'
-
-    if BBizunit.objects.filter(bizunit_cd=bizunitcd, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizunit_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizunit.objects.filter(bizunit_nm=bizunitnm, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizunit_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BBizunit.objects.filter(bizunit_rmrk=bizunitrmrk, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "bizunit_rmrk exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    # 생성 부분
-    BBizunit.objects.create(bizunit_cd=bizunitcd,
-                            bizunit_nm=bizunitnm,
-                            bizunit_rmrk=bizunitrmrk,
-                            usage_fg=usagefg
-                            )
-
-    context["flag"] = "0"
-    context["result_msg"] = "bizunit insert success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def bizunit_element_update(request):
-    context = {}
-    value = request.GET['value']
-    bizunitnm = request.GET['bizunitnm']
-    bizunitrmrk = request.GET['bizunitrmrk']
-    rsHeader = BBizunit.objects.get(id=value)
-    rsHeader.bizunit_rmrk = bizunitrmrk
-    rsHeader.bizunit_nm = bizunitnm
-    rsHeader.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "BBizunit update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def bizunit_element_delete(request):
-    context = {}
-
-    id = request.GET['id']
-
-    rsHeader = BBizunit.objects.get(id=id)
-    rsHeader.usage_fg = 'N'
-    rsHeader.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "BBizunit elements delete success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-# **********************************************************************************************************************
-# 사업부 코드 끝
-# ***********************************************************************************************************************
-
-
-# *********************************************************************************************************************
-# 공장 코드 시작
-# *********************************************************************************************************************
-def b_factory(request):
+def b_factory(request):  # 공장
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -734,87 +374,7 @@ def b_factory(request):
     return render(request, board_path + "b_factory.html", context)
 
 
-@csrf_exempt
-def factory_element_insert(request):
-    context = {}
-
-    id = 1
-    factorycd = request.GET['factorycd']
-    factorynm = request.GET['factorynm']
-    factoryrmrk = request.GET['factoryrmrk']
-    usagefg = 'Y'
-
-    while BFactory.objects.filter(id=id).exists():
-        id += 1
-
-    if BFactory.objects.filter(factory_cd=factorycd, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "factory_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BFactory.objects.filter(factory_nm=factorynm, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "factory_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    # 생성 부분
-    BFactory.objects.create(id=id,
-                            factory_cd=factorycd,
-                            factory_nm=factorynm,
-                            factory_rmrk=factoryrmrk,
-                            insrt_dt=datetime.now(),
-                            updt_dt=datetime.now(),
-                            usage_fg=usagefg)
-
-    context["flag"] = "0"
-    context["result_msg"] = "factory insert success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-# Update기능 미완성 -> 회의 후 항목 설정 예정.
-@csrf_exempt
-def factory_element_update(request):
-    context = {}
-
-    id = request.GET['id']
-    factorynm = request.GET['factorynm']
-    factoryrmrk = request.GET['factoryrmrk']
-
-    rsFactory = BFactory.objects.get(id=id)
-    rsFactory.factory_nm = factorynm
-    rsFactory.factory_rmrk = factoryrmrk
-    rsFactory.updt_dt = datetime.now()
-    rsFactory.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "factory update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def factory_element_delete(request):
-    context = {}
-
-    id = request.GET['id']
-
-    rsHeader = BFactory.objects.get(id=id)
-    rsHeader.usage_fg = 'N'
-    rsHeader.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "factory elements delete success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-# *********************************************************************************************************************
-# 공장 코드 끝
-# *********************************************************************************************************************
-
-# *********************************************************************************************************************
-# 통합코드관리 코드 시작
-# *********************************************************************************************************************
-
-def codemanage(request):
+def codemanage(request):  # 통합코드 관리
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -841,134 +401,6 @@ def codemanage(request):
     context["rsCode"] = rsCode
 
     return render(request, "board/codemanage.html", context)
-
-
-@csrf_exempt
-def codetype_insert(request):
-    context = {}
-
-    typecd = request.GET['typecd']
-    typename = request.GET['typename']
-
-    if CbCodeHdr.objects.filter(type_cd=typecd, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type code exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if CbCodeHdr.objects.filter(type_nm=typename, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    CbCodeHdr.objects.create(type_cd=typecd,
-                             type_nm=typename,
-                             )
-
-    context["flag"] = "0"
-    context["result_msg"] = "Type insert success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def codetype_update(request):
-    context = {}
-
-    typeid = request.GET['typeid']
-    tvalue = request.GET['tvalue']
-
-    if CbCodeHdr.objects.filter(type_nm=tvalue, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    rsHeader = CbCodeHdr.objects.get(id=typeid)
-    rsHeader.type_nm = tvalue
-    rsHeader.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Type update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def codetype_delete(request):
-    context = {}
-
-    typeid = request.GET['typeid']
-    rsHeader = CbCodeHdr.objects.get(id=typeid)
-    typecd = rsHeader.type_cd
-
-    if CbCodeDtl.objects.filter(type_cd=typecd).exists():
-        context["flag"] = "1"
-        context["result_msg"] = "하위 코드가 있어 삭제 불가..."
-        return JsonResponse(context, content_type="application/json")
-    else:
-        rsHeader.usage_fg = 'N'
-        rsHeader.save()
-
-        context["flag"] = "0"
-        context["result_msg"] = "Type delete success..."
-        return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def code_insert(request):
-    context = {}
-
-    typecd = request.GET['typecd']
-    codecd = request.GET['codecd']
-    codename = request.GET['codename']
-
-    if CbCodeDtl.objects.filter(type_cd=typecd, code_cd=codecd, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Code 중복..."
-        return JsonResponse(context, content_type="application/json")
-    else:
-        CbCodeDtl.objects.create(type_cd=typecd,
-                                 code_cd=codecd,
-                                 cd_nm=codename)
-
-        context["flag"] = "0"
-        context["result_msg"] = "Code 등록 성공..."
-        return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def code_update(request):
-    context = {}
-
-    codeid = request.GET['codeid']
-    codename = request.GET['codename']
-
-    if CbCodeDtl.objects.filter(cd_nm=codename, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Code name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    else:
-        rs = CbCodeDtl.objects.get(id=codeid)
-        rs.cd_nm = codename
-        rs.save()
-
-        context["flag"] = "0"
-        context["result_msg"] = "Code update success..."
-        return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def code_delete(request):
-    context = {}
-
-    codeid = request.GET['codeid']
-
-    if CbCodeDtl.objects.get(id=codeid):
-        rs = CbCodeDtl.objects.get(id=codeid)
-        rs.usage_fg = 'N'
-        rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Code deleted... "
-    return JsonResponse(context, content_type="application/json")
 
 
 # 상세정보 html 만들어야함 일단 보류
@@ -998,15 +430,7 @@ def code_view(request):
     return render(request, "board/codeview.html", context)
 
 
-# *********************************************************************************************************************
-# 통합코드관리 코드 끝
-# *********************************************************************************************************************
-
-# *********************************************************************************************************************
-# 품목마스터 코드 시작
-# *********************************************************************************************************************
-
-def b_item(request):
+def b_item(request):  # 품목마스터
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -1127,84 +551,7 @@ def b_item(request):
     return render(request, 'board/b_item.html', context)
 
 
-@csrf_exempt
-def item_insert(request):
-    context = {}
-
-    factoryid = request.GET['factoryid']
-    itemcd = request.GET['itemcd']
-    itemnm = request.GET['itemnm']
-    itemspec = request.GET['itemspec']
-    unitid = request.GET['unitid']
-    itemgrpid = request.GET['itemgrpid']
-    itemaccntid = request.GET['itemaccntid']
-
-    BItem.objects.create(factory_id=factoryid,
-                         item_cd=itemcd,
-                         item_nm=itemnm,
-                         item_spec=itemspec,
-                         unit_id=unitid,
-                         itemgrp_id=itemgrpid,
-                         itemaccnt_id=itemaccntid, )
-    context["flag"] = "0"
-    context["result_msg"] = "Insert success..."
-
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def item_update(request):
-    context = {}
-
-    id = request.GET['id']
-    factoryid = request.GET['factoryid']
-    unitid = request.GET['unitid']
-    itemgrpid = request.GET['itemgrpid']
-    itemaccntid = request.GET['itemaccntid']
-    itemnm = request.GET['itemname']
-    itemspec = request.GET['itemspec']
-
-    rs = BItem.objects.get(id=id)
-    rs.factory_id = factoryid
-    rs.unit_id = unitid
-    rs.itemgrp_id = itemgrpid
-    rs.itemaccnt_id = itemaccntid
-    rs.item_nm = itemnm
-    rs.item_spec = itemspec
-    rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def item_delete(request):
-    context = {}
-
-    id = request.GET['id']
-
-    if BItem.objects.get(id=id):
-        rs = BItem.objects.get(id=id)
-        rs.usage_fg = 'N'
-        rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Delete success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-# *********************************************************************************************************************
-# 품목마스터 코드 끝
-# *********************************************************************************************************************
-
-
-# *********************************************************************************************************************
-# 품목 계정 코드 시작
-# *********************************************************************************************************************
-
-
-def b_itemaccnt(request):
+def b_itemaccnt(request):  # 품목계정
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -1227,79 +574,7 @@ def b_itemaccnt(request):
     return render(request, 'board/b_itemaccnt.html', context)
 
 
-@csrf_exempt
-def itemaccnt_insert(request):
-    context = {}
-
-    itemaccntcd = request.GET['itemaccntcd']
-    itemaccntnm = request.GET['itemaccntnm']
-
-    if BItemaccnt.objects.filter(itemaccnt_cd=itemaccntcd, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Item account code exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BItemaccnt.objects.filter(itemaccnt_nm=itemaccntnm, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Item account name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    BItemaccnt.objects.create(itemaccnt_cd=itemaccntcd,
-                              itemaccnt_nm=itemaccntnm,
-                              )
-
-    context["flag"] = "0"
-    context["result_msg"] = "Insert success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def itemaccnt_delete(request):
-    context = {}
-
-    id = request.GET['id']
-
-    if BItemaccnt.objects.get(id=id):
-        rs = BItemaccnt.objects.get(id=id)
-        rs.usage_fg = 'N'
-        rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Delete success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def itemaccnt_update(request):
-    context = {}
-
-    accntid = request.GET['accntid']
-    value = request.GET['value']
-
-    if BItemaccnt.objects.filter(itemaccnt_nm=value, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    rs = BItemaccnt.objects.get(id=accntid)
-    rs.itemaccnt_nm = value
-    rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-# *********************************************************************************************************************
-# 품목 계정 코드 끝
-# *********************************************************************************************************************
-
-# *********************************************************************************************************************
-# 품목 그룹 코드 시작
-# *********************************************************************************************************************
-
-
-def b_itemgrp(request):
+def b_itemgrp(request):  # 품목그룹
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -1322,326 +597,8 @@ def b_itemgrp(request):
     return render(request, 'board/b_itemgrp.html', context)
 
 
-@csrf_exempt
-def itemgrp_insert(request):
-    context = {}
 
-    itemgrpcd = request.GET['itemgrpcd']
-    itemgrpnm = request.GET['itemgrpnm']
-
-    if BItemgrp.objects.filter(itemgrp_cd=itemgrpcd, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Item group code exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BItemgrp.objects.filter(itemgrp_nm=itemgrpnm, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Item account name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    BItemgrp.objects.create(itemgrp_cd=itemgrpcd,
-                            itemgrp_nm=itemgrpnm,
-                            )
-
-    context["flag"] = "0"
-    context["result_msg"] = "Insert success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def itemgrp_delete(request):
-    context = {}
-
-    id = request.GET['id']
-
-    if BItemgrp.objects.get(id=id):
-        rs = BItemgrp.objects.get(id=id)
-        rs.usage_fg = 'N'
-        rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Delete success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def itemgrp_update(request):
-    context = {}
-
-    grpid = request.GET['grpid']
-    value = request.GET['value']
-
-    if BItemgrp.objects.filter(itemgrp_nm=value, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "Type name exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    rs = BItemgrp.objects.get(id=grpid)
-    rs.itemgrp_nm = value
-    rs.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "Update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-# *********************************************************************************************************************
-# 품목 그룹 코드 끝
-# *********************************************************************************************************************
-
-def b_user(request):
-    return render(request, 'b_user.html')
-
-
-# *********************************************************************************************************************
-# BOM 코드 시작
-# *********************************************************************************************************************
-# from django.db.models import Q
-# from datetime import datetime
-
-
-def b_bom(request):
-    context = {}
-
-    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
-        member_no = request.session['id']
-        member_id = request.session['user_id']
-    else:
-        member_no = None
-        member_id = None
-
-    context["id"] = member_no
-    context["user_id"] = member_id
-
-    # 컨택스트 변수 초기화해주고
-    context['itemid'] = 0
-    context['itemcd'] = ""
-    context['itemname'] = ""
-    context['itemspec'] = ""
-    context['registerdate'] = ""
-    itemid = "0"
-
-    # request안에 품폭id 가 있다면
-    if 'itemid' in request.GET:
-        itemid = request.GET['itemid']
-        context['itemid'] = itemid
-        # 필터로 걸러서 rsTmp로 담아주고 rsTmp객체의 속성들을 context변수에 넣어준다.
-        if BItem.objects.filter(id=itemid).exists():
-            rsTmp = BItem.objects.get(id=itemid)
-            context['itemcd'] = rsTmp.item_cd
-            context['itemname'] = rsTmp.item_nm
-            context['itemspec'] = rsTmp.item_spec
-            context['registerdate'] = rsTmp.insrt_dt
-        else:
-            print("nothing ")
-
-    # 두번째 항목들 초기화.
-    bomid = "0"
-    context['moitembase'] = 0.0
-    context['jaitembase'] = 0.0
-    context['unitproduct'] = '단위'
-    context['lossproduct'] = 0.0
-    context['demandamt'] = ''
-    context['startdate'] = ''
-    context['enddate'] = ''
-
-    # 두번째, request안에 bomid인 객체를 찾아서
-    if 'bomid' in request.GET:
-        bomid = request.GET['bomid']
-        if BBom.objects.filter(id=bomid).exist():
-            rsTmp2 = BBom.objects.get(id=bomid)
-            context['moitembase'] = rsTmp2.moitem_base
-            context['jaitembase'] = rsTmp2.jaitem_base
-            context['unitproduct'] = rsTmp2.unit_product
-            context['lossproduct'] = rsTmp2.loss_product
-            context['demandamt'] = rsTmp2.demand_amt
-            context['startdate'] = rsTmp2.start_date
-            context['enddate'] = rsTmp2.end_date
-
-    # 품폭그룹 아이디, 품목코드, 품목규격가져와서 저장.
-    itemgrpid = ""
-    if 'itemgrpid' in request.GET:
-        itemgrpid = request.GET['itemgrpid']
-
-    searchcode = ""
-    if 'itemcode' in request.GET:
-        searchcode = request.GET['itemcode']
-
-    searchspec = ""
-    if 'itemspec' in request.GET:
-        searchspec = request.GET['itemspec']
-
-    # like문 Q
-    if searchcode != "":
-        rsItem = BItem.objects.filter(Q(item_cd__contains=searchcode))[:100]
-    elif searchspec != "":
-        rsItem = BItem.objects.filter(Q(item_spec__contains=searchspec))[:100]
-    elif itemgrpid != "":
-        rsItem = BItem.objects.filter(itemgrp_id=itemgrpid)[:100]
-    else:
-        strsql = "SELECT a.*, b.*, d.*" + \
-                 "FROM (SELECT * FROM b_item WHERE usage_fg = 'Y') a " + \
-                 "LEFT JOIN b_factory b ON a.factory_id = b.id " + \
-                 "LEFT JOIN b_itemgrp d ON a.itemgrp_id = d.id "
-        rsItem = BItem.objects.raw(strsql)[:100]
-    context['rsItem'] = rsItem
-
-    rsBOM = BBom.objects.filter(top_id=itemid).select_related("item")
-
-    context["rsBOM"] = rsBOM
-
-    rsItemgrp = BItemgrp.objects.filter()
-    context["rsItemgrp"] = rsItemgrp
-
-    context['bomid'] = bomid
-    context["itemgrpid"] = itemgrpid
-    context["title"] = "BOM"
-    context["result_msg"] = "BOM "
-
-    return render(request, board_path + "b_bom.html", context)
-
-
-@csrf_exempt
-def bom_create(request):
-    context = {}
-
-    itemid = request.GET['itemid']
-
-    if BBom.objects.filter(item_id=itemid, parent_id=0).exists():
-        print("already existed")
-        context["flag"] = "1"
-        context["result_msg"] = "already existed"
-        return JsonResponse(context, content_type="application/json")
-    else:
-        BBom.objects.create(bom_type='MBOM',
-                            item_id=itemid,
-                            parent_id=0,
-                            top_id=itemid,
-                            bom_order=1,
-                            bom_level=0,
-                            leaf_fg='0',
-                            moitem_base=0.0,
-                            jaitem_base=0.0,
-                            unit_product='',
-                            demand_amt=0.0,
-                            free_fg='0',
-                            loss_product=0.0,
-                            start_dt='',
-                            end_dt='',
-                            register_dt=datetime.now(),
-                            usage_fg='Y')
-        # rsItem에 아이디에 해당하는 품목을 저장하고 bomflag를 1로 바꿔주고 저장
-        rsItem = BItem.objects.get(id=itemid)
-        rsItem.bom_fg = '1'
-        rsItem.save()
-
-        context["flag"] = "0"
-        context["result_msg"] = "Top level 등록 성공..."
-        return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def bomitem_read(request):
-    context = {}
-
-    bomid = request.GET['bomid']
-    itmtext = request.GET['itmtext']
-
-    if itmtext == "":
-        rsItem = BItem.objects.filter(usage_fg='Y')[:10]
-    else:
-        rsItem = BItem.objects.filter(Q(item_cd__contains=itmtext) | Q(item_spec__contains=itmtext))[:10]
-
-    itmstr = ""
-    if rsItem:
-        for i in rsItem:
-            itmstr += f"<div><i class='icofont-plus-square' style='margin-right:20px;' itemid='{i.id}' bomid='{bomid}' flag='add' onclick='pickBOMItem(this)'></i>  " + \
-                      f"<i class='icofont-check' style='margin-right:20px;' itemid='{i.id}' bomid='{bomid}' flag='update' onclick='pickBOMItem(this)'></i> " + \
-                      f"<span>{i.item_cd} - {i.item_spec} </span></div>"
-    else:
-        itmstr = "<div>No item searched...</div>"
-
-    context["itmstr"] = itmstr
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def bomitem_pick(request):
-    context = {}
-
-    bomid = request.GET['bomid']
-    itemid = request.GET['itemid']
-    flag = request.GET['flag']
-
-    if flag == 'add':
-        print(11)
-        rsTmp = BBom.objects.get(id=bomid)
-        bomorder = rsTmp.bom_order
-        bomlevel = rsTmp.bom_level
-        topid = rsTmp.top_id
-        rsTmp.leaf_fg = '0'
-        rsTmp.save()
-
-        BBom.objects.create(bom_type='MBOM',
-                            item_id=itemid,
-                            parent_id=bomid,
-                            top_id=topid,
-                            bom_order=bomorder + 1,
-                            bom_level=bomlevel + 1,
-                            leaf_fg='1',
-                            moitem_base=0.0,
-                            jaitem_base=0.0,
-                            unit_product='',
-                            demand_amt=0.0,
-                            free_fg='1',
-                            loss_product=0.0,
-                            start_dt='',
-                            end_dt='',
-                            register_dt=datetime.now(),
-                            usage_fg='Y')
-
-        context["flag"] = "0"
-        context["result_msg"] = "BOM tree added..."
-        return JsonResponse(context, content_type="application/json")
-
-    elif flag == 'update':
-        rsTmp = BBom.objects.get(id=bomid)
-        rsTmp.item_id = itemid
-        rsTmp.save()
-
-        context["flag"] = "0"
-        context["result_msg"] = "BOM item updated..."
-        return JsonResponse(context, content_type="application/json")
-    else:
-        context["flag"] = "1"
-        context["result_msg"] = "Nothing..."
-        return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def bom_update(request):
-    context = {}
-
-    bomid = request.GET['bomid']
-    flag = request.GET['flag']
-    bvalue = request.GET['bvalue']
-
-    rsTmp = BBom.objects.get(id=bomid)
-    if flag == 'mobase':
-        rsTmp.moitem_base = bvalue
-        rsTmp.save()
-    elif flag == 'jabase':
-        rsTmp.jaitem_base = bvalue
-        rsTmp.save()  # *********************************************************************************************************************
-
-
-# BOM 코드 시작
-# *********************************************************************************************************************
-# from django.db.models import Q
-# from datetime import datetime
-
-
-def b_bom(request):
+def b_bom(request): # BOM
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -1823,7 +780,6 @@ def bomitem_pick(request):
     flag = request.GET['flag']
 
     if flag == 'add':
-        print(11)
         rsTmp = BBom.objects.get(id=bomid)
         bomorder = rsTmp.bom_order
         bomlevel = rsTmp.bom_level
@@ -1946,86 +902,7 @@ def b_workcenter(request):
     return render(request, board_path + 'b_workcenter.html', context)
 
 
-@csrf_exempt
-def workcenter_element_insert(request):
-    context = {}
-
-    id = 1
-    workcentercd = request.GET['workcentercd']
-    workcenternm = request.GET['workcenternm']
-    cstctrid = request.GET['cstctrid']
-    usagefg = 'Y'
-
-    while BWorkcenter.objects.filter(id=id).exists():
-        id += 1
-
-    if BWorkcenter.objects.filter(workcenter_cd=workcentercd, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "workcenter_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if BWorkcenter.objects.filter(workcenter_nm=workcenternm, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "workcenter_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    # 생성 부분
-    BWorkcenter.objects.create(id=id,
-                               workcenter_cd=workcentercd,
-                               workcenter_nm=workcenternm,
-                               cstctr_id=cstctrid,
-                               insrt_dt=datetime.now(),
-                               updt_dt=datetime.now(),
-                               usage_fg=usagefg)
-
-    context["flag"] = "0"
-    context["result_msg"] = "workcenter insert success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def workcenter_element_update(request):
-    context = {}
-
-    id = request.GET['id']
-    workcenternm = request.GET['workcenternm']
-    cstctrid = request.GET['cstctrid']
-
-    rsWorkcenter = BWorkcenter.objects.get(id=id)
-    rsWorkcenter.workcenter_nm = workcenternm
-    rsWorkcenter.cstctr_id = cstctrid
-    rsWorkcenter.updt_dt = datetime.now()
-    rsWorkcenter.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "workcenter update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def workcenter_element_delete(request):
-    context = {}
-
-    id = request.GET['id']
-
-    rsWorkcenter = BWorkcenter.objects.get(id=id)
-    rsWorkcenter.usage_fg = 'N'
-    rsWorkcenter.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "workcenter elements delete success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-# *********************************************************************************************************************
-# 작업장 코드 끝
-# *********************************************************************************************************************
-
-# *********************************************************************************************************************
-# 코스트센터 코드 시작
-# *********************************************************************************************************************
-
-def cb_cost_center(request):
+def cb_cost_center(request):  # 코스트센터
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -2061,106 +938,18 @@ def cb_cost_center(request):
     return render(request, board_path + 'cb_cost_center.html', context)
 
 
-def costcenter_element_insert(request):
-    context = {}
-
-    id = 1
-    cstctrcd = request.GET['cstctrcd']
-    cstctrnm = request.GET['cstctrnm']
-    bizareaid = request.GET['bizareaid']
-    bizunitid = request.GET['bizunitid']
-    factoryid = request.GET['factoryid']
-    cstctrtype = request.GET['cstctrtype']
-    cstctrdirdiv = request.GET['cstctrdirdiv']
-    usagefg = 'Y'
-
-    while CbCostCenter.objects.filter(id=id).exists():
-        id += 1
-
-    if CbCostCenter.objects.filter(cstctr_cd=cstctrcd, usage_fg='Y').exists():
-        context["flag"] = "1"
-        context["result_msg"] = "cstctr_cd exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    if CbCostCenter.objects.filter(cstctr_nm=cstctrnm, usage_fg='Y').exists():
-        context['flag'] = "1"
-        context['result_msg'] = "cstctr_nm exists..."
-        return JsonResponse(context, content_type="application/json")
-
-    # 생성 부분
-    CbCostCenter.objects.create(id=id,
-                                cstctr_cd=cstctrcd,
-                                cstctr_nm=cstctrnm,
-                                bizarea_id=bizareaid,
-                                bizunit_id=bizunitid,
-                                factory_id=factoryid,
-                                cstctr_type=cstctrtype,
-                                cstctr_dir_div=cstctrdirdiv,
-                                insrt_dt=datetime.now(),
-                                updt_dt=datetime.now(),
-                                usage_fg=usagefg)
-
-    context["flag"] = "0"
-    context["result_msg"] = "costcenter insert success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-@csrf_exempt
-def costcenter_element_update(request):
-    context = {}
-
-    id = request.GET['id']
-    cstctrnm = request.GET['cstctrnm']
-    bizareaid = request.GET['bizareaid']
-    bizunitid = request.GET['bizunitid']
-    factoryid = request.GET['factoryid']
-    cstctrtype = request.GET['cstctrtype']
-    cstctrdirdiv = request.GET['cstctrdirdiv']
-
-    rsCostcenter = CbCostCenter.objects.get(id=id)
-    rsCostcenter.cstctr_nm = cstctrnm
-    rsCostcenter.bizarea_id = bizareaid
-    rsCostcenter.bizunit_id = bizunitid
-    rsCostcenter.factory_id = factoryid
-    rsCostcenter.cstctr_type = cstctrtype
-    rsCostcenter.cstctr_dir_div = cstctrdirdiv
-    rsCostcenter.updt_dt = datetime.now()
-    rsCostcenter.save()
-
-    context['flag'] = "0"
-    context['result_msg'] = "costcenter update success..."
-    return JsonResponse(context, content_type="application/json")
-
-
-def costcenter_element_delete(request):
-    context = {}
-
-    id = request.GET['id']
-
-    rsCostcenter = CbCostCenter.objects.get(id=id)
-    rsCostcenter.usage_fg = 'N'
-    rsCostcenter.save()
-
-    context["flag"] = "0"
-    context["result_msg"] = "costcenter elements delete success..."
-    return JsonResponse(context, content_type="application/json")
-
 # *********************************************************************************************************************
-# 코스트센터 코드 끝
-# *********************************************************************************************************************
-
-# *********************************************************************************************************************
-# 제조비용 코드 시작
+# 2단계 제조비용 코드 시작
 # *********************************************************************************************************************
 
 def cc_manucost_if(request):
     context = {}
 
-    strSql= "SELECT  a.*, b.*, c.*, d.* " \
-            "FROM (SELECT * FROM cc_manucost_if) a " \
-            "LEFT JOIN b_co b ON a.co_id = b.id " \
-            "LEFT JOIN cb_cost_center c ON a.cstctr_id = c.id " \
-            "LEFT JOIN b_itemaccnt d ON a.itemaccnt_id = d.id "
+    strSql = "SELECT  a.*, b.*, c.*, d.* " \
+             "FROM (SELECT * FROM cc_manucost_if) a " \
+             "LEFT JOIN b_co b ON a.co_id = b.id " \
+             "LEFT JOIN cb_cost_center c ON a.cstctr_id = c.id " \
+             "LEFT JOIN b_itemaccnt d ON a.itemaccnt_id = d.id "
     rsManucost = CcManucostIf.objects.raw(strSql)
     context["rsManucost"] = rsManucost
 
@@ -2168,12 +957,12 @@ def cc_manucost_if(request):
     rsCstctr = CbCostCenter.objects.filter(usage_fg='Y')
     rsItemaccnt = BItemaccnt.objects.filter(usage_fg='Y')
 
-
     context["rsCo"] = rsCo
     context["rsCstctr"] = rsCstctr
     context["rsItemaccnt"] = rsItemaccnt
 
     return render(request, 'board2/cc_manucost_if.html', context)
+
 
 @csrf_exempt
 def manucosttemplate_download(request):
@@ -2216,11 +1005,11 @@ def manucosttemplate_download(request):
         context["result_msg"] = "품목코드 테이블 없음... "
         return JsonResponse(context, content_type="application/json")
 
-
     context["flag"] = "0"
     context["result_msg"] = "Template downloaded... "
 
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def manucostdata_upload(request):
@@ -2322,6 +1111,7 @@ def manucostdata_upload(request):
 
     return redirect('board:cc_manucost_if')
 
+
 # *********************************************************************************************************************
 # 제조비용 코드 끝
 # *********************************************************************************************************************
@@ -2351,6 +1141,7 @@ def cc_materialcost_if(request):
     context["rsWrkctr"] = rsWrkctr
 
     return render(request, 'board2/cc_materialcost_if.html', context)
+
 
 @csrf_exempt
 def materialcosttemplate_download(request):
@@ -2393,11 +1184,11 @@ def materialcosttemplate_download(request):
         context["result_msg"] = "품목코드 테이블 없음... "
         return JsonResponse(context, content_type="application/json")
 
-
     context["flag"] = "0"
     context["result_msg"] = "Template downloaded... "
 
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def materialcostdata_upload(request):
@@ -2466,28 +1257,28 @@ def materialcostdata_upload(request):
             for j in range(3, max_row + 1):
                 lstTmp = []
                 strbottom = ""
-    
+
                 for i in range(1, max_col + 1):
                     valTmp = sheet.cell(row=j, column=i).value
-    
+
                     lstTmp.append(valTmp)
-    
+
                     if valTmp == '':
                         strbottom += "default,"
                     elif valTmp == None:
                         strbottom += "default,"
                     else:
                         strbottom += "'" + str(valTmp) + "',"
-    
+
                 strbottom = strbottom[:-1]
-    
+
                 strSql = "INSERT INTO cc_materialcost_if VALUES (" + strbottom + ")"
-    
+
                 cursor = dbCon.cursor()
                 cursor.execute(strSql)
                 rows = cursor.fetchone()
                 cursor.close()
-    
+
             dbCon.commit()
             book.close()
         except:
@@ -2498,6 +1289,7 @@ def materialcostdata_upload(request):
         return redirect('board:cc_materialcost_if')
 
     return redirect('board:cc_materialcost_if')
+
 
 # *********************************************************************************************************************
 # 재료비 코드 끝
@@ -2525,6 +1317,7 @@ def cc_itempermanucost_if(request):
     context["rsItemaccnt"] = rsItemaccnt
 
     return render(request, 'board2/cc_itempermanucost_if.html', context)
+
 
 @csrf_exempt
 def itempermanucosttemplate_download(request):
@@ -2567,11 +1360,11 @@ def itempermanucosttemplate_download(request):
         context["result_msg"] = "품목코드 테이블 없음... "
         return JsonResponse(context, content_type="application/json")
 
-
     context["flag"] = "0"
     context["result_msg"] = "Template downloaded... "
 
     return JsonResponse(context, content_type="application/json")
+
 
 @csrf_exempt
 def itempermanucostdata_upload(request):
@@ -2623,7 +1416,7 @@ def itempermanucostdata_upload(request):
 
     max_col = len(rsColumns)
 
-    #timenow = datetime.now()
+    # timenow = datetime.now()
 
     filename = 'static/dataupload/cc_itempermanucost/' + file_name
 
@@ -2636,36 +1429,36 @@ def itempermanucostdata_upload(request):
         max_row = sheet.max_row
 
     if max_row > 2:
-        
+
         try:
             for j in range(3, max_row + 1):
                 lstTmp = []
                 strbottom = ""
-    
+
                 for i in range(1, max_col + 1):
                     valTmp = sheet.cell(row=j, column=i).value
-    
+
                     lstTmp.append(valTmp)
-    
+
                     if valTmp == '':
                         strbottom += "default,"
                     elif valTmp == None:
                         strbottom += "default,"
                     else:
                         strbottom += "'" + str(valTmp) + "',"
-    
+
                 strbottom = strbottom[:-1]
-    
+
                 strSql = "INSERT INTO cc_itempermanucost_if VALUES (" + strbottom + ")"
-    
+
                 cursor = dbCon.cursor()
                 cursor.execute(strSql)
                 rows = cursor.fetchone()
                 cursor.close()
-    
+
             dbCon.commit()
             book.close()
-        
+
         except:
             print("엑셀오류")
             return redirect('board:cc_itempermanucost_if')
@@ -2699,6 +1492,7 @@ def cc_productcostpayment_if(request):
     context["rsFactory"] = rsFactory
 
     return render(request, 'board2/cc_productcostpayment_if.html', context)
+
 
 @csrf_exempt
 def productcostpaymenttemplate_download(request):
@@ -2740,7 +1534,6 @@ def productcostpaymenttemplate_download(request):
         context["flag"] = "1"
         context["result_msg"] = "품목코드 테이블 없음... "
         return JsonResponse(context, content_type="application/json")
-
 
     context["flag"] = "0"
     context["result_msg"] = "Template downloaded... "
@@ -2798,7 +1591,7 @@ def productcostpaymentdata_upload(request):
 
     max_col = len(rsColumns)
 
-    #timenow = datetime.now()
+    # timenow = datetime.now()
 
     filename = 'static/dataupload/cc_productcostpayment/' + file_name
 
@@ -2815,28 +1608,28 @@ def productcostpaymentdata_upload(request):
             for j in range(3, max_row + 1):
                 lstTmp = []
                 strbottom = ""
-    
+
                 for i in range(1, max_col + 1):
                     valTmp = sheet.cell(row=j, column=i).value
-    
+
                     lstTmp.append(valTmp)
-    
+
                     if valTmp == '':
                         strbottom += "default,"
                     elif valTmp == None:
                         strbottom += "default,"
                     else:
                         strbottom += "'" + str(valTmp) + "',"
-    
+
                 strbottom = strbottom[:-1]
-    
+
                 strSql = "INSERT INTO cc_productcostpayment_if VALUES (" + strbottom + ")"
-    
+
                 cursor = dbCon.cursor()
                 cursor.execute(strSql)
                 rows = cursor.fetchone()
                 cursor.close()
-    
+
             dbCon.commit()
             book.close()
         except:
@@ -2863,6 +1656,7 @@ def cc_costbill_if(request):
 
     return render(request, 'board2/cc_costbill_if.html', context)
 
+
 # *********************************************************************************************************************
 # costbill 코드 끝
 # *********************************************************************************************************************
@@ -2874,6 +1668,7 @@ def cc_costbill1_if(request):
     context["rsCostbill1"] = rsCostbill1
 
     return render(request, 'board3/cc_costbill1_if.html', context)
+
 
 def chart_if(request):
     context = {}

@@ -101,7 +101,7 @@
                             <tbody >
                             <tr>
                                 <td>{{ i.co_nm }}</td>
-                                                                <td>
+                                <td>
                                     {% if not rsCo %}
                                     <p class="text-center">지정법인 없음</p>
                                     {% else %}
@@ -182,162 +182,193 @@
             </div>
         </div>
         <script>
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
                     }
                 }
-            }
-            return cookieValue;
-        }
-        var csrftoken = getCookie('csrftoken');
-
-        var xhr;
-
-        function insert_element() {
-//변수 리스트
-
-            var bizareacd = document.getElementById("bizarea_cd").value;
-            var bizareanm = document.getElementById("bizarea_nm").value;
-            var bizareashnm = document.getElementById("bizarea_shnm").value;
-            var bizno = document.getElementById("biz_no").value;
-            var bizrpr = document.getElementById("biz_rpr").value;
-
-            var conmSelect = document.querySelector('.coid');
-            var conm = conmSelect.options[conmSelect.selectedIndex].value;
-
-
-
-//예외 처리
-            //사업부 코드 항목
-            if(bizareashnm == '') {
-                alert('사업장약명이 비었습니다.');
-                document.getElementById("bizarea_cd").focus();
-                return false;
-            }
-            // 사업부명 항목
-            if(bizareanm == '') {
-                alert('사업장명이 비었습니다.');
-                document.getElementById("bizarea_nm").focus();
-                return false;
-            }
-            // 사업번호 항목
-            if(bizno == '') {
-                alert('사업번호가 비었습니다.');
-                document.getElementById("biz_no").focus();
-                return false;
-            }
-            // 비고 항목
-            if(bizrpr == '') {
-                alert('대표자명이 비었습니다.');
-                document.getElementById("biz_rpr").focus();
-                return false;
+                return cookieValue;
             }
 
-//예외 처리 끝
-            var unitCurSelect = document.querySelector('.cur');
-            var unitcurid = unitCurSelect.options[unitCurSelect.selectedIndex].value;
+            var csrftoken = getCookie('csrftoken');
+            var xhr;
 
-            var unitCnSelect = document.querySelector('.cn');
-            var unitcnid = unitCnSelect.options[unitCnSelect.selectedIndex].value;
+            function insert_element() {
+                var bizareaCd = document.getElementById("bizarea_cd").value;
+                var bizareaNm = document.getElementById("bizarea_nm").value;
+                var bizareaShnm = document.getElementById("bizarea_shnm").value;
+                var bizNo = document.getElementById("biz_no").value;
+                var bizRpr = document.getElementById("biz_rpr").value;
 
-            var strurl = "bizarea_element_insert?bizareanm=" + bizareanm + "&bizrpr=" + bizrpr + "&bizno=" + bizno +
-            "&bizareashnm=" + bizareashnm +"&bizareacd=" + bizareacd +"&conm=" + conm +  "&unitcurid=" +unitcurid+ "&unitcnid="+ unitcnid;
+                var coIdSelect = document.querySelector('.coid');
+                var coId = coIdSelect.options[coIdSelect.selectedIndex].value;
 
-            //alert(strurl);
-            //return false;
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+                //예외 처리
+                //사업부 코드 항목
+                if (bizareaShnm == '') {
+                    alert('사업장약명이 비었습니다.');
+                    document.getElementById("bizarea_cd").focus();
+                    return false;
+                }
+                // 사업부명 항목
+                if (bizareaNm == '') {
+                    alert('사업장명이 비었습니다.');
+                    document.getElementById("bizarea_nm").focus();
+                    return false;
+                }
+                // 사업번호 항목
+                if (bizNo == '') {
+                    alert('사업번호가 비었습니다.');
+                    document.getElementById("biz_no").focus();
+                    return false;
+                }
+                // 비고 항목
+                if (bizRpr == '') {
+                    alert('대표자명이 비었습니다.');
+                    document.getElementById("biz_rpr").focus();
+                    return false;
+                }
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
+                var unitCurSelect = document.querySelector('.cur');
+                var unitCurId = unitCurSelect.options[unitCurSelect.selectedIndex].value;
 
-                    if(obj.flag =='0') {
+                var unitCnSelect = document.querySelector('.cn');
+                var unitCnId = unitCnSelect.options[unitCnSelect.selectedIndex].value;
+
+                var payload = {
+                    "bizarea_cd": bizareaCd,
+                    "co": coId,
+                    "bizarea_nm": bizareaNm,
+                    "bizarea_shnm": bizareaShnm,
+                    "biz_no": bizNo,
+                    "biz_rpr": bizRpr,
+                    "unitcur": unitCurId,
+                    "unitcn": unitCnId
+                };
+
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 201)
+                            alert("생성이 완료되었습니다.");
+                        location.reload();
+                    } else {
+                        if (xhr.status == 400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
+
+                            if (obj.detail == "DuplicateCode") {
+                                alert("법인코드가 이미 존재합니다.");
+                            } else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
+
+                var strurl = "http://127.0.0.1:8080/rest_api/bizareas";
+                xhr.open("POST", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
+            }
+
+            function update_element(elem) {
+                var typeId = elem.getAttribute('name');
+
+                var unitCnSelect = document.querySelector('.unitcnid' + typeId);
+                var unitCnId = unitCnSelect.options[unitCnSelect.selectedIndex].value;
+
+                var unitCurSelect = document.querySelector('.unitcurid' + typeId);
+                var unitCurId = unitCurSelect.options[unitCurSelect.selectedIndex].value;
+
+                var coIdSelect = document.querySelector('.coid' + typeId);
+                var coId = coIdSelect.options[coIdSelect.selectedIndex].value;
+
+                var bizareaCd = $('#bizareacd' + typeId).val();
+                var bizareaNm = $('#bizareanm' + typeId).val();
+                var bizareaShnm = $('#bizareashnm' + typeId).val();
+                var bizNo = $('#bizno' + typeId).val();
+                var bizRpr = $('#bizrpr' + typeId).val();
+
+                var payload = {
+                    "bizarea_cd": bizareaCd,
+                    "co": coId,
+                    "bizarea_nm": bizareaNm,
+                    "bizarea_shnm": bizareaShnm,
+                    "biz_no": bizNo,
+                    "biz_rpr": bizRpr,
+                    "unitcur": unitCurId,
+                    "unitcn": unitCnId
+                };
+
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if(xhr.status==200)
+                            alert("수정이 완료되었습니다.");
                         location.reload();
                     }
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
 
-        function update_element(elem) {
-            var typeid = elem.getAttribute('typeid');
-            // alert(id);
-            // return false;
-            var unitcnSelect = document.querySelector('.unitcnid' + typeid);
-            var unitcnid = unitcnSelect.options[unitcnSelect.selectedIndex].value;
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
 
-            var unitcurSelect = document.querySelector('.unitcurid' + typeid);
-            var unitcurid = unitcurSelect.options[unitcurSelect.selectedIndex].value;
+                var strurl = "http://127.0.0.1:8080/rest_api/bizareas/" + typeId;
+                xhr.open("PUT", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
+            }
 
-            var coselect = document.querySelector('.coid' + typeid);
-            var coid = coselect.options[coselect.selectedIndex].value;
+            function delete_element(elem) {
+                var typeId = elem.getAttribute('name');
 
-            var bizareanm = $('#bizareanm' + typeid).val();
-            var bizareashnm = $('#bizareashnm' + typeid).val();
-            var bizno = $('#bizno' + typeid).val();
-            var bizrpr = $('#bizrpr' + typeid).val();
-
-
-            var strurl = "bizarea_element_update?typeid=" + typeid +"&bizareanm="+bizareanm +"&bizareashnm="+bizareashnm +
-                "&bizno="+bizno + "&bizrpr="+bizrpr+ "&unitcnid="+ unitcnid + "&unitcurid="+ unitcurid + "&coid=" + coid;
-            // + "&e_value=" + e_value
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 204)
+                            alert("삭제가 완료되었습니다.");
                         location.reload();
+                    } else {
+                        if (xhr.status == 400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
 
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            } else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
 
-        function delete_element(elem) {
-
-            var id = elem.getAttribute('id');
-
-            // alert(id);
-            // return false;
-
-            var strurl = "bizarea_element_delete?id=" + id;
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-                    location.reload();
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            // xhr.send(null);
-        }
-    </script>
+                var strurl = "http://127.0.0.1:8080/rest_api/bizareas/" + typeId;
+                xhr.open("DELETE", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(null);
+            }
+        </script>
 
     </section>
     <!--main content end-->
