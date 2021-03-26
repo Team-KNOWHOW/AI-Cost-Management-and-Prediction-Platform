@@ -23,6 +23,8 @@ urlpatterns = [
     path('cc_itempermanucost_if', views.cc_itempermanucost_if, name='cc_itempermanucost_if'),
     path('cc_productcostpayment_if', views.cc_productcostpayment_if, name='cc_productcostpayment_if'),
     path('cc_costbill_if', views.cc_costbill_if, name='cc_costbill_if'),
+    path('cc_costbill1_if', views.cc_costbill1_if, name='cc_costbill1_if'),
+    path('chart_if', views.chart_if, name='chart_if'),
 
     # 사용자 관리
     path('member_register', views.member_register, name="member_register"),
