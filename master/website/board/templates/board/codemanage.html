@@ -55,8 +55,10 @@
                     var data = xhr.responseText;
                     var obj = JSON.parse(data);
 
-                    if (obj.detail == "DuplicateCode") {
-                        alert("법인코드가 이미 존재합니다.");
+                    if (obj.detail == "Duplicate Type Code") {
+                        alert("타입 코드가 이미 존재합니다.");
+                    } else if (obj.detail == "Duplicate Type Name") {
+                        alert("타입명이 이미 존재합니다.");
                     } else {
                         alert("400 Bad Request");
                     }
@@ -182,8 +184,8 @@
                     var data = xhr.responseText;
                     var obj = JSON.parse(data);
 
-                    if (obj.detail == "DuplicateCode") {
-                        alert("법인코드가 이미 존재합니다.");
+                    if (obj.detail == "Duplicate Code Name") {
+                        alert("세부 코드명이 이미 존재합니다.");
                     } else {
                         alert("400 Bad Request");
                     }
