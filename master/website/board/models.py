@@ -393,3 +393,39 @@ class CcCostbill1(models.Model):  # 분석용
     class Meta:
         managed = False
         db_table = 'cc_costbill1'
+
+
+class BCosteleaccnt(models.Model):  #원가요소계정
+    id = models.AutoField(db_column='id', primary_key=True)
+    #itemaccnt = models.ForeignKey(BItemaccnt, blank=True, null=True, on_delete=models.CASCADE)
+    accnt_cd = models.CharField(db_column='accnt_cd', max_length=50, blank=True, null=True)
+    accnt_nm = models.CharField(db_column='accnt_nm',max_length=50, blank=True, null=True)
+    pl_cd = models.CharField(db_column='pl_cd', max_length=50, blank=True, null=True)
+    pl_nm = models.CharField(db_column='pl_nm', max_length=50, blank=True, null=True)
+    fv_div = models.CharField(db_column='fv_div', max_length=1, blank=True, null=True)
+    costeleaccnt_rmrk = models.CharField(db_column='costeleaccnt_rmrk', max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'b_costeleaccnt'
+
+
+class DmPeriod(models.Model):   #기간테이블
+    id = models.AutoField(db_column='id', primary_key=True)
+    period_ym = models.IntegerField(blank=True, null=True)
+    period_y = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'dm_period'
+
+
+class DmManucost(models.Model): #제조비용마트
+    id = models.AutoField(db_column='id', primary_key=True)
+    itemaccnt = models.ForeignKey(BItemaccnt, blank=True, null=True, on_delete=models.CASCADE)
+    period = models.ForeignKey(DmPeriod, blank=True, null=True, on_delete=models.CASCADE)
+    manucost_price = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'dm_manucost'
