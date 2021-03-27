@@ -17,6 +17,7 @@ urlpatterns = [
     path('codemanage/', views.codemanage, name='codemanage'),
     path('b_itemaccnt/', views.b_itemaccnt, name='b_itemaccnt'),
     path('b_itemgrp/', views.b_itemgrp, name='b_itemgrp'),
+    path('b_costeleaccnt/',views.b_costeleaccnt, name='b_costeleaccnt'),
     path('cc_manucost_if', views.cc_manucost_if, name='cc_manucost_if'),
     path('cc_materialcost_if', views.cc_materialcost_if, name='cc_materialcost_if'),
     path('cc_itempermanucost_if', views.cc_itempermanucost_if, name='cc_itempermanucost_if'),
