@@ -54,4 +54,7 @@ urlpatterns = [
 
     path('items', views.item_list, name='item_list'),
     path('items/<int:pk>', views.item_detail, name='item_detail'),
+
+    path('cost-element-accounts', views.costeleaccnt_list, name='costeleaccnt_list'),
+    path('cost-element-accounts/<int:pk>', views.costeleaccnt_detail, name='costeleaccnt_detail'),
 ]
