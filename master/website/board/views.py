@@ -938,7 +938,7 @@ def cb_cost_center(request):  # 코스트센터
     return render(request, board_path + 'cb_cost_center.html', context)
 
 
-def b_costeleaccnt(request):
+def b_costeleaccnt(request):  # 원가요소계정
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -951,8 +951,7 @@ def b_costeleaccnt(request):
     context["id"] = member_no
     context["user_id"] = member_id
 
-
-    rsCosteleaccnt = BCosteleaccnt.objects.all()
+    rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
 
     context["rsCosteleaccnt"] = rsCosteleaccnt
 

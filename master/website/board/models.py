@@ -404,6 +404,11 @@ class BCosteleaccnt(models.Model):  #원가요소계정
     pl_nm = models.CharField(db_column='pl_nm', max_length=50, blank=True, null=True)
     fv_div = models.CharField(db_column='fv_div', max_length=1, blank=True, null=True)
     costeleaccnt_rmrk = models.CharField(db_column='costeleaccnt_rmrk', max_length=255, blank=True, null=True)
+    updt_dt = models.DateTimeField(blank=True, null=True)
+    insrt_dt = models.DateTimeField(blank=True, null=True)
+    usage_fg = models.CharField(max_length=1, blank=True, null=True, default='Y')
+    insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
+    updt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
 
     class Meta:
         managed = False
