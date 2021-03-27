@@ -938,12 +938,44 @@ def cb_cost_center(request):  # 코스트센터
     return render(request, board_path + 'cb_cost_center.html', context)
 
 
+def b_costeleaccnt(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
+    rsCosteleaccnt = BCosteleaccnt.objects.all()
+
+    context["rsCosteleaccnt"] = rsCosteleaccnt
+
+    return render(request, 'board/b_costeleaccnt.html', context)
+
+
 # *********************************************************************************************************************
 # 2단계 제조비용 코드 시작
 # *********************************************************************************************************************
 
 def cc_manucost_if(request):
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
 
     strSql = "SELECT  a.*, b.*, c.*, d.* " \
              "FROM (SELECT * FROM cc_manucost_if) a " \
@@ -1124,6 +1156,17 @@ def manucostdata_upload(request):
 def cc_materialcost_if(request):
     context = {}
 
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
     strSql = "SELECT  a.*, b.*, c.*, d.* " \
              "FROM (SELECT * FROM cc_materialcost_if) a " \
              "LEFT JOIN b_factory b ON a.factory_id = b.id " \
@@ -1301,6 +1344,17 @@ def materialcostdata_upload(request):
 
 def cc_itempermanucost_if(request):
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
 
     strSql = "SELECT  a.*, b.*, c.* " \
              "FROM (SELECT * FROM cc_itempermanucost_if) a " \
@@ -1480,6 +1534,17 @@ def itempermanucostdata_upload(request):
 def cc_productcostpayment_if(request):
     context = {}
 
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
     strSql = "SELECT  a.*, b.* " \
              "FROM (SELECT * FROM cc_productcostpayment_if) a " \
              "LEFT JOIN b_factory b ON a.factory_id = b.id "
@@ -1654,6 +1719,17 @@ def productcostpaymentdata_upload(request):
 def cc_costbill_if(request):
     context = {}
 
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
     return render(request, 'board2/cc_costbill_if.html', context)
 
 
@@ -1664,6 +1740,17 @@ def cc_costbill_if(request):
 def cc_costbill1_if(request):
     context = {}
 
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
     rsCostbill1 = CcCostbill1.objects.all()
     context["rsCostbill1"] = rsCostbill1
 
@@ -1672,5 +1759,16 @@ def cc_costbill1_if(request):
 
 def chart_if(request):
     context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
 
     return render(request, 'board3/chart_if.html', context)
