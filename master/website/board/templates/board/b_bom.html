@@ -132,8 +132,6 @@
             var flag = elem.getAttribute('flag');
 
             var strurl = "bomitem_pick?bomid=" + bomid + "&itemid=" + itemid + "&flag=" + flag;
-            alert(strurl);
-            //return false;
 
             xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
@@ -286,6 +284,7 @@
                                                 <i class="icofont-site-map" style="color:#ddd;"></i>
                                                 {% else %}
                                                 <i class="icofont-site-map" style="color:#FF6600;"></i>
+
                                                 {% endif %}
                                             </td>
                                         </tr>

@@ -33,7 +33,7 @@
                 </a>
                 <ul class="sub">
                     <li><a class="" href="{% url 'board:cb_cost_center_list' %}">Cost Center</a></li>
-                    <li><a class=""  >원가요소계정</a></li>
+                    <li><a class="" href="{% url 'board:b_costeleaccnt' %}">원가요소계정</a></li>
                 </ul>
             </li>
             <li class="sub-menu">
@@ -47,7 +47,7 @@
                     <li><a class="" href="{% url 'board:cc_materialcost_if' %}">재료비 I/F</a></li>
                     <li><a class="" href="{% url 'board:cc_itempermanucost_if' %}">품목별 제조비용 I/F</a></li>
                     <li><a class="" href="{% url 'board:cc_productcostpayment_if' %}">제품원가수불 I/F</a></li>
-                    <li><a class="" >원가 I/F</a></li>
+                    <li><a class="" href="{% url 'board:cc_costbill_if' %}">원가 I/F</a></li>
                     <li><a class=""  >원가 계산</a></li>
                 </ul>
             </li>
@@ -58,7 +58,8 @@
                     <span class="menu-arrow arrow_carrot-right"></span>
                 </a>
                 <ul class="sub">
-                    <li><a class=""  >원가 예측</a></li>
+                    <li><a class=""  href="{% url 'board:cc_costbill1_if' %}">원가 예측</a></li>
+                    <li><a class=""  href="{% url 'board:chart_if' %}">원가 차트</a></li>
                 </ul>
             </li>
             <li class="active">

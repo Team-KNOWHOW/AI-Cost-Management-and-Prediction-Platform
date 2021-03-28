@@ -28,38 +28,34 @@
             <div>
                 <table>
                     <tr>
-                        <td width="" align="center"  >공장코드</td>
-                        <td width="" align="center"  >공장명</td>
-                        <td width="" align="center"  >비고</td>
-                        <td width="" align="center"  >등록</td>
-                        </td>
+                        <td align="center">공장코드</td>
+                        <td align="center">공장명</td>
+                        <td align="center">비고</td>
+                        <td align="center">등록</td>
                     </tr>
-                    <tbody >
-                    <tr>
-                        <td>
-                            <input type="text" id="factory_cd" value="" class="form-control" placeholder="Factory Code" >
 
-                        </td>
-                        <td>
-                            <input type="text" id="factory_nm" value="" class="form-control" placeholder="Factory Name">
-
-                        </td>
-                        <td>
-                            <input type="text" id="factory_rmrk" value="" class="form-control" placeholder="">
-
-                        </td>
-                        <td>
-                            <button onclick="insert_element();" class="btn btn-primary btn-sm">등록</button>
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="text" id="factory_cd" value="" class="form-control" placeholder="Factory Code" >
+                            </td>
+                            <td>
+                                <input type="text" id="factory_nm" value="" class="form-control" placeholder="Factory Name">
+                            </td>
+                            <td>
+                                <input type="text" id="factory_rmrk" value="" class="form-control" placeholder="">
+                            </td>
+                            <td>
+                                <button onclick="insert_element();" class="btn btn-primary btn-sm">등록</button>
+                            </td>
+                        </tr>
                     </tbody>
-
                 </table>
             </div>
+            {% endif %}
         </div>
         <br>
-        {% endif %}
-        </div>
+
         <div class="row">
             <div class="col-lg-12">
                 <section class="panel">
@@ -67,175 +63,196 @@
                         {% if rsHeader %}
                         <table class="table" width="100%">
                             <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>공장코드</th>
-                                <th>공장명</th>
-                                <th>비고</th>
-                                <th width="5%"></th>
-                                <th></th>
-                                <!--                                    <th>사용구분</th>-->
-                            </tr>
+                                <tr>
+                                    <th>공장코드</th>
+                                    <th>공장명</th>
+                                    <th>비고</th>
+                                    <th width="5%"></th>
+                                    <th></th>
+                                </tr>
                             </thead>
-                            {% for i in rsHeader %}
-                            <tbody id="row{{i.id}}">
-                            <tr>
-                                <td width="5%">
-                                    {{ i.id }}
-                                </td>
-                                <td width="10%">
-                                    {{ i.factory_cd }}
-                                </td>
-                                <td width="20%">
-                                    <input id="factory_nm{{i.id}}" class="form-control" type="text" value="{{ i.factory_nm }}" >
-                                </td>
-                                <td width="20%">
-                                    <input id="factory_rmrk{{i.id}}" class="form-control" type="text" value="{{ i.factory_rmrk }}">
-                                </td>
-                                <td width="40%" align="right">
-                                    <a value="{{ i.id }}" onclick="update_element(this)" class="btn btn-default btn-sm">수정</a>
-                                </td>
-                                <td width="5%" align="center" >
-                                    <a value="{{ i.id }}" onclick="delete_element(this)" class="btn btn-default btn-sm">삭제</a>
-                                </td>
-                            </tr>
+
+                            <tbody>
+                                {% for i in rsHeader %}
+                                <tr>
+                                    <td id="factory_cd{{i.id}}" width="10%">
+                                        {{ i.factory_cd }}
+                                    </td>
+                                    <td width="20%">
+                                        <input id="factory_nm{{i.id}}" class="form-control" type="text" value="{{ i.factory_nm }}" >
+                                    </td>
+                                    <td width="20%">
+                                        <input id="factory_rmrk{{i.id}}" class="form-control" type="text" value="{{ i.factory_rmrk }}">
+                                    </td>
+                                    <td width="40%" align="right">
+                                        <a name="{{ i.id }}" onclick="update_element(this)" class="btn btn-default btn-sm">수정</a>
+                                    </td>
+                                    <td width="5%" align="center" >
+                                        <a name="{{ i.id }}" onclick="delete_element(this)" class="btn btn-default btn-sm">삭제</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
-                            {% endfor %}
                         </table>
                         {% else %}
                         <span>내용이 없습니다.</span>
                         {% endif %}
                     </div>
-
                 </section>
             </div>
         </div>
+
         <script>
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
                     }
                 }
-            }
-            return cookieValue;
-        }
-        var csrftoken = getCookie('csrftoken');
-
-        var xhr;
-
-        function insert_element() {
-//변수 리스트
-            var factorycd = document.getElementById("factory_cd").value;
-            var factorynm = document.getElementById("factory_nm").value;
-            var factoryrmrk = document.getElementById("factory_rmrk").value;
-
-//예외 처리
-            // 공장 코드 항목
-            if(factorycd == '') {
-                alert('거래처 코드가 비었습니다.');
-                document.getElementById("factory_cd").focus();
-                return false;
-            }
-            // 공장명 항목
-            if(factorynm == '') {
-                alert('법인명이 비었습니다.');
-                document.getElementById("factory_nm").focus();
-                return false;
-            }
-            // 비고 항목
-            if(factoryrmrk == '') {
-                alert('거래처형태가 비었습니다.');
-                document.getElementById("factory_rmrk").focus();
-                return false;
+                return cookieValue;
             }
 
-//예외 처리 끝
+            var csrftoken = getCookie('csrftoken');
+            var xhr;
 
-            var strurl = "factory_element_insert?factorycd=" + factorycd
-                + "&factorynm=" + factorynm
-                + "&factoryrmrk=" + factoryrmrk;
+            function insert_element() {
+                var factoryCd = document.getElementById("factory_cd").value;
+                var factoryNm = document.getElementById("factory_nm").value;
+                var factoryRmrk = document.getElementById("factory_rmrk").value;
 
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+                // 공장 코드 항목
+                if (factoryCd == '') {
+                    alert('거래처 코드가 비었습니다.');
+                    document.getElementById("factory_cd").focus();
+                    return false;
+                }
+                // 공장명 항목
+                if (factoryNm == '') {
+                    alert('법인명이 비었습니다.');
+                    document.getElementById("factory_nm").focus();
+                    return false;
+                }
+                // 비고 항목
+                if (factoryRmrk == '') {
+                    alert('거래처형태가 비었습니다.');
+                    document.getElementById("factory_rmrk").focus();
+                    return false;
+                }
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
+                var payload = {
+                    "factory_cd": factoryCd,
+                    "factory_nm": factoryNm,
+                    "factory_rmrk": factoryRmrk
+                };
 
-                    if(obj.flag =='0') {
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 201)
+                            alert("생성이 완료되었습니다.");
+                        location.reload();
+                    } else {
+                        if (xhr.status == 400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
+
+                            if (obj.detail == "DuplicateCode") {
+                                alert("공장 코드가 이미 존재합니다.");
+                            } else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
+
+                var strurl = "http://127.0.0.1:8080/rest_api/factories";
+                xhr.open("POST", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
+            }
+
+            function update_element(elem) {
+                var id = elem.getAttribute('name');
+
+                var factoryCd = document.getElementById("factory_cd" + id).value;
+                var factoryNm = document.getElementById('factory_nm' + id).value;
+                var factoryRmrk = document.getElementById('factory_rmrk' + id).value;
+
+                var payload = {
+                    "factory_cd": factoryCd,
+                    "factory_nm": factoryNm,
+                    "factory_rmrk": factoryRmrk
+                };
+
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if(xhr.status==200)
+                            alert("수정이 완료되었습니다.");
                         location.reload();
                     }
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
 
-        function update_element(elem) {
-            var id = elem.getAttribute('value');
-            var factorynm = document.getElementById('factory_nm' + id).value;
-            var factoryrmrk = document.getElementById('factory_rmrk' + id).value;
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
 
-            var e_value = elem.value;
-            if(e_value == ''){
-                alert('Value empty');
-                elem.focus();
-                return false;
+                var strurl = "http://127.0.0.1:8080/rest_api/factories/" + id;
+                xhr.open("PUT", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
             }
 
-            var strurl = "factory_element_update?id=" + id
-                    + "&factorynm=" + factorynm
-                    + "&factoryrmrk=" + factoryrmrk;
+            function delete_element(elem) {
+                var id = elem.getAttribute('name');
 
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
-
-        function delete_element(elem) {
-            var id = elem.getAttribute('value');
-
-            var strurl = "factory_element_delete?id=" + id;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    if(obj.flag =='1') {
-                        document.getElementById('row' + id).remove();
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if(xhr.status==204)
+                            alert("삭제가 완료되었습니다.");
+                        location.reload();
                     }
-                }
-            };
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
 
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-            location.reload();
-        }
-    </script>
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
+
+                var strurl = "http://127.0.0.1:8080/rest_api/factories/" + id;
+                xhr.open("DELETE", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(null);
+            }
+        </script>
 
     </section>
     <!--main content end-->

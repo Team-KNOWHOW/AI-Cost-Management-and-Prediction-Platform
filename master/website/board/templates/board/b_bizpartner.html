@@ -22,11 +22,7 @@
         </div>
 
         <div>
-            {% if not rsHeader %}
-            <p class="text-center">내용이 없습니다! </p>
-            {% else %}
-        </div>
-        {% endif %}
+
         </div>
         <br>
 
@@ -34,343 +30,363 @@
             <div class="col-lg-12">
                 <section class="panel">
                     <div class="table-responsive">
-                        {% if rsHeader %}
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th>법인</th>
-                                <th>거래처코드</th>
-                                <th width="7%">거래처형태</th>
-                                <th>상호명</th>
-                                <th>거래처명</th>
-                                <th width="6%">국가코드</th>
-                                <th width="6%">통화코드</th>
-                                <th width="7%">거래처상태</th>
-                                <th></th>
-                                <th></th>
-                                <!--                                    <th>등록/수정자</th>-->
-                                <!--                                    <th>사용구분</th>-->
-                            </tr>
+                                <tr>
+                                    <th>법인</th>
+                                    <th>거래처코드</th>
+                                    <th width="7%">거래처형태</th>
+                                    <th>상호명</th>
+                                    <th>거래처명</th>
+                                    <th width="6%">국가코드</th>
+                                    <th width="6%">통화코드</th>
+                                    <th width="7%">거래처상태</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
                             </thead>
 
                             <tbody>
-                            <tr bgcolor="#F7F7F7">
-                                <td align="left">
-                                    <select>
-                                        {% for ii in rsCo %}
-                                        <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td align="left">
-                                    <input type="text" id="bizpartner_cd" class="form-control" value="" >
+                                <tr bgcolor="#F7F7F7">
+                                    <td align="left">
+                                        <select id="conm">
+                                            {% for ii in rsCo %}
+                                            <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td align="left">
+                                        <input type="text" id="bizpartnercd" class="form-control" value="" >
+                                    </td>
+                                    <td align="left">
+                                        <select id="bizpartnertype" style="width:100%;padding:3px;">
+                                            <option value="법인"> 법인 </option>
+                                            <option value="개인"> 개인 </option>
+                                        </select>
+                                    </td>
+                                    <td align="center">
+                                        <input type="text" class="form-control" id="biznm" value="" >
+                                    </td>
+                                    <td align="center">
+                                        <input type="text" class="form-control" id="bizpartnernm" value="" >
+                                    </td>
+                                    <td>
+                                        <select id="cn" style="width:100%;padding:3px;">
+                                            {% for i in rsUnitCn %}
+                                            <option value="{{i.id}}"> {{ i.cd_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select id="cur"  style="width:100%;padding:3px;">
+                                            {% for i in rsUnitCur %}
+                                            <option value="{{i.id}}"> {{ i.cd_nm }} </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td align="left">
+                                        <select id="bizpartnerstat" style="width:100%;padding:3px;">
+                                            <option value="정상"> 정상 </option>
+                                            <option value="중지"> 중지 </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button onclick="insert_element();" class="btn btn-default btn-sm">저장</button>
+                                    </td>
+                                    <td></td>
+                                </tr>
 
-                                </td>
-                                <td align="left">
-                                    <select class="bizpartnertype" >
-                                        <option value="법인"> 법인 </option>
-                                        <option value="개인"> 개인 </option>
-                                    </select>
-                                </td>
-                                <td align="center">
-                                    <input type="text" class="form-control" id="biz_nm" value="" >
+                                {% if rsHeader %}
+                                {% for i in rsHeader %}
+                                <tr>
+                                    <td>
+                                        <select id="conm{{i.id}}">
+                                            {% for ii in rsCo %}
+                                            {% if i.co_id == ii.id %}
+                                            <option selected value="{{ ii.id }}"> {{ ii.co_nm }} </option>
+                                            {% else %}
+                                            <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <span id="bizpartner_cd{{ i.id }}" value="{{ i.bizpartner_cd }}">
+                                             {{ i.bizpartner_cd }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <select id="bizpartnertype{{i.id}}" style="width:100%;padding:3px;">
+                                            {% if i.bizpartner_type == "법인" %}
+                                            <option selected> 법인 </option>
+                                            {% else %}
+                                            <option> 법인 </option>
+                                            {% endif %}
 
-                                </td>
-                                <td align="center">
-                                    <input type="text" class="form-control" id="bizpartner_nm" value="" >
+                                            {% if i.bizpartner_type == "개인" %}
+                                            <option selected> 개인 </option>
+                                            {% else %}
+                                            <option> 개인 </option>
+                                            {% endif %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="biz_nm{{ i.id }}" value="{{i.biz_nm}}"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="bizpartner_nm{{ i.id }}" value="{{ i.bizpartner_nm }}"/>
+                                    </td>
+                                   <td>
+                                        {% if not rsUnitCn %}
+                                        <p class="text-center">지정국가 없음</p>
+                                        {% else %}
+                                        <select id="unitcn_id{{ i.id }}" style="width:100%;padding:3px;">
+                                            {% for k in rsUnitCn %}
+                                            {% if i.unitcn_id == k.id %}
+                                            <option value="{{ k.id }}" selected> {{ k.cd_nm }} </option>
+                                            {% else %}
+                                            <option value="{{ k.id }}"> {{ k.cd_nm }} </option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not rsUnitCur %}
+                                        <p class="text-center">기준통화 없음</p>
+                                        {% else %}
+                                        <select id="unitcur_id{{ i.id }}" style="width:100%;padding:3px;">
+                                            {% for k in rsUnitCur %}
+                                            {% if i.unitcur_id == k.id %}
+                                            <option value="{{ k.id }}" selected>{{ k.cd_nm }}</option>
+                                            {% else %}
+                                            <option value="{{ k.id }}">{{ k.cd_nm }}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <select id="bizpartnerstat{{i.id}}" style="width:100%;padding:3px;">
+                                            {% if i.bizpartner_stat == "정상" %}
+                                            <option selected> 정상 </option>
+                                            {% else %}
+                                            <option> 정상 </option>
+                                            {% endif %}
 
-                                </td>
-                                <td align="left">
-                                    <select class="cncd" >
-                                        {% for ii in rsCncd %}
-                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td align="left">
-                                    <select class="curcd" >
-                                        {% for ii in rsCurcd %}
-                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                        {% endfor %}
-                                    </select>
-
-                                </td>
-                                <td align="left">
-                                    <select class="bizpartnerstat" >
-                                        <option value="정상"> 정상 </option>
-                                        <option value="중지"> 중지 </option>
-
-                                    </select>
-                                </td>
-                                <td align="left"><a class="btn btn-default btn-sm" href="javascript:void(0);" onclick="insert_element();" title="Bootstrap 3 themes generator">등록</a></td>
-                                <td></td>
-                            </tr>
+                                            {% if i.bizpartner_stat == "중지" %}
+                                            <option selected> 중지 </option>
+                                            {% else %}
+                                            <option> 중지 </option>
+                                            {% endif %}
+                                        </select>
+                                    </td>
+                                    <td width="5%">
+                                        <button class="btn btn-default btn-sm" id="update_{{i.id}}" name="{{i.id}}" onclick="update_element(this);">수정</button>
+                                    </td>
+                                    <td width="5%">
+                                        <button class="btn btn-default btn-sm" id="delete_{{i.id}}" name="{{i.id}}" onclick="delete_element(this);">삭제</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
-
-                            {% for i in rsHeader %}
-                            <tbody >
-                            <tr>
-                                <td>
-                                    <select class="conm{{i.id}}">
-                                        {% for ii in rsCo %}
-                                        {% if i.co_id == ii.id %}
-                                        <option selected value="{{ ii.id }}"> {{ ii.co_nm }} </option>
-                                        {% else %}
-                                        <option value="{{ii.id}}"> {{ ii.co_nm }} </option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    {{ i.bizpartner_cd }}
-                                </td>
-                                <td>
-                                    <select class="bizpartnertype{{i.id}}">
-                                        <option value="법인"> 법인 </option>
-                                        <option value="개인"> 개인 </option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="biz_nm{{ i.id }}" value="{{i.biz_nm}}"/>
-                                </td>
-                                <td>
-                                    <input type="text" class="form-control" id="bizpartner_nm{{ i.id }}" value="{{ i.bizpartner_nm }}"/>
-                                </td>
-                                <td>
-                                    <select class="cncd{{i.id}}">
-                                        {% for ii in rsCncd %}
-                                        {% if i.cn_cd == ii.id %}
-                                        <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
-                                        {% else %}
-                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="curcd{{i.id}}">
-                                        {% for ii in rsCurcd %}
-                                        {% if i.cur_cd == ii.id %}
-                                        <option selected value="{{ ii.id }}"> {{ ii.cd_nm }} </option>
-                                        {% else %}
-                                        <option value="{{ii.id}}"> {{ ii.cd_nm }} </option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="bizpartnerstat{{i.id}}">
-                                        <option value="정상"> 정상 </option>
-                                        <option value="중지"> 중지 </option>
-                                    </select>
-                                </td>
-                                <td width="5%"><a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="update_element(this);" title="Bootstrap 3 themes generator">수정</a></td>
-                                <td width="5%"><a class="btn btn-default btn-sm" value="{{i.id}}" href="javascript:void(0);" onclick="delete_element(this);" title="Bootstrap 3 themes generator">삭제</a></td>
-
-                            </tr>
-                            </td>
-                            </tbody>
-                            {% endfor %}
                         </table>
-                        {% else %}
-                        <span>Type이 없습니다.</span>
                         {% endif %}
                     </div>
-
                 </section>
             </div>
         </div>
         <script>
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = jQuery.trim(cookies[i]);
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
                     }
                 }
+                return cookieValue;
             }
-            return cookieValue;
-        }
-        var csrftoken = getCookie('csrftoken');
 
-        var xhr;
+            var csrftoken = getCookie('csrftoken');
+            var xhr;
 
+            function insert_element() {
+                var coSelect = document.querySelector('#conm');
+                var coId = coSelect.options[coSelect.selectedIndex].value;
 
-        function insert_element() {
+                var cnSelect = document.querySelector('#cn');
+                var cnId = cnSelect.options[cnSelect.selectedIndex].value;
 
-            var coSelect = document.querySelector('.conm');
-            var coid = coSelect.options[coSelect.selectedIndex].value;
+                var curSelect = document.querySelector('#cur');
+                var curId = curSelect.options[curSelect.selectedIndex].value;
 
-            var cnSelect = document.querySelector('.cncd');
-            var cncd = cnSelect.options[cnSelect.selectedIndex].value;
+                var bsSelect = document.querySelector('#bizpartnerstat');
+                var bizpartnerStat = bsSelect.options[bsSelect.selectedIndex].value;
 
-            var curSelect = document.querySelector('.curcd');
-            var curcd = curSelect.options[curSelect.selectedIndex].value;
+                var btSelect = document.querySelector('#bizpartnertype');
+                var bizpartnerType = btSelect.options[btSelect.selectedIndex].value;
 
-            var bsSelect = document.querySelector('.bizpartnerstat');
-            var bizpartnerstat = bsSelect.options[bsSelect.selectedIndex].value;
+                var bizpartnerCd = document.getElementById("bizpartnercd").value;
+                var bizNm = document.getElementById("biznm").value;
+                var bizpartnerNm = document.getElementById("bizpartnernm").value;
 
-            var btSelect = document.querySelector('.bizpartnertype');
-            var bizpartnertype = btSelect.options[btSelect.selectedIndex].value;
+                // 거래처 코드 항목
+                if(bizpartnerCd == '') {
+                    alert('거래처 코드가 비었습니다.');
+                    document.getElementById("bizpartnercd").focus();
+                    return false;
+                }
 
-            var bizpartnercd = document.getElementById("bizpartner_cd").value;
-            //var coid = document.getElementById("co_id").value;
-            //var bizpartnertype = document.getElementById("bizpartner_type").value;
-            var biznm = document.getElementById("biz_nm").value;
-            var bizpartnernm = document.getElementById("bizpartner_nm").value;
-            //var cncd = document.getElementById("cn_cd").value;
-           // var curcd = document.getElementById("cur_cd").value;
-            //var bizpartnerstat = document.getElementById("bizpartner_stat").value;
-//예외 처리
-            // 거래처 코드 항목
-            if(bizpartnercd == '') {
-                alert('거래처 코드가 비었습니다.');
-                document.getElementById("bizpartner_cd").focus();
-                return false;
-            }
-            // 법인 항목
-            if(coid == '') {
-                alert('법인명이 비었습니다.');
-                document.getElementById("co_id").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(bizpartnertype == '') {
-                alert('거래처형태가 비었습니다.');
-                document.getElementById("bizpartner_type").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(biznm == '') {
-                alert('상호명이 비었습니다.');
-                document.getElementById("biz_nm").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(bizpartnernm == '') {
-                alert('거래처명이 비었습니다.');
-                document.getElementById("bizpartner_nm").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(cncd == '') {
-                alert('국가코드가 비었습니다.');
-                document.getElementById("cn_cd").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(curcd == '') {
-                alert('통화코드가 비었습니다.');
-                document.getElementById("cur_cd").focus();
-                return false;
-            }
-            // 거래처형태 항목
-            if(bizpartnerstat == '') {
-                alert('거래처 상태가 비었습니다.');
-                document.getElementById("bizpartner_stat").focus();
-                return false;
-            }
-//예외 처리 끝
+                if(bizNm == '') {
+                    alert('상호명이 비었습니다.');
+                    document.getElementById("biznm").focus();
+                    return false;
+                }
 
-            var strurl = "bizpartner_element_insert?bizpartnercd=" + bizpartnercd + "&coid=" + coid+ "&bizpartnertype=" +
-                bizpartnertype+ "&biznm=" + biznm+ "&bizpartnernm=" + bizpartnernm+ "&cncd=" + cncd+ "&curcd=" + curcd+"&bizpartnerstat=" + bizpartnerstat;
-            alert(strurl);
-            //return false;
+                if(bizpartnerNm == '') {
+                    alert('거래처명이 비었습니다.');
+                    document.getElementById("bizpartnernm").focus();
+                    return false;
+                }
 
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+                var payload = {
+                    "co_id": coId,
+                    "bizpartner_cd": bizpartnerCd,
+                    "bizpartner_type": bizpartnerType,
+                    "biz_nm": bizNm,
+                    "bizpartner_nm": bizpartnerNm,
+                    "unitcur": curId,
+                    "unitcn": cnId,
+                    "bizpartner_stat": bizpartnerStat
+                };
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    if(obj.flag =='0') {
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if(xhr.status==201)
+                            alert("생성이 완료되었습니다.");
                         location.reload();
                     }
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
 
-        function update_element(elem) {
-
-
-            var id = elem.getAttribute('id');
-
-            var biznm = $('#biz_nm' + id).val();
-            var bizpartnernm = $('#bizpartner_nm' + id).val();
-
-            var coSelect = document.querySelector('.conm' + id);
-            var coid = coSelect.options[coSelect.selectedIndex].value;
-
-            var cnSelect = document.querySelector('.cncd' + id);
-            var cncd = cnSelect.options[cnSelect.selectedIndex].value;
-
-            var curSelect = document.querySelector('.curcd' + id);
-            var curcd = curSelect.options[curSelect.selectedIndex].value;
-
-            var bsSelect = document.querySelector('.bizpartnerstat' +id);
-            var bizpartnerstat = bsSelect.options[bsSelect.selectedIndex].value;
-
-            var btSelect = document.querySelector('.bizpartnertype'+id);
-            var bizpartnertype = btSelect.options[btSelect.selectedIndex].value;
-//////
-
-            var strurl = "bizpartner_element_update?id=" + id +"&coid=" + coid+ "&bizpartnertype=" +
-                bizpartnertype+ "&biznm=" + biznm+ "&bizpartnernm=" + bizpartnernm+ "&cncd=" + cncd+ "&curcd=" + curcd+"&bizpartnerstat=" + bizpartnerstat;
-            alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
-
-        function delete_element(elem) {
-
-            var id = elem.getAttribute('value');
-
-            var strurl = "bizpartner_element_delete?id=" + id;
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    if(obj.flag =='1') {
-                        document.getElementById('typebox_' + id).remove();
+                            if (obj.detail == "DuplicateCode") {
+                                alert("거래처 코드가 이미 존재합니다.");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
                     }
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
-    </script>
+                };
 
+                var strurl = "http://127.0.0.1:8080/rest_api/bizpartners";
+                xhr.open("POST", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
+            }
+
+            function update_element(elem) {
+                var id = elem.getAttribute('name');
+
+                var bizpartnerCd = document.getElementById('bizpartner_cd' + id).innerText;
+                var bizNm = $('#biz_nm' + id).val();
+                var bizpartnerNm = $('#bizpartner_nm' + id).val();
+
+                var coSelect = document.querySelector('#conm' + id);
+                var coId = coSelect.options[coSelect.selectedIndex].value;
+
+                var cnSelect = document.querySelector('#unitcn_id' + id);
+                var cnId = cnSelect.options[cnSelect.selectedIndex].value;
+
+                var curSelect = document.querySelector('#unitcur_id' + id);
+                var curId = curSelect.options[curSelect.selectedIndex].value;
+
+                var bsSelect = document.querySelector('#bizpartnerstat' + id);
+                var bizpartnerStat = bsSelect.options[bsSelect.selectedIndex].value;
+
+                var btSelect = document.querySelector('#bizpartnertype' + id);
+                var bizpartnerType = btSelect.options[btSelect.selectedIndex].value;
+
+                var payload = {
+                    "co_id": coId,
+                    "bizpartner_cd": bizpartnerCd,
+                    "bizpartner_type": bizpartnerType,
+                    "biz_nm": bizNm,
+                    "bizpartner_nm": bizpartnerNm,
+                    "unitcur": curId,
+                    "unitcn": cnId,
+                    "bizpartner_stat": bizpartnerStat
+                };
+
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200)
+                            alert("수정이 완료되었습니다.");
+                        location.reload();
+                    } else {
+                        if (xhr.status == 400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
+
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            } else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
+
+                var strurl = "http://127.0.0.1:8080/rest_api/bizpartners/" + id;
+                xhr.open("PUT", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
+            }
+
+            function delete_element(elem) {
+                var id = elem.getAttribute('name');
+
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if(xhr.status==204)
+                            alert("삭제가 완료되었습니다.");
+                        location.reload();
+                    }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
+
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
+
+                var strurl = "http://127.0.0.1:8080/rest_api/bizpartners/" + id;
+                xhr.open("DELETE", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(null);
+            }
+        </script>
     </section>
     <!--main content end-->
 </section>

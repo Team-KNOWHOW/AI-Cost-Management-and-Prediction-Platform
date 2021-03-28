@@ -6,219 +6,279 @@
 
 <script>
     // https://docs.djangoproject.com/en/3.1/ref/csrf/
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Does this cookie string begin with the name we want?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+    var xhr;
+
+    function insertType() {
+        var typeCd = document.getElementById('type_cd').value;
+        if (typeCd == '') {
+            alert('Code empty');
+            document.getElementById('type_cd').focus();
+            return false;
+        }
+        var typeName = document.getElementById('type_name').value;
+        if (typeName == '') {
+            alert('Name empty');
+            document.getElementById('type_name').focus();
+            return false;
+        }
+
+        var payload = {
+            "type_cd": typeCd,
+            "type_nm": typeName
+        };
+
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 201)
+                    alert("생성이 완료되었습니다.");
+                location.reload();
+            } else {
+                if (xhr.status == 400) {
+                    var data = xhr.responseText;
+                    var obj = JSON.parse(data);
+
+                    if (obj.detail == "Duplicate Type Code") {
+                        alert("타입 코드가 이미 존재합니다.");
+                    } else if (obj.detail == "Duplicate Type Name") {
+                        alert("타입명이 이미 존재합니다.");
+                    } else {
+                        alert("400 Bad Request");
                     }
                 }
             }
-            return cookieValue;
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/code-headers";
+        xhr.open("POST", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
+    }
+
+    function updateType(elem) {
+        var typeId = elem.getAttribute('name');
+
+        var typeCd = document.getElementById('type_cd' + typeId).innerText;
+        var value = elem.value;
+
+        if (value == '') {
+            alert('Value empty');
+            elem.focus();
+            return false;
         }
-        var csrftoken = getCookie('csrftoken');
 
-        var xhr;
+        var payload = {
+            "type_cd": typeCd,
+            "type_nm": value
+        };
 
-        function insertType() {
-
-            var typecd = document.getElementById('type_cd').value;
-            if(typecd == ''){
-                alert('Code empty');
-                document.getElementById('type_cd').focus();
-                return false;
-            }
-            var typename = document.getElementById('type_name').value;
-            if(typename == ''){
-                alert('Name empty');
-                document.getElementById('type_name').focus();
-                return false;
-            }
-
-            var strurl = "codetype_insert?typecd=" + typecd + "&typename=" + typename;
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200)
+                    alert("수정이 완료되었습니다.");
+                location.reload();
+            } else {
+                if (xhr.status == 400) {
                     var data = xhr.responseText;
-
                     var obj = JSON.parse(data);
-                    alert(obj.result_msg);
 
-                    if(obj.flag =='0') {
-                        location.reload();
+                    if (obj.detail == "") {//추후 에러처리 추가시 사용
+                        alert("에러코드");
+                    } else {
+                        alert("400 Bad Request");
                     }
                 }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
+            }
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/code-headers/" + typeId;
+        xhr.open("PUT", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
+    }
+
+    function deleteType(elem) {
+        var typeId = elem.getAttribute('name');
+
+        if (!confirm("삭제 하시겠습니까")) {
+            return false;
         }
 
-        function updateType(elem) {
-
-            var typeid = elem.getAttribute('typeid');
-            var tvalue = elem.value;
-            if(tvalue == ''){
-                alert('Value empty');
-                elem.focus();
-                return false;
-            }
-
-            var strurl = "codetype_update?typeid=" + typeid + "&tvalue=" + tvalue;
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 204)
+                    alert("삭제가 완료되었습니다.");
+                location.reload();
+            } else {
+                if (xhr.status == 400) {
                     var data = xhr.responseText;
-
                     var obj = JSON.parse(data);
-                    alert(obj.result_msg);
 
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
-
-        function deleteType(elem) {
-
-            var typeid = elem.getAttribute('id');
-
-            if (!confirm("삭제 하시겠습니까")) {
-                return false;
-            }
-
-            var strurl = "codetype_delete?typeid=" + typeid;
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    location.reload();
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
-
-        function insertCode() {
-            var typecd = document.getElementById('mytype_cd').value;
-
-            var codecd = document.getElementById('code_cd').value;
-            var codename = document.getElementById('code_name').value;
-
-            if(codecd == ''){
-                alert('Code empty');
-                document.getElementById('code_cd').focus();
-                return false;
-            }
-            if(codename == ''){
-                alert('Name empty');
-                document.getElementById('code_name').focus();
-                return false;
-            }
-
-            var strurl = "code_insert?typecd=" + typecd + "&codecd=" + codecd + "&codename=" + codename;
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
-
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-
-                    if(obj.flag =='0') {
-                        location.reload();
+                    if (obj.detail == "") {//추후 에러처리 추가시 사용
+                        alert("에러코드");
+                    } else {
+                        alert("400 Bad Request");
                     }
                 }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
+            }
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/code-headers/" + typeId;
+        xhr.open("DELETE", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(null);
+    }
+
+    function insertCode() {
+        var typeCd = document.getElementById('mytype_cd').value;
+        var codeCd = document.getElementById('code_cd').value;
+        var codeNm = document.getElementById('code_nm').value;
+
+        if (codeCd == '') {
+            alert('Code empty');
+            document.getElementById('code_cd').focus();
+            return false;
+        }
+        if (codeNm == '') {
+            alert('Name empty');
+            document.getElementById('code_nm').focus();
+            return false;
         }
 
-        function updateCode(elem) {
+        var payload = {
+            "type_cd": typeCd,
+            "code_cd": codeCd,
+            "cd_nm": codeNm
+        };
 
-            var cvalue= elem.value;
-            if(cvalue == '') {
-                alert('값 없음');
-                elem.focus()
-                return false;
-            }
-            var codeid= elem.getAttribute("codeid");
-
-            var strurl = "code_update?codeid=" + codeid + "&codename=" + cvalue;
-            //alert(strurl);
-            //return false;
-
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 201)
+                    alert("생성이 완료되었습니다.");
+                location.reload();
+            } else {
+                if (xhr.status == 400) {
                     var data = xhr.responseText;
-
                     var obj = JSON.parse(data);
-                    alert(obj.result_msg);
-                    elem.style.backgroundColor = "#BBDDFF";
-                    if(obj.flag=='1') {
-                        alert(obj.result_msg);
-                        elem.focus()
+
+                    if (obj.detail == "Duplicate Code Name") {
+                        alert("세부 코드명이 이미 존재합니다.");
+                    } else {
+                        alert("400 Bad Request");
                     }
                 }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
-        }
-
-
-        function deleteCode(elem) {
-
-            var codeid = elem.getAttribute("id");
-
-            if (!confirm("삭제 하시겠습니까")) {
-                return false;
             }
+        };
 
-            var strurl = "code_delete?codeid=" + codeid;
-            //alert(strurl);
-            //return false;
+        var strurl = "http://127.0.0.1:8080/rest_api/code-details";
+        xhr.open("POST", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
+    }
 
-            xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    var data = xhr.responseText;
+    function updateCode(elem) {
+        var codeId = elem.getAttribute('name');
 
-                    var obj = JSON.parse(data);
-                    alert(obj.result_msg);
+        var typeCd = document.getElementById('mytype_cd' + codeId).innerText;
+        var codeCd = document.getElementById('code_cd' + codeId).innerText;
+        var value = elem.value;
 
-                    location.reload();
-                }
-            };
-            xhr.open("POST", strurl);
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            xhr.send(null);
+        if (value == '') {
+            alert('값 없음');
+            elem.focus()
+            return false;
         }
+
+        var payload = {
+            "type_cd": typeCd,
+            "code_cd": codeCd,
+            "cd_nm": value
+        };
+
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200)
+                    alert("수정이 완료되었습니다.");
+                location.reload();
+            } else {
+                if (xhr.status == 400) {
+                    var data = xhr.responseText;
+                    var obj = JSON.parse(data);
+
+                    if (obj.detail == "") {//추후 에러처리 추가시 사용
+                        alert("에러코드");
+                    } else {
+                        alert("400 Bad Request");
+                    }
+                }
+            }
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/code-details/" + codeId;
+        xhr.open("PUT", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
+    }
+
+    function deleteCode(elem) {
+        var codeId = elem.getAttribute('name');
+
+        if (!confirm("삭제 하시겠습니까")) {
+            return false;
+        }
+
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 204)
+                    alert("삭제가 완료되었습니다.");
+                location.reload();
+            } else {
+                if (xhr.status == 400) {
+                    var data = xhr.responseText;
+                    var obj = JSON.parse(data);
+
+                    if (obj.detail == "") {//추후 에러처리 추가시 사용
+                        alert("에러코드");
+                    } else {
+                        alert("400 Bad Request");
+                    }
+                }
+            }
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/code-details/" + codeId;
+        xhr.open("DELETE", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(null);
+    }
     </script>
 {% endblock %}
 
@@ -237,33 +297,31 @@
             </div>
         </div>
         <div>
-
             <table>
-                <tr>
-                    <td width="" align="center">타입코드</td>
-                    <td width="" align="center">타입명</td>
-                    <td width="" align="center">등록</td>
-                    </td>
-                </tr>
+                <thead>
+                    <tr>
+                        <td width="" align="center">타입코드</td>
+                        <td width="" align="center">타입명</td>
+                        <td width="" align="center">등록</td>
+                    </tr>
+                </thead>
                 <tbody>
-                <tr>
-                    <td>
-                        <input type="text" id="type_cd" class="form-control" placeholder="Type Code">
-
-                    </td>
-                    <td>
-                        <input type="text" id="type_name" class="form-control" placeholder="Type Name">
-
-                    </td>
-                    <td>
-                        <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="insertType();" title="Bootstrap 3 themes generator">저장</a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>
+                            <input type="text" id="type_cd" class="form-control" placeholder="Type Code">
+                        </td>
+                        <td>
+                            <input type="text" id="type_name" class="form-control" placeholder="Type Name">
+                        </td>
+                        <td>
+                            <button onclick="insertType();" class="btn btn-primary btn-sm">저장</button>
+                        </td>
+                    </tr>
                 </tbody>
-
             </table>
         </div>
         <br>
+
         <div class="row">
             <div class="col-lg-12">
                 <section class="panel">
@@ -271,58 +329,42 @@
                         {% if rsHeader %}
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th width="15%">TYPE CD</th>
-                                <th width="15%">TYPE NAME</th>
-                                <th width="10%">등록자</th>
-                                <th width="15%">등록일</th>
-                                <th width="10%">수정자</th>
-                                <th width="15%">수정일</th>
-                                <th width="10%">삭제</th>
-                            </tr>
+                                <tr>
+                                    <th width="10%">TYPE CD</th>
+                                    <th width="15%">TYPE NAME</th>
+                                </tr>
                             </thead>
-                            {% for i in rsHeader %}
-                            <tbody id="typebox_{{ i.id }}">
-                            <tr>
-                                <td width="15%">
-                                    <a href="?type_cd={{ i.type_cd }}">{{ i.type_cd }}</a>
-                                </td>
-                                <td width="15%">
-                                    <input type="text" typeid="{{ i.id }}" class="form-control" value="{{ i.type_nm }}" onchange="updateType(this)" />
-                                </td>
-                                <td width="10%">
-                                    {{ i.insrt_id }}
-                                </td>
-                                <td width="15%">
-                                    {{ i.insrt_dt }}
-                                </td>
-                                <td width="10%">
-                                    {{ i.updt_id }}
-                                </td>
-                                <td width="15%">
-                                    {{ i.updt_dt }}
-                                </td>
-                                <td width="10%">
-                                    <a class="btn btn-default btn-sm" id="{{i.id}}" href="javascript:void(0);" onclick="deleteType(this);" title="Bootstrap 3 themes generator">삭제</a>
-                                </td>
-                            </tr>
+
+                            <tbody>
+                                {% for i in rsHeader %}
+                                <tr>
+                                    <td id="type_cd{{ i.id }}">
+                                        <a href="?type_cd={{ i.type_cd }}">{{ i.type_cd }}</a>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="{{ i.id }}" class="form-control" value="{{ i.type_nm }}" onchange="updateType(this)" />
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-default btn-sm" id="type_delete_{{i.id}}" name="{{i.id}}" onclick="deleteType(this);">삭제</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
                             </tbody>
-                            {% endfor %}
                         </table>
                         {% else %}
                         <span>Type이 없습니다.</span>
                         {% endif %}
                     </div>
-
                 </section>
             </div>
         </div>
 
         <div>
             <div>
-                TYPE : <span style="color:#FF6600;">{{ type_cd }}</span>
+                TYPE : <span id={{type_cd}} style="color:#FF6600;">{{ type_cd }}</span>
             </div>
             <br>
+
             {% if type_cd == None %}
             <div>
                 Type을 선택하세요.
@@ -331,31 +373,30 @@
             <div>
 
                 <table>
-                    <tr>
-                        <td width="" align="center">코드</td>
-                        <td width="" align="center">코드명</td>
-                        <td width="" align="center">등록</td>
-                        </td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <td width="" align="center">코드</td>
+                            <td width="" align="center">코드명</td>
+                            <td width="" align="center">등록</td>
+                        </tr>
+                    </thead>
                     <tbody>
-                    <tr>
-                        <td>
-                            <input type="text" id="code_cd" class="form-control" placeholder="Code">
-
-                        </td>
-                        <td>
-                            <input type="text" id="code_name" class="form-control" placeholder="Code Name">
-
-                        </td>
-                        <td>
-                            <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="insertCode();" title="Bootstrap 3 themes generator">저장</a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>
+                                <input type="text" id="code_cd" class="form-control" placeholder="Code">
+                            </td>
+                            <td>
+                                <input type="text" id="code_nm" class="form-control" placeholder="Code Name">
+                            </td>
+                            <td>
+                                <button onclick="insertCode();" class="btn btn-primary btn-sm">저장</button>
+                            </td>
+                        </tr>
                     </tbody>
-
                 </table>
             </div>
             <br>
+
             <div class="row">
                 <div class="col-lg-12">
                     <section class="panel">
@@ -363,61 +404,41 @@
                             {% if rsCode %}
                             <table class="table">
                                 <thead>
-                                <tr>
-                                    <th width="15%">TYPE CD</th>
-                                    <th width="10%">CODE</th>
-                                    <th width="15%">CODE NAME</th>
-                                    <th width="10%">등록자</th>
-                                    <th width="15%">등록일</th>
-                                    <th width="10%">수정자</th>
-                                    <th width="15%">수정일</th>
-                                    <th width="10%">삭제</th>
-                                </tr>
+                                    <tr>
+                                        <th width="5%">TYPE CD</th>
+                                        <th width="10%">CODE</th>
+                                        <th width="20%">CODE NAME</th>
+                                        <th width="65%">삭제</th>
+                                    </tr>
                                 </thead>
-                                {% for j in rsCode %}
-                                <tbody id="codebox_{{ j.id }}">
-                                <tr>
-                                    <td width="15%">
-                                        {{ j.type_cd }}
-                                    </td>
-                                    <td width="15%">
-                                        <a href="code_view?codeid={{ j.id }}"> {{ j.code_cd }}</a>
-                                    </td>
-                                    <td width="15%">
-                                        <input type="text" class="form-control" codeid="{{ j.id }}" value="{{ j.cd_nm }}" onchange="updateCode(this)" />
-                                    </td>
-                                    <td width="10%">
-                                        {{ j.insrt_id }}
-                                    </td>
-                                    <td width="15%">
-                                        {{ j.insrt_dt }}
-                                    </td>
-                                    <td width="10%">
-                                        {{ j.updt_id }}
-                                    </td>
-                                    <td width="15%">
-                                        {{ j.updt_dt }}
-                                    </td>
-                                    <td width="10%">
-                                        <a class="btn btn-default btn-sm" id="{{j.id}}" href="javascript:void(0);" onclick="deleteCode(this);" title="Bootstrap 3 themes generator">삭제</a>
-
-                                    </td>
-                                </tr>
+                                <tbody>
+                                    {% for j in rsCode %}
+                                    <tr>
+                                        <td id="mytype_cd{{j.id}}">
+                                            {{ j.type_cd }}
+                                        </td>
+                                        <td id="code_cd{{j.id}}">
+                                            <a href="code_view?codeid={{ j.id }}"> {{ j.code_cd }}</a>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" name="{{ j.id }}" value="{{ j.cd_nm }}" onchange="updateCode(this)" />
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-default btn-sm" id="code_delete_{{j.id}}" name="{{j.id}}" onclick="deleteCode(this);">삭제</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
                                 </tbody>
-                                {% endfor %}
                             </table>
                             {% else %}
                             <span>Type이 없습니다.</span>
                             {% endif %}
                         </div>
-
                     </section>
                 </div>
             </div>
-
             {% endif %}
         </div>
-
     </section>
     <!--main content end-->
 </section>
