@@ -55,8 +55,10 @@
                     var data = xhr.responseText;
                     var obj = JSON.parse(data);
 
-                    if (obj.detail == "DuplicateCode") {
-                        alert("법인코드가 이미 존재합니다.");
+                    if (obj.detail == "Duplicate Type Code") {
+                        alert("타입 코드가 이미 존재합니다.");
+                    } else if (obj.detail == "Duplicate Type Name") {
+                        alert("타입명이 이미 존재합니다.");
                     } else {
                         alert("400 Bad Request");
                     }
@@ -182,8 +184,8 @@
                     var data = xhr.responseText;
                     var obj = JSON.parse(data);
 
-                    if (obj.detail == "DuplicateCode") {
-                        alert("법인코드가 이미 존재합니다.");
+                    if (obj.detail == "Duplicate Code Name") {
+                        alert("세부 코드명이 이미 존재합니다.");
                     } else {
                         alert("400 Bad Request");
                     }
@@ -328,38 +330,21 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th width="15%">TYPE CD</th>
+                                    <th width="10%">TYPE CD</th>
                                     <th width="15%">TYPE NAME</th>
-                                    <th width="10%">등록자</th>
-                                    <th width="15%">등록일</th>
-                                    <th width="10%">수정자</th>
-                                    <th width="15%">수정일</th>
-                                    <th width="10%">삭제</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 {% for i in rsHeader %}
                                 <tr>
-                                    <td id="type_cd{{ i.id }}" width="15%">
+                                    <td id="type_cd{{ i.id }}">
                                         <a href="?type_cd={{ i.type_cd }}">{{ i.type_cd }}</a>
                                     </td>
-                                    <td width="15%">
+                                    <td>
                                         <input type="text" name="{{ i.id }}" class="form-control" value="{{ i.type_nm }}" onchange="updateType(this)" />
                                     </td>
-                                    <td width="10%">
-                                        {{ i.insrt_id }}
-                                    </td>
-                                    <td width="15%">
-                                        {{ i.insrt_dt }}
-                                    </td>
-                                    <td width="10%">
-                                        {{ i.updt_id }}
-                                    </td>
-                                    <td width="15%">
-                                        {{ i.updt_dt }}
-                                    </td>
-                                    <td width="10%">
+                                    <td>
                                         <button class="btn btn-default btn-sm" id="type_delete_{{i.id}}" name="{{i.id}}" onclick="deleteType(this);">삭제</button>
                                     </td>
                                 </tr>
@@ -420,41 +405,25 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th width="15%">TYPE CD</th>
+                                        <th width="5%">TYPE CD</th>
                                         <th width="10%">CODE</th>
-                                        <th width="15%">CODE NAME</th>
-                                        <th width="10%">등록자</th>
-                                        <th width="15%">등록일</th>
-                                        <th width="10%">수정자</th>
-                                        <th width="15%">수정일</th>
-                                        <th width="10%">삭제</th>
+                                        <th width="20%">CODE NAME</th>
+                                        <th width="65%">삭제</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for j in rsCode %}
                                     <tr>
-                                        <td id="mytype_cd{{j.id}}" width="15%">
+                                        <td id="mytype_cd{{j.id}}">
                                             {{ j.type_cd }}
                                         </td>
-                                        <td id="code_cd{{j.id}}" width="15%">
+                                        <td id="code_cd{{j.id}}">
                                             <a href="code_view?codeid={{ j.id }}"> {{ j.code_cd }}</a>
                                         </td>
-                                        <td width="15%">
+                                        <td>
                                             <input type="text" class="form-control" name="{{ j.id }}" value="{{ j.cd_nm }}" onchange="updateCode(this)" />
                                         </td>
-                                        <td width="10%">
-                                            {{ j.insrt_id }}
-                                        </td>
-                                        <td width="15%">
-                                            {{ j.insrt_dt }}
-                                        </td>
-                                        <td width="10%">
-                                            {{ j.updt_id }}
-                                        </td>
-                                        <td width="15%">
-                                            {{ j.updt_dt }}
-                                        </td>
-                                        <td width="10%">
+                                        <td>
                                             <button class="btn btn-default btn-sm" id="code_delete_{{j.id}}" name="{{j.id}}" onclick="deleteCode(this);">삭제</button>
                                         </td>
                                     </tr>
