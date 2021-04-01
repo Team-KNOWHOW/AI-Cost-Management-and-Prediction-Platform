@@ -1756,6 +1756,10 @@ def cc_costbill1_if(request):
     return render(request, 'board3/cc_costbill1_if.html', context)
 
 
+# *********************************************************************************************************************
+# 차트 코드 시작
+# *********************************************************************************************************************
+
 def chart_if(request):
     context = {}
 
@@ -1771,3 +1775,52 @@ def chart_if(request):
 
 
     return render(request, 'board3/chart_if.html', context)
+
+
+def chart1(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
+    return render(request, 'board3/chart1.html', context)
+
+def chart2(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
+    return render(request, 'board3/chart2.html', context)
+
+def chart3(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
+    return render(request, 'board3/chart3.html', context)

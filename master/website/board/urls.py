@@ -25,6 +25,9 @@ urlpatterns = [
     path('cc_costbill_if', views.cc_costbill_if, name='cc_costbill_if'),
     path('cc_costbill1_if', views.cc_costbill1_if, name='cc_costbill1_if'),
     path('chart_if', views.chart_if, name='chart_if'),
+    path('chart1', views.chart1, name='chart1'),
+    path('chart2', views.chart2, name='chart2'),
+    path('chart3', views.chart3, name='chart3'),
 
     # 사용자 관리
     path('member_register', views.member_register, name="member_register"),
