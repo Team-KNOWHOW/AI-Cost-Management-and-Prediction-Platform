@@ -97,12 +97,13 @@
                                 <th>법인명</th>
                                 <th>년월</th>
                                 <th>version</th>
-                                <th>자재코드</th>
-                                <th>자재명</th>
-                                <th>작업장</th>
-                                <th>작업장명</th>
-                                <th>모품목코드</th>
-                                <th>모품목명</th>
+                                <th>공장코드</th>
+                                <th>공장명</th>
+                                <th>사업장</th>
+                                <th>사업장명</th>
+                                <th>계정코드</th>
+                                <th>계정명</th>
+                                <th>bom코드</th>
                                 <th>수량</th>
                                 <th>금액</th>
                             </tr>
@@ -123,10 +124,10 @@
                                     {{ i.mc_version }}
                                 </td>
                                 <td>
-
+                                    {{ i.factory_cd }}
                                 </td>
                                 <td>
-
+                                    {{ i.factory_nm }}
                                 </td>
                                 <td>
                                     {{ i.workcenter_cd }}
@@ -135,7 +136,10 @@
                                     {{ i.workcenter_nm }}
                                 </td>
                                 <td>
-
+                                    {{ i.accnt_cd }}
+                                </td>
+                                <td>
+                                    {{ i.accnt_nm }}
                                 </td>
                                 <td>
 
@@ -175,6 +179,9 @@
                                 <th>
                                     사업장코드
                                 </th>
+                                <th>
+                                    계정코드
+                                </th>
                             </tr>
                             <tbody>
                             <tr>
@@ -191,6 +198,11 @@
                                 <td>
                                     {% for i in rsWrkctr %}
                                     <div>{{ i.id }}.{{ i.workcenter_cd }} - {{ i.workcenter_nm }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in rsCosteleaccnt %}
+                                    <div>{{ i.id }}.{{ i.accnt_cd }} - {{ i.accnt_nm }}</div>
                                     {% endfor %}
                                 </td>
                             </tr>
