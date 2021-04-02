@@ -56,7 +56,7 @@
                     var obj = JSON.parse(data);
 
                     if (obj.detail == "DuplicateCode") {
-                        alert("법인코드가 이미 존재합니다.");
+                        alert("품목 그룹 코드가 이미 존재합니다.");
                     } else {
                         alert("400 Bad Request");
                     }
@@ -89,7 +89,7 @@
                     var data = xhr.responseText;
                     var obj = JSON.parse(data);
 
-                    if (obj.detail == "") {//추후 에러처리 추가시 사용
+                    if (obj.detail == "") {
                         alert("에러코드");
                     } else {
                         alert("400 Bad Request");

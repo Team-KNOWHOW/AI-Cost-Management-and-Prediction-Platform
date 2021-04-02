@@ -74,3 +74,7 @@ class BItemSerializer(serializers.ModelSerializer):
         fields = ('factory', 'item_cd', 'item_nm', 'item_spec', 'unit_id', 'itemgrp', 'itemaccnt')
 
 
+class BCosteleaccntSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BCosteleaccnt
+        fields = ('pl_cd', 'pl_nm', 'accnt_cd', 'accnt_nm', 'fv_div', 'costeleaccnt_rmrk')

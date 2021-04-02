@@ -100,7 +100,7 @@
                             {% for i in rsBizarea %}
                             <tbody >
                             <tr>
-                                <td>{{ i.co_nm }}</td>
+                                <td>{{ i.bizarea_cd }}</td>
                                 <td>
                                     {% if not rsCo %}
                                     <p class="text-center">지정법인 없음</p>
@@ -266,7 +266,7 @@
                             var obj = JSON.parse(data);
 
                             if (obj.detail == "DuplicateCode") {
-                                alert("법인코드가 이미 존재합니다.");
+                                alert("사업장 코드가 이미 존재합니다.");
                             } else {
                                 alert("400 Bad Request");
                             }

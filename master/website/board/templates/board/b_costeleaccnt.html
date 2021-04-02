@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+    {{ block.super }}
+
+{% endblock %}
+
+{% block body %}
+
+    {% include "navbar.html" %}
+    {% include "sidebar.html" %}
+
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="page-header"><i class="fa fa-table"></i>원가요소계정</h3>
+                </div>
+            </div>
+            <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <div class="table-responsive">
+
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th width="15%">손익코드</th>
+                                <th width="20%">손익명</th>
+                                <th width="15%">계정코드</th>
+                                <th width="20%">계정명</th>
+                                <th width="15%">변동고정구분</th>
+                                <th width="15%">비고</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr bgcolor="#F7F7F7">
+                                    <td> <input type="text" id="pl_cd" class="form-control" placeholder="plcd"></td>
+                                    <td> <input type="text" id="pl_nm" class="form-control" placeholder="plname"></td>
+                                    <td> <input type="text" id="accnt_cd" class="form-control" placeholder="accntcd"></td>
+                                    <td> <input type="text" id="accnt_nm" class="form-control" placeholder="accntnm"></td>
+                                    <td>
+                                        <select class="fv_div">
+                                            <option value="F">F</option>
+                                            <option value="V">V</option>
+                                        </select>
+                                    </td>
+                                    <td> <input type="text" id="costeleaccnt_rmrk" class="form-control" placeholder="remark"></td>
+                                    <td>
+                                        <button onclick="insert_element()" class="btn btn-default btn-sm">저장</button>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                            {% if rsCosteleaccnt %}
+                            <tbody>
+                            {% for i in rsCosteleaccnt %}
+                            <tr>
+                                <td id="pl_cd{{ i.id }}" value="{{ i.pl_cd }}">
+                                    {{ i.placcnt_cd }}
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="pl_nm{{ i.id }}" value="{{ i.pl_nm }}"/>
+                                </td>
+                                <td id="accnt_cd{{ i.id }}" value="{{ i.accnt_cd }}">
+                                    {{ i.accnt_cd }}
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="accnt_nm{{ i.id }}" value="{{ i.accnt_nm }}"/>
+                                </td>
+                                <td>
+                                    <select class="fv_div{{ i.id }}">
+                                            {% if i.fv_div == "F" %}
+                                            <option value="{{ i.fv_div }}" selected>{{ i.fv_div }}</option>
+                                            <option value="V">V</option>
+                                            {% else %}
+                                            <option value="{{ i.fv_div }}" selected>{{ i.fv_div }}</option>
+                                            <option value="F">F</option>
+                                            {% endif %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="costeleaccnt_rmrk{{ i.id }}" value="{{ i.costeleaccnt_rmrk }}"/>
+                                </td>
+                                <td>
+                                    <button class="btn btn-default btn-sm" id="update_{{i.id}}" name="{{ i.id }}" onclick="update_element(this)">수정</button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-default btn-sm" id="delete_{{i.id}}" name="{{ i.id }}" onclick="delete_element(this)">삭제</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                            {% endif %}
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+            <script>
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var csrftoken = getCookie('csrftoken');
+            var xhr;
+
+            function insert_element() {
+                var plCd = document.getElementById("pl_cd").value;
+                var plNm = document.getElementById("pl_nm").value;
+                var accntCd = document.getElementById("accnt_cd").value;
+                var accntNm = document.getElementById("accnt_nm").value;
+                var fvDivSelect = document.querySelector('.fv_div');
+                var fvDiv = fvDivSelect.options[fvDivSelect.selectedIndex].value;
+                var costEleAccntRmrk = document.getElementById("costeleaccnt_rmrk").value;
+
+                if(plCd == '') {
+                    alert('손익코드를 입력해주십시오.');
+                    document.getElementById("pl_cd").focus();
+                    return false;
+                }
+
+                if(plNm == '') {
+                    alert('손익명을 입력해주십시오.');
+                    document.getElementById("pl_nm").focus();
+                    return false;
+                }
+
+                if(accntCd == '') {
+                    alert('계정코드를 입력해주십시오.');
+                    document.getElementById("accnt_cd").focus();
+                    return false;
+                }
+
+                if(accntNm == '') {
+                    alert('계정명을 입력해주십시오.');
+                    document.getElementById("accnt_nm").focus();
+                    return false;
+                }
+
+                var payload = {
+                    "pl_cd": plCd,
+                    "pl_nm": plNm,
+                    "accnt_cd": accntCd,
+                    "accnt_nm": accntNm,
+                    "fv_div": fvDiv,
+                    "costeleaccnt_rmrk": costEleAccntRmrk,
+                };
+
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if(xhr.status==201)
+                            alert("생성이 완료되었습니다.");
+                        location.reload();
+                    }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
+
+                            if (obj.detail == "Duplicate PL Code") {
+                                alert("손익 코드가 이미 존재합니다.");
+                            }
+                            else if (obj.detail == "Duplicate Account Code") {
+                                alert("계정 코드가 이미 존재합니다.");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
+
+                var strurl = "http://127.0.0.1:8080/rest_api/cost-element-accounts";
+                xhr.open("POST", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
+            }
+
+            function update_element(elem) {
+                var costEleAccntId = elem.getAttribute('name');
+
+
+                var fvDivSelect = document.querySelector('.fv_div' + costEleAccntId);
+                var fvDiv = fvDivSelect.options[fvDivSelect.selectedIndex].value;
+
+                var plCd = document.getElementById('pl_cd' + costEleAccntId).value;
+                var plNm = document.getElementById('pl_nm' + costEleAccntId).value;
+                var accntCd = document.getElementById('accnt_cd' + costEleAccntId).value;
+                var accntNm = document.getElementById('accnt_nm' + costEleAccntId).value;
+                var costEleAccntRmrk = document.getElementById('costeleaccnt_rmrk' + costEleAccntId).value;
+
+
+                var payload = {
+                    "pl_cd": plCd,
+                    "pl_nm": plNm,
+                    "accnt_cd": accntCd,
+                    "accnt_nm": accntNm,
+                    "fv_div": fvDiv,
+                    "costeleaccnt_rmrk": costEleAccntRmrk,
+                };
+
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if(xhr.status==200)
+                            alert("수정이 완료되었습니다.");
+                        location.reload();
+                    }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
+
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
+
+                var strurl = "http://127.0.0.1:8080/rest_api/cost-element-accounts/" + costEleAccntId;
+                xhr.open("PUT", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(payload));
+            }
+
+            function delete_element(elem) {
+                var costEleAccntId = elem.getAttribute('name');
+
+                xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if(xhr.status==204)
+                            alert("삭제가 완료되었습니다.");
+                        location.reload();
+                    }
+                    else {
+                        if(xhr.status==400) {
+                            var data = xhr.responseText;
+                            var obj = JSON.parse(data);
+
+                            if (obj.detail == "") {//추후 에러처리 추가시 사용
+                                alert("에러코드");
+                            }
+                            else {
+                                alert("400 Bad Request");
+                            }
+                        }
+                    }
+                };
+
+                var strurl = "http://127.0.0.1:8080/rest_api/cost-element-accounts/" + costEleAccntId;
+                xhr.open("DELETE", strurl, true);
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(null);
+            }
+        </script>
+        </section>
+        <!--main content end-->
+    </section>
+    <!-- container section start -->
+
+{% endblock %}
