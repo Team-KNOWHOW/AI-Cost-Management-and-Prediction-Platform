@@ -126,10 +126,10 @@
 
                                 </td>
                                 <td>
-                                    {{ i.itemaccnt_cd }}
+                                    {{ i.accnt_cd }}
                                 </td>
                                 <td>
-                                    {{ i.itemaccnt_nm }}
+                                    {{ i.accnt_nm }}
                                 </td>
                                 <td>
                                     {{ i.ipmc_price }}
@@ -161,7 +161,7 @@
                                     법인코드
                                 </th>
                                 <th>
-                                    품목계정코드
+                                    계정코드
                                 </th>
                             </tr>
                             <tbody>
@@ -172,8 +172,8 @@
                                     {% endfor %}
                                 </td>
                                 <td>
-                                    {% for i in rsItemaccnt %}
-                                    <div>{{ i.id }}.{{ i.itemaccnt_cd }} - {{ i.itemaccnt_nm }}</div>
+                                    {% for i in rsCosteleaccnt %}
+                                    <div>{{ i.id }}.{{ i.accnt_cd }} - {{ i.accnt_nm }}</div>
                                     {% endfor %}
                                 </td>
                             </tr>
