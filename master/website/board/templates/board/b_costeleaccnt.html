@@ -61,7 +61,7 @@
                             {% for i in rsCosteleaccnt %}
                             <tr>
                                 <td id="pl_cd{{ i.id }}" value="{{ i.pl_cd }}">
-                                    {{ i.pl_cd }}
+                                    {{ i.placcnt_cd }}
                                 </td>
                                 <td>
                                     <input type="text" class="form-control" id="pl_nm{{ i.id }}" value="{{ i.pl_nm }}"/>
@@ -73,7 +73,7 @@
                                     <input type="text" class="form-control" id="accnt_nm{{ i.id }}" value="{{ i.accnt_nm }}"/>
                                 </td>
                                 <td>
-                                    <select class="fv_div{{ i.id }}" style="width:20%;padding:3px;">
+                                    <select class="fv_div{{ i.id }}">
                                             {% if i.fv_div == "F" %}
                                             <option value="{{ i.fv_div }}" selected>{{ i.fv_div }}</option>
                                             <option value="V">V</option>

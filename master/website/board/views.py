@@ -978,19 +978,19 @@ def cc_manucost_if(request):
 
     strSql = "SELECT  a.*, b.*, c.*, d.* " \
              "FROM (SELECT * FROM cc_manucost_if) a " \
-             "LEFT JOIN b_co b ON a.co_id = b.id " \
-             "LEFT JOIN cb_cost_center c ON a.cstctr_id = c.id " \
-             "LEFT JOIN b_itemaccnt d ON a.itemaccnt_id = d.id "
+             "LEFT JOIN b_co b ON a.co_cd = b.co_cd " \
+             "LEFT JOIN cb_cost_center c ON a.cstctr_cd = c.cstctr_cd " \
+             "LEFT JOIN b_costeleaccnt d ON a.costeleaccnt_cd = d.accnt_cd "
     rsManucost = CcManucostIf.objects.raw(strSql)
     context["rsManucost"] = rsManucost
 
     rsCo = BCo.objects.filter(usage_fg='Y')
     rsCstctr = CbCostCenter.objects.filter(usage_fg='Y')
-    rsItemaccnt = BItemaccnt.objects.filter(usage_fg='Y')
+    rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
 
     context["rsCo"] = rsCo
     context["rsCstctr"] = rsCstctr
-    context["rsItemaccnt"] = rsItemaccnt
+    context["rsCosteleaccnt"] = rsCosteleaccnt
 
     return render(request, 'board2/cc_manucost_if.html', context)
 
@@ -1166,21 +1166,26 @@ def cc_materialcost_if(request):
     context["user_id"] = member_id
 
 
-    strSql = "SELECT  a.*, b.*, c.*, d.* " \
+    strSql = "SELECT  a.*, b.*, c.*, d.*, e.*, f.* " \
              "FROM (SELECT * FROM cc_materialcost_if) a " \
-             "LEFT JOIN b_factory b ON a.factory_id = b.id " \
-             "LEFT JOIN b_co c ON a.co_id = c.id " \
-             "LEFT JOIN b_workcenter d ON a.workcenter_id = d.id "
+             "LEFT JOIN b_factory b ON a.factory_cd = b.factory_cd " \
+             "LEFT JOIN b_co c ON a.co_cd = c.co_cd " \
+             "LEFT JOIN b_workcenter d ON a.workcenter_cd = d.workcenter_cd " \
+             "LEFT JOIN b_costeleaccnt e ON a.costeleaccnt_cd = e.accnt_cd " \
+             "LEFT JOIN b_bom f ON a.bom_cd = f.item_cd "
+
     rsMaterialcost = CcMaterialcostIf.objects.raw(strSql)
     context["rsMaterialcost"] = rsMaterialcost
 
     rsCo = BCo.objects.filter(usage_fg='Y')
     rsFactory = BFactory.objects.filter(usage_fg='Y')
     rsWrkctr = BWorkcenter.objects.filter(usage_fg='Y')
+    rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
 
     context["rsCo"] = rsCo
     context["rsFactory"] = rsFactory
     context["rsWrkctr"] = rsWrkctr
+    context["rsCosteleaccnt"] = rsCosteleaccnt
 
     return render(request, 'board2/cc_materialcost_if.html', context)
 
@@ -1355,19 +1360,20 @@ def cc_itempermanucost_if(request):
     context["user_id"] = member_id
 
 
-    strSql = "SELECT  a.*, b.*, c.* " \
+    strSql = "SELECT  a.*, b.*, c.*, d.* " \
              "FROM (SELECT * FROM cc_itempermanucost_if) a " \
-             "LEFT JOIN b_co b ON a.co_id = b.id " \
-             "LEFT JOIN b_itemaccnt c ON a.itemaccnt_id = c.id "
+             "LEFT JOIN b_co b ON a.co_cd = b.co_cd " \
+             "LEFT JOIN b_costeleaccnt c ON a.costeleaccnt_cd = c.accnt_cd " \
+             "LEFT JOIN b_bom d ON a.bom_cd = d.item_cd "
 
     rsItempermanucost = CcItempermanucostIf.objects.raw(strSql)
     context["rsItempermanucost"] = rsItempermanucost
 
     rsCo = BCo.objects.filter(usage_fg='Y')
-    rsItemaccnt = BItemaccnt.objects.filter(usage_fg='Y')
+    rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
 
     context["rsCo"] = rsCo
-    context["rsItemaccnt"] = rsItemaccnt
+    context["rsCosteleaccnt"] = rsCosteleaccnt
 
     return render(request, 'board2/cc_itempermanucost_if.html', context)
 
@@ -1544,16 +1550,20 @@ def cc_productcostpayment_if(request):
     context["user_id"] = member_id
 
 
-    strSql = "SELECT  a.*, b.* " \
+    strSql = "SELECT  a.*, b.*, c.*, d.* " \
              "FROM (SELECT * FROM cc_productcostpayment_if) a " \
-             "LEFT JOIN b_factory b ON a.factory_id = b.id "
+             "LEFT JOIN b_factory b ON a.factory_cd = b.factory_cd " \
+             "LEFT JOIN b_bom c ON a.bom_cd = c.item_cd " \
+             "LEFT JOIN b_costeleaccnt d ON a.costeleaccnt_cd = d.accnt_cd "
 
     rsProductcostpayment = CcProductcostpaymentIf.objects.raw(strSql)
     context["rsProductcostpayment"] = rsProductcostpayment
 
     rsFactory = BFactory.objects.filter(usage_fg='Y')
+    rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
 
     context["rsFactory"] = rsFactory
+    context["rsCosteleaccnt"] = rsCosteleaccnt
 
     return render(request, 'board2/cc_productcostpayment_if.html', context)
 
@@ -1756,6 +1766,10 @@ def cc_costbill1_if(request):
     return render(request, 'board3/cc_costbill1_if.html', context)
 
 
+# *********************************************************************************************************************
+# 차트 코드 시작
+# *********************************************************************************************************************
+
 def chart_if(request):
     context = {}
 
@@ -1771,3 +1785,52 @@ def chart_if(request):
 
 
     return render(request, 'board3/chart_if.html', context)
+
+
+def chart1(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
+    return render(request, 'board3/chart1.html', context)
+
+def chart2(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
+    return render(request, 'board3/chart2.html', context)
+
+def chart3(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+    context["id"] = member_no
+    context["user_id"] = member_id
+
+
+    return render(request, 'board3/chart3.html', context)

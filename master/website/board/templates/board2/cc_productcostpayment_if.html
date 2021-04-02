@@ -95,6 +95,8 @@
                             <tr>
                                 <th rowspan="3">공장코드</th>
                                 <th rowspan="3">공장명</th>
+                                <th rowspan="3">계정코드</th>
+                                <th rowspan="3">계정명</th>
                                 <td rowspan="2" colspan="2" align="center">기초재고</td>
                                 <td rowspan="2" colspan="2" align="center">생산입고</td>
                                 <td colspan="6" align="center">당기출고</td>
@@ -128,6 +130,12 @@
                                 </td>
                                 <td>
                                     {{ i.factory_nm }}
+                                </td>
+                                <td>
+                                    {{ i.accnt_cd }}
+                                </td>
+                                <td>
+                                    {{ i.accnt_nm }}
                                 </td>
                                 <td>
                                     {{ i.basisicstoc_amt }}
@@ -188,12 +196,24 @@
                                 <th>
                                     공장코드
                                 </th>
+                                <th>
+                                    계정코드
+                                </th>
                             </tr>
                             <tbody>
                             <tr>
                                 <td>
                                     {% for i in rsFactory %}
-                                    <div>{{ i.id }}.{{ i.factory_cd }} - {{ i.factory_nm }}</div>
+                                    <div>
+                                        {{ i.id }}.{{ i.factory_cd }} - {{ i.factory_nm }}
+                                    </div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in rsCosteleaccnt %}
+                                    <div>
+                                        {{ i.id }}.{{ i.accnt_cd }} - {{ i.accnt_nm }}
+                                    </div>
                                     {% endfor %}
                                 </td>
                             </tr>
