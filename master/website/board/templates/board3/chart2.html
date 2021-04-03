@@ -38,7 +38,7 @@
                                             1.
                                         </header>
                                         <div class="panel-body text-center">
-                                            <canvas height="300" width="450"></canvas>
+                                            <canvas id="year_chart" height="300" width="450"></canvas>
                                         </div>
                                     </section>
                                 </div>
@@ -49,7 +49,7 @@
                                             2.
                                         </header>
                                         <div class="panel-body text-center">
-                                            <canvas height="300" width="500"></canvas>
+                                            <canvas id="month_chart" height="300" width="500"></canvas>
                                         </div>
                                     </section>
                                 </div>
@@ -63,5 +63,140 @@
     </section>
     <!--main content end-->
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+    var ctx_year = document.getElementById('year_chart').getContext('2d');
+    var ctx_month = document.getElementById('month_chart').getContext('2d');
+
+    var year_chart = new Chart(ctx_year, {
+        type: 'bar',
+        data: {
+            labels: ['제조원가', '매출액'],
+            datasets: [{
+                label: '설장률',
+                type: 'line',
+                yAxisID: 'y-axis-growth',
+                fill: false,
+                lineTension: 0,
+                backgroundColor: '#888888',
+                borderColor: '#888888',
+                data: [9, 5.7],
+            }, {
+                label: '전년',
+                type: 'bar',
+                yAxisID: 'y-axis-cost',
+                backgroundColor: '#FFCC66',
+                data: [70, 110],
+                borderWidth: 0,
+                hoverBorderWidth: 0
+            }, {
+                label: '당년',
+                type: 'bar',
+                yAxisID: 'y-axis-cost',
+                backgroundColor: '#66CCFF',
+                data: [74, 110],
+                borderWidth: 0,
+                hoverBorderWidth: 0
+            }]
+        },
+        options: {
+            responsive: false,
+            legend: {
+                labels: {
+                    fontColor: '#000000'
+                }
+            },
+            scales: {
+                yAxes: [{
+                    id: 'y-axis-cost',
+                    type: 'linear',
+                    position: 'left',
+                    ticks: {
+                        fontColor: '#000000',
+                        beginAtZero: true
+                    }
+                }, {
+                    id: 'y-axis-growth',
+                    type: 'linear',
+                    position: 'right',
+                    ticks: {
+                        fontColor: '#000000',
+                        beginAtZero: true
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontColor: '#000000'
+                    }
+                }]
+            }
+        }
+    });
+
+    var month_chart = new Chart(ctx_month, {
+        type: 'bar',
+        data: {
+            labels: ['제조원가', '매출액'],
+            datasets: [{
+                type: 'line',
+                label: '성장률',
+                yAxisID: 'y-axis-growth',
+                fill: false,
+                lineTension: 0,
+                backgroundColor: '#888888',
+                borderColor: '#888888',
+                data: [3.7, 4.3]
+            }, {
+                label: '전월',
+                yAxisID: 'y-axis-cost',
+                backgroundColor: '#FFCC66',
+                data: [6.7, 14],
+                borderWidth: 0,
+                hoverBorderWidth: 0
+            }, {
+                label: '당월',
+                yAxisID: 'y-axis-cost',
+                backgroundColor: '#66CCFF',
+                data: [7.1, 15.5],
+                borderWidth: 0,
+                hoverBorderWidth: 0
+            }]
+        },
+
+        options: {
+            responsive: false,
+            legend: {
+                labels: {
+                    fontColor: '#000000'
+                }
+            },
+            scales: {
+                yAxes: [{
+                    id: 'y-axis-cost',
+                    type: 'linear',
+                    position: 'left',
+                    ticks: {
+                        fontColor: '#000000',
+                        beginAtZero: true
+                    }
+                }, {
+                    id: 'y-axis-growth',
+                    type: 'linear',
+                    position: 'right',
+                    ticks: {
+                        fontColor: '#000000',
+                        beginAtZero: true
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontColor: '#000000'
+                    }
+                }]
+            }
+        }
+    });
+</script>
 
 {% endblock %}
