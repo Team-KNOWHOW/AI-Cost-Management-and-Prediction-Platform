@@ -329,7 +329,7 @@ class CcManucostIf(models.Model):  # 제조비용
     id = models.AutoField(db_column='id', primary_key=True)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
     costeleaccnt = models.ForeignKey(BCosteleaccnt, on_delete=models.CASCADE)
-    periodym_cd = models.CharField(db_column='periodym_cd', default='0', max_length=8)
+    periodym_cd = models.CharField(db_column='periodym_cd', max_length=6)
     cstctr = models.ForeignKey(CbCostCenter, on_delete=models.CASCADE)
     manucost_price = models.IntegerField(db_column='manucost_price', default=0)
     mngmt_1 = models.CharField(db_column='mngmt_1', max_length=50, default='0')
@@ -344,7 +344,7 @@ class CcMaterialcostIf(models.Model):  # 제료비용
     id = models.AutoField(db_column='id', primary_key=True)
     factory = models.ForeignKey(BFactory, on_delete=models.CASCADE)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
-    periodym_cd = models.CharField(db_column='periodym_cd', max_length=8, blank=True, null=True)
+    periodym_cd = models.CharField(db_column='periodym_cd', max_length=6)
     version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
     workcenter = models.ForeignKey(BWorkcenter, on_delete=models.CASCADE)
     mc_amount = models.IntegerField(db_column='mc_amount', default=0)
@@ -363,8 +363,7 @@ class CcItempermanucostIf(models.Model):  # 품목별제조비용
     version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
     costeleaccnt = models.ForeignKey(BCosteleaccnt, on_delete=models.CASCADE)
     bom = models.ForeignKey(BBom, on_delete=models.CASCADE)
-    #periodym_cd = models.CharField(db_column='periodym_cd', max_length=8)
-    ipmc_ym = models.IntegerField(db_column='ipmc_ym')
+    ipmc_ym = models.CharField(db_column='ipmc_ym', max_length=6)
     ipmc_cost = models.IntegerField(db_column='ipmc_cost', default=0)
 
     class Meta:
@@ -390,7 +389,7 @@ class CcProductcostpaymentIf(models.Model):  # 제품원가수불
     development_cost = models.IntegerField(db_column='development_cost', default=0)
     endingstock_amt = models.IntegerField(db_column='endingstock_amt', default=0)
     endingstock_cost = models.IntegerField(db_column='endingstock_cost', default=0)
-    pcp_dt = models.CharField(db_column='pcp_dt', max_length=8, blank=True, null=True)
+    pcp_dt = models.CharField(db_column='pcp_dt', max_length=6)
 
     class Meta:
         managed = False

@@ -100,15 +100,15 @@
                                 <th rowspan="3">계정코드</th>
                                 <th rowspan="3">계정명</th>
                                 <th rowspan="3">version</th>
-                                <td rowspan="2" colspan="2" align="center">기초재고</td>
-                                <td rowspan="2" colspan="2" align="center">생산입고</td>
-                                <td colspan="6" align="center">당기출고</td>
-                                <td rowspan="2" colspan="2" align="center">기말재고</td>
+                                <td rowspan="2" colspan="2" align="center" style="font-weight: bold; padding-top: 30px">기초재고</td>
+                                <td rowspan="2" colspan="2" align="center" style="font-weight: bold; padding-top: 30px">생산입고</td>
+                                <td colspan="6" align="center" style="font-weight: bold">당기출고</td>
+                                <td rowspan="2" colspan="2" align="center" style="font-weight: bold; padding-top: 30px">기말재고</td>
                             </tr>
                             <tr>
-                                <td colspan="2" align="center">판매출고</td>
-                                <td colspan="2" align="center">LOSS출고</td>
-                                <td colspan="2" align="center">개발출고</td>
+                                <td colspan="2" align="center" style="font-weight: bold">판매출고</td>
+                                <td colspan="2" align="center" style="font-weight: bold">LOSS출고</td>
+                                <td colspan="2" align="center" style="font-weight: bold">개발출고</td>
                             </tr>
                             <tr>
                                 <th>수량</th>
@@ -129,7 +129,7 @@
                             <tbody>
                             <tr>
                                 <td>
-                                    {{ i.factory_cd }}
+                                    {{ i.f_cd }}
                                 </td>
                                 <td>
                                     {{ i.factory_nm }}
@@ -197,16 +197,23 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-12">
-                <section class="panel">
-                    <header class="panel-heading">*code information</header>
-                    <div class="table-responsive">
-                        <table class="table">
+
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse1" aria-expanded="false">
+                    *Code Information
+                </a>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse" role="tabpanel">
+                <div class="panel-body">
+                    <table class="table">
                             <thead>
                             <tr>
                                 <th>
                                     공장코드
+                                </th>
+                                <th>
+                                    version코드
                                 </th>
                                 <th>
                                     계정코드
@@ -220,30 +227,35 @@
                                 <td>
                                     {% for i in rsFactory %}
                                     <div>
-                                        {{ i.id }}.{{ i.factory_cd }} - {{ i.factory_nm }}
+                                        {{ i.id }}. {{ i.factory_cd }} - {{ i.factory_nm }}
+                                    </div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in rsVersion %}
+                                    <div>
+                                        {{ i.id }}. {{ i.version_cd }}
                                     </div>
                                     {% endfor %}
                                 </td>
                                 <td>
                                     {% for i in rsCosteleaccnt %}
                                     <div>
-                                        {{ i.id }}.{{ i.accnt_cd }} - {{ i.accnt_nm }}
+                                        {{ i.id }}. {{ i.accnt_cd }} - {{ i.accnt_nm }}
                                     </div>
                                     {% endfor %}
                                 </td>
                                 <td>
                                     {% for i in rsBom %}
                                     <div>
-                                        {{ i.id }}.{{ i.item_cd }}
+                                        {{ i.id }}. {{ i.item_cd }}
                                     </div>
                                     {% endfor %}
                                 </td>
                             </tr>
                             </tbody>
                         </table>
-                    </div>
-
-                </section>
+                </div>
             </div>
         </div>
 
