@@ -103,7 +103,10 @@
                                 <th>사업장명</th>
                                 <th>계정코드</th>
                                 <th>계정명</th>
-                                <th>bom코드</th>
+                                <th>모품목코드</th>
+                                <th>모품목명</th>
+                                <th>자품목코드</th>
+                                <th>자품목명</th>
                                 <th>수량</th>
                                 <th>금액</th>
                             </tr>
@@ -118,10 +121,10 @@
                                     {{ i.co_nm }}
                                 </td>
                                 <td>
-                                    {{ i.mc_ym }}
+                                    {{ i.periodym_cd }}
                                 </td>
                                 <td>
-                                    {{ i.mc_version }}
+                                    {{ i.version_cd }}
                                 </td>
                                 <td>
                                     {{ i.factory_cd }}
@@ -142,7 +145,16 @@
                                     {{ i.accnt_nm }}
                                 </td>
                                 <td>
-
+                                    {{ i.moitem }}
+                                </td>
+                                <td>
+                                    {{ i.item_nm }}
+                                </td>
+                                <td>
+                                    {{ i.jaitem }}
+                                </td>
+                                <td>
+                                    {{ i.janame }}
                                 </td>
                                 <td>
                                     {{ i.mc_amount }}
@@ -182,6 +194,9 @@
                                 <th>
                                     계정코드
                                 </th>
+                                <th>
+                                    BOM코드
+                                </th>
                             </tr>
                             <tbody>
                             <tr>
@@ -203,6 +218,11 @@
                                 <td>
                                     {% for i in rsCosteleaccnt %}
                                     <div>{{ i.id }}.{{ i.accnt_cd }} - {{ i.accnt_nm }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in rsBom %}
+                                    <div>{{ i.id }}.{{ i.item_cd }}</div>
                                     {% endfor %}
                                 </td>
                             </tr>
