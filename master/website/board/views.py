@@ -1171,7 +1171,7 @@ def cc_materialcost_if(request):
 
     strSql = "SELECT  a.*, b.*, c.*, d.*, e.*, f.*, h.*, i.*, j.*" \
              "FROM (SELECT * FROM cc_materialcost_if) a " \
-             "LEFT JOIN b_factory b ON a.factory_cd = b.factory_cd " \
+             "LEFT JOIN (SELECT factory_cd f_cd, factory_nm FROM b_factory) b ON a.factory_cd = b.f_cd " \
              "LEFT JOIN b_co c ON a.co_cd = c.co_cd " \
              "LEFT JOIN b_workcenter d ON a.workcenter_cd = d.workcenter_cd " \
              "LEFT JOIN b_costeleaccnt e ON a.costeleaccnt_cd = e.accnt_cd " \
@@ -1188,6 +1188,7 @@ def cc_materialcost_if(request):
     rsFactory = BFactory.objects.filter(usage_fg='Y')
     rsWrkctr = BWorkcenter.objects.filter(usage_fg='Y')
     rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
+    rsVersion = BVersion.objects.all()
     rsBom = BBom.objects.filter(usage_fg='Y', parent_id=0)
 
     context["rsCo"] = rsCo
@@ -1195,6 +1196,8 @@ def cc_materialcost_if(request):
     context["rsWrkctr"] = rsWrkctr
     context["rsCosteleaccnt"] = rsCosteleaccnt
     context["rsBom"] = rsBom
+    context["rsVersion"] = rsVersion
+
 
     return render(request, 'board2/cc_materialcost_if.html', context)
 
@@ -1383,10 +1386,12 @@ def cc_itempermanucost_if(request):
     rsCo = BCo.objects.filter(usage_fg='Y')
     rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
     rsBom = BBom.objects.filter(usage_fg='Y', parent_id=0)
+    rsVersion = BVersion.objects.all()
 
     context["rsCo"] = rsCo
     context["rsCosteleaccnt"] = rsCosteleaccnt
     context["rsBom"] = rsBom
+    context["rsVersion"] = rsVersion
 
     return render(request, 'board2/cc_itempermanucost_if.html', context)
 
@@ -1565,7 +1570,7 @@ def cc_productcostpayment_if(request):
 
     strSql = "SELECT  a.*, b.*, c.*, d.*, e.*, f.* " \
              "FROM (SELECT * FROM cc_productcostpayment_if) a " \
-             "LEFT JOIN b_factory b ON a.factory_cd = b.factory_cd " \
+             "LEFT JOIN (SELECT factory_cd f_cd, factory_nm FROM b_factory) b ON a.factory_cd = b.f_cd " \
              "LEFT JOIN b_bom c ON a.bom_cd = c.item_cd " \
              "LEFT JOIN b_costeleaccnt d ON a.costeleaccnt_cd = d.accnt_cd " \
              "LEFT JOIN b_version e ON a.version_cd = e.version_cd " \
@@ -1577,11 +1582,13 @@ def cc_productcostpayment_if(request):
     rsFactory = BFactory.objects.filter(usage_fg='Y')
     rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
     rsBom = BBom.objects.filter(usage_fg='Y', parent_id=0)
+    rsVersion = BVersion.objects.all()
 
 
     context["rsFactory"] = rsFactory
     context["rsCosteleaccnt"] = rsCosteleaccnt
     context["rsBom"] = rsBom
+    context["rsVersion"] = rsVersion
 
     return render(request, 'board2/cc_productcostpayment_if.html', context)
 

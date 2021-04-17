@@ -132,7 +132,7 @@
                                     {{ i.accnt_nm }}
                                 </td>
                                 <td>
-                                    {{ i.ipmc_price }}
+                                    {{ i.ipmc_cost }}
                                 </td>
                             </tr>
                             </tbody>
@@ -146,47 +146,57 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-12">
-                <section class="panel">
-                    <header class="panel-heading">*code information</header>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>
-                                    법인코드
-                                </th>
-                                <th>
-                                    계정코드
-                                </th>
-                                <th>
-                                    BOM코드
-                                </th>
-                            </tr>
-                            <tbody>
-                            <tr>
-                                <td>
-                                    {% for i in rsCo %}
-                                    <div>{{ i.id }}.{{ i.co_cd }} - {{ i.co_nm }}</div>
-                                    {% endfor %}
-                                </td>
-                                <td>
-                                    {% for i in rsCosteleaccnt %}
-                                    <div>{{ i.id }}.{{ i.accnt_cd }} - {{ i.accnt_nm }}</div>
-                                    {% endfor %}
-                                </td>
-                                <td>
-                                    {% for i in rsBom %}
-                                    <div>{{ i.id }}.{{ i.item_cd }}</div>
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
 
-                </section>
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse1" aria-expanded="false">
+                    *Code Information
+                </a>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse" role="tabpanel">
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>
+                                법인코드
+                            </th>
+                            <th>
+                                version코드
+                            </th>
+                            <th>
+                                계정코드
+                            </th>
+                            <th>
+                                BOM코드
+                            </th>
+                        </tr>
+                        <tbody>
+                        <tr>
+                            <td>
+                                {% for i in rsCo %}
+                                <div>{{ i.id }}. {{ i.co_cd }} - {{ i.co_nm }}</div>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for i in rsVersion %}
+                                <div>{{ i.id }}. {{ i.version_cd }}</div>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for i in rsCosteleaccnt %}
+                                <div>{{ i.id }}. {{ i.accnt_cd }} - {{ i.accnt_nm }}</div>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for i in rsBom %}
+                                <div>{{ i.id }}. {{ i.item_cd }}</div>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
