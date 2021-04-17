@@ -73,6 +73,7 @@
                                 </thead>
 
                                 <tbody>
+                                    {% if rsWorkcenter %}
                                     {% for i in rsWorkcenter %}
                                     <tr>
                                         <td id="workcenter_cd{{i.id}}">
@@ -100,6 +101,15 @@
                                         </td>
                                     </tr>
                                     {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td>
+                                            <span>
+                                                내용이 없습니다!
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
                         </div>
