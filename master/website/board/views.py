@@ -234,6 +234,8 @@ def b_bizpartner(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -273,6 +275,8 @@ def b_co(request):  # 법인정보
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -302,6 +306,8 @@ def b_bizarea(request):  # 사업장
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -335,6 +341,8 @@ def b_bizunit(request):  # 사업부
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -358,6 +366,8 @@ def b_factory(request):  # 공장
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -383,6 +393,8 @@ def codemanage(request):  # 통합코드 관리
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -414,6 +426,8 @@ def code_view(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -439,6 +453,8 @@ def b_item(request):  # 품목마스터
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -561,6 +577,8 @@ def b_itemaccnt(request):  # 품목계정
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -583,6 +601,8 @@ def b_itemgrp(request):  # 품목그룹
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -607,6 +627,8 @@ def b_bom(request): # BOM
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -884,6 +906,8 @@ def b_workcenter(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -911,6 +935,8 @@ def cb_cost_center(request):  # 코스트센터
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -948,6 +974,8 @@ def b_costeleaccnt(request):  # 원가요소계정
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -971,6 +999,8 @@ def cc_manucost_if(request):
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -1164,6 +1194,8 @@ def cc_materialcost_if(request):
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -1368,6 +1400,8 @@ def cc_itempermanucost_if(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -1563,6 +1597,8 @@ def cc_productcostpayment_if(request):
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -1760,6 +1796,8 @@ def cc_costbill_if(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -1780,6 +1818,8 @@ def cc_costbill1_if(request):
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -1805,6 +1845,8 @@ def chart_if(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -1822,6 +1864,8 @@ def chart1(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -1838,6 +1882,8 @@ def chart2(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -1853,6 +1899,8 @@ def chart3(request):
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
