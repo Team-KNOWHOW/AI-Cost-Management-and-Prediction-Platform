@@ -35,10 +35,10 @@
                                 <div class="col-lg-6">
                                     <section class="panel">
                                         <header class="panel-heading">
-                                            1.
+                                            당기 투입
                                         </header>
                                         <div class="panel-body text-center">
-                                            <canvas height="300" width="450"></canvas>
+                                              <canvas id="chart_injection" height="300" width="500"></canvas>
                                         </div>
                                     </section>
                                 </div>
@@ -46,10 +46,10 @@
                                 <div class="col-lg-6">
                                     <section class="panel">
                                         <header class="panel-heading">
-                                            2.
+                                            당기 사용
                                         </header>
                                         <div class="panel-body text-center">
-                                            <canvas height="300" width="500"></canvas>
+                                            <canvas id="chart_usage" height="300" width="500"></canvas>
                                         </div>
                                     </section>
                                 </div>
@@ -63,5 +63,222 @@
     </section>
     <!--main content end-->
 </section>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="{%static 'js/chartjs-custom.js'%}"></script>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+    var xhr;
+
+    var months=['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+    var mater_cost=[120, 56, 56, 100, 110, 50, 110, 50, 60, 110, 86, 79];
+    var labor_cost=[115, 55, 55, 95, 105, 50, 105, 50, 55, 105, 88, 81];
+    var out_pro_cost=[90, 40, 40, 70, 80, 50, 80, 50, 55, 80, 90, 83];
+    var manu_cost=[95, 42, 42, 75, 85, 50, 85, 50, 55, 85, 81, 84];
+    var sales_cost=[480, 400, 385, 420, 500, 530, 400, 450, 430, 430, 440, 460];
+
+    var inj_canvas = document.getElementById('chart_injection').getContext('2d');
+    var usa_canvas = document.getElementById('chart_usage').getContext('2d');
+
+    var inj_chart = new Chart(inj_canvas, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '매출액',
+                type: 'line',
+                yAxisID: 'sales_line',
+                fill: false,
+                lineTension: 0,
+                pointRadius: 1,
+                backgroundColor: '#FFCC00',
+                borderColor: '#FFCC00',
+                borderWidth: 3,
+                data: sales_cost
+            }, {
+                label: '고정비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                borderColor: 'rgba(255, 84, 84)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
+            }, {
+                label: '변동비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(255, 127, 101, 0.5)',
+                borderColor: 'rgba(255, 153, 110)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
+            }]
+        },
+
+        // Configuration options
+        options: {
+            responsive: false,
+            legend: {
+                labels: {
+                    fontColor: '#000000' // label color
+                }
+            },
+            scales: {
+                // y축
+                yAxes: [
+                    {
+                        id: 'sales_line',
+                        name: 'A',
+                        type: 'linear',
+                        position: 'left',
+                        scalePositionLeft: true,
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000'
+                        },
+                        lineWidth: 10
+                    }, {
+                        id: 'cost_bar',
+                        name: 'B',
+                        type: 'linear',
+                        position: 'right',
+                        scalePositionLeft: true,
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000'
+                        }
+                    }
+                ],
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        fontColor: '#000000'
+                    },
+          callback: function(val, index) {
+            // Hide the label of every 2nd dataset
+            return index % 2 === 0 ? this.getLabelForValue(val) : '';
+          },
+          color: 'red'
+                }]
+            }
+        }
+    });
+
+    var usa_chart = new Chart(usa_canvas, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '매출액',
+                type: 'line',
+                yAxisID: 'sales_line',
+                fill: false,
+                lineTension: 0,
+                pointRadius: 1,
+                backgroundColor: '#FFCC00',
+                borderColor: '#FFCC00',
+                borderWidth: 3,
+                data: sales_cost
+            }, {
+                label: '재료비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(0, 0, 255, 0.6)',
+                borderColor: 'rgba(101, 101, 255)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
+            }, {
+                label: '노무비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(93, 119, 255, 0.4)',
+                borderColor: 'rgba(127, 170, 255)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
+            }, {
+                label: '경비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(135, 175, 255, 0.4)',
+                borderColor: 'rgba(163, 196, 255)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
+            }]
+        },
+
+        options: {
+            responsive: false,
+            legend: {
+                labels: {
+                    fontColor: '#000000'
+                }
+            },
+            scales: {
+                yAxes: [
+                    {
+                        id: 'sales_line',
+                        name: 'A',
+                        type: 'linear',
+                        position: 'left',
+                        display: true,
+                        scalePositionLeft: true,
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000'
+                        }
+                    }, {
+                        id: 'cost_bar',
+                        name: 'B',
+                        type: 'linear',
+                        position: 'right',
+                        scalePositionLeft: true,
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000'
+                        },
+                        gridLines: {
+                            color: ['rgba(0, 0, 255, 0.6)', '#D9D9D9', '#D9D9D9', '#D9D9D9', '#D9D9D9', '#D9D9D9'],
+                            lineWidth: [3, 1, 1, 1, 1, 1],
+                            borderColor: '#D9D9D9',
+                            borderWidth: 1
+                        }
+                    }],
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        fontColor: '#000000'
+                    },
+                    gridLines: {
+                        zeroLineColor: '#FFCC00',
+                        zeroLineWidth: 3
+                    }
+                }]
+            }
+        }
+    });
+
+</script>
 
 {% endblock %}

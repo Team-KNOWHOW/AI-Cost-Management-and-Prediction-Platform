@@ -234,6 +234,8 @@ def b_bizpartner(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -273,6 +275,8 @@ def b_co(request):  # 법인정보
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -302,6 +306,8 @@ def b_bizarea(request):  # 사업장
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -335,6 +341,8 @@ def b_bizunit(request):  # 사업부
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -358,6 +366,8 @@ def b_factory(request):  # 공장
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -383,6 +393,8 @@ def codemanage(request):  # 통합코드 관리
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -414,6 +426,8 @@ def code_view(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -439,6 +453,8 @@ def b_item(request):  # 품목마스터
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -561,6 +577,8 @@ def b_itemaccnt(request):  # 품목계정
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -583,6 +601,8 @@ def b_itemgrp(request):  # 품목그룹
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -607,6 +627,8 @@ def b_bom(request): # BOM
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -884,6 +906,8 @@ def b_workcenter(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -911,6 +935,8 @@ def cb_cost_center(request):  # 코스트센터
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -948,6 +974,8 @@ def b_costeleaccnt(request):  # 원가요소계정
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -972,25 +1000,30 @@ def cc_manucost_if(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
 
-    strSql = "SELECT  a.*, b.*, c.*, d.* " \
+    strSql = "SELECT  a.*, b.*, c.*, d.*, e.* " \
              "FROM (SELECT * FROM cc_manucost_if) a " \
              "LEFT JOIN b_co b ON a.co_cd = b.co_cd " \
              "LEFT JOIN cb_cost_center c ON a.cstctr_cd = c.cstctr_cd " \
-             "LEFT JOIN b_costeleaccnt d ON a.costeleaccnt_cd = d.accnt_cd "
+             "LEFT JOIN b_costeleaccnt d ON a.costeleaccnt_cd = d.accnt_cd " \
+             "LEFT JOIN b_version e ON a.version_cd = e.version_cd"
     rsManucost = CcManucostIf.objects.raw(strSql)
     context["rsManucost"] = rsManucost
 
     rsCo = BCo.objects.filter(usage_fg='Y')
     rsCstctr = CbCostCenter.objects.filter(usage_fg='Y')
     rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
+    rsVersion = BVersion.objects.all()
 
     context["rsCo"] = rsCo
     context["rsCstctr"] = rsCstctr
     context["rsCosteleaccnt"] = rsCosteleaccnt
+    context["rsVersion"] = rsVersion
 
     return render(request, 'board2/cc_manucost_if.html', context)
 
@@ -1162,17 +1195,23 @@ def cc_materialcost_if(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
 
-    strSql = "SELECT  a.*, b.*, c.*, d.*, e.*, f.* " \
+    strSql = "SELECT  a.*, b.*, c.*, d.*, e.*, f.*, h.*, i.*, j.*" \
              "FROM (SELECT * FROM cc_materialcost_if) a " \
-             "LEFT JOIN b_factory b ON a.factory_cd = b.factory_cd " \
+             "LEFT JOIN (SELECT factory_cd f_cd, factory_nm FROM b_factory) b ON a.factory_cd = b.f_cd " \
              "LEFT JOIN b_co c ON a.co_cd = c.co_cd " \
              "LEFT JOIN b_workcenter d ON a.workcenter_cd = d.workcenter_cd " \
              "LEFT JOIN b_costeleaccnt e ON a.costeleaccnt_cd = e.accnt_cd " \
-             "LEFT JOIN b_bom f ON a.bom_cd = f.item_cd "
+             "LEFT JOIN (SELECT b1.item_cd moitem, b2.item_cd jaitem FROM b_bom b1, b_bom b2 " \
+             "WHERE b1.item_id = b2.parent_id) f ON f.moitem = a.bom_cd " \
+             "LEFT JOIN (SELECT item_nm janame, item_cd FROM b_item) j on f.jaitem = j.item_cd " \
+             "LEFT JOIN b_version h ON a.version_cd = h.version_cd " \
+             "LEFT JOIN b_item i ON a.bom_cd = i.item_cd"
 
     rsMaterialcost = CcMaterialcostIf.objects.raw(strSql)
     context["rsMaterialcost"] = rsMaterialcost
@@ -1181,11 +1220,16 @@ def cc_materialcost_if(request):
     rsFactory = BFactory.objects.filter(usage_fg='Y')
     rsWrkctr = BWorkcenter.objects.filter(usage_fg='Y')
     rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
+    rsVersion = BVersion.objects.all()
+    rsBom = BBom.objects.filter(usage_fg='Y', parent_id=0)
 
     context["rsCo"] = rsCo
     context["rsFactory"] = rsFactory
     context["rsWrkctr"] = rsWrkctr
     context["rsCosteleaccnt"] = rsCosteleaccnt
+    context["rsBom"] = rsBom
+    context["rsVersion"] = rsVersion
+
 
     return render(request, 'board2/cc_materialcost_if.html', context)
 
@@ -1356,24 +1400,32 @@ def cc_itempermanucost_if(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
 
-    strSql = "SELECT  a.*, b.*, c.*, d.* " \
+    strSql = "SELECT  a.*, b.*, c.*, d.*, e.*, f.* " \
              "FROM (SELECT * FROM cc_itempermanucost_if) a " \
              "LEFT JOIN b_co b ON a.co_cd = b.co_cd " \
              "LEFT JOIN b_costeleaccnt c ON a.costeleaccnt_cd = c.accnt_cd " \
-             "LEFT JOIN b_bom d ON a.bom_cd = d.item_cd "
+             "LEFT JOIN b_bom d ON a.bom_cd = d.item_cd " \
+             "LEFT JOIN b_version e ON a.version_cd = e.version_cd " \
+             "LEFT JOIN b_item f ON a.bom_cd = f.item_cd "
 
     rsItempermanucost = CcItempermanucostIf.objects.raw(strSql)
     context["rsItempermanucost"] = rsItempermanucost
 
     rsCo = BCo.objects.filter(usage_fg='Y')
     rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
+    rsBom = BBom.objects.filter(usage_fg='Y', parent_id=0)
+    rsVersion = BVersion.objects.all()
 
     context["rsCo"] = rsCo
     context["rsCosteleaccnt"] = rsCosteleaccnt
+    context["rsBom"] = rsBom
+    context["rsVersion"] = rsVersion
 
     return render(request, 'board2/cc_itempermanucost_if.html', context)
 
@@ -1546,24 +1598,33 @@ def cc_productcostpayment_if(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
 
-    strSql = "SELECT  a.*, b.*, c.*, d.* " \
+    strSql = "SELECT  a.*, b.*, c.*, d.*, e.*, f.* " \
              "FROM (SELECT * FROM cc_productcostpayment_if) a " \
-             "LEFT JOIN b_factory b ON a.factory_cd = b.factory_cd " \
+             "LEFT JOIN (SELECT factory_cd f_cd, factory_nm FROM b_factory) b ON a.factory_cd = b.f_cd " \
              "LEFT JOIN b_bom c ON a.bom_cd = c.item_cd " \
-             "LEFT JOIN b_costeleaccnt d ON a.costeleaccnt_cd = d.accnt_cd "
+             "LEFT JOIN b_costeleaccnt d ON a.costeleaccnt_cd = d.accnt_cd " \
+             "LEFT JOIN b_version e ON a.version_cd = e.version_cd " \
+             "LEFT JOIN b_item f ON a.bom_cd = f.item_cd "
 
     rsProductcostpayment = CcProductcostpaymentIf.objects.raw(strSql)
     context["rsProductcostpayment"] = rsProductcostpayment
 
     rsFactory = BFactory.objects.filter(usage_fg='Y')
     rsCosteleaccnt = BCosteleaccnt.objects.filter(usage_fg='Y')
+    rsBom = BBom.objects.filter(usage_fg='Y', parent_id=0)
+    rsVersion = BVersion.objects.all()
+
 
     context["rsFactory"] = rsFactory
     context["rsCosteleaccnt"] = rsCosteleaccnt
+    context["rsBom"] = rsBom
+    context["rsVersion"] = rsVersion
 
     return render(request, 'board2/cc_productcostpayment_if.html', context)
 
@@ -1735,6 +1796,8 @@ def cc_costbill_if(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -1755,6 +1818,8 @@ def cc_costbill1_if(request):
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id
@@ -1780,6 +1845,8 @@ def chart_if(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -1797,6 +1864,8 @@ def chart1(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -1813,6 +1882,8 @@ def chart2(request):
         member_no = None
         member_id = None
 
+        return redirect('board:home')
+
     context["id"] = member_no
     context["user_id"] = member_id
 
@@ -1828,6 +1899,8 @@ def chart3(request):
     else:
         member_no = None
         member_id = None
+
+        return redirect('board:home')
 
     context["id"] = member_no
     context["user_id"] = member_id

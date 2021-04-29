@@ -43,7 +43,6 @@ class CbCodeDtl(models.Model):  # 코드 detail
     type_cd = models.CharField(db_column='type_cd', max_length=20)
     code_cd = models.CharField(db_column='code_cd', max_length=20)
     cd_nm = models.CharField(db_column='cd_nm', max_length=50)
-    cd_nmen = models.CharField(db_column='cd_nmen', max_length=50)
     updt_dt = models.DateTimeField(db_column='updt_dt', auto_now=True)
     insrt_dt = models.DateTimeField(db_column='insrt_dt', auto_now_add=True)
     usage_fg = models.CharField(db_column='usage_fg', max_length=1, default='Y')
@@ -287,6 +286,7 @@ class BomDtl(models.Model):  # BOM 디테일
 class BBom(models.Model):  # BOM 메인
     id = models.AutoField(db_column='id', primary_key=True)
     bom_type = models.CharField(db_column='bom_type', max_length=20)
+    item_cd = models.CharField(db_column='item_cd', max_length=50)
     item = models.ForeignKey(BItem, on_delete=models.DO_NOTHING)
     parent_id = models.IntegerField(db_column='parent_id', default=0)
     top_id = models.IntegerField(db_column='top_id', default=0)
@@ -316,7 +316,7 @@ class BBom(models.Model):  # BOM 메인
 
 class BVersion(models.Model):
     id = models.IntegerField(primary_key=True)
-    insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
+    #insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
     version_cd = models.CharField(max_length=50, blank=True, null=True)
     version_dt = models.CharField(max_length=8, blank=True, null=True)
 
@@ -329,23 +329,23 @@ class CcManucostIf(models.Model):  # 제조비용
     id = models.AutoField(db_column='id', primary_key=True)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
     costeleaccnt = models.ForeignKey(BCosteleaccnt, on_delete=models.CASCADE)
-    #manucost_ym = models.CharField(db_column='manucost_ym', max_length=50, blank=True, null=True)
+    periodym_cd = models.CharField(db_column='periodym_cd', max_length=6)
     cstctr = models.ForeignKey(CbCostCenter, on_delete=models.CASCADE)
     manucost_price = models.IntegerField(db_column='manucost_price', default=0)
     mngmt_1 = models.CharField(db_column='mngmt_1', max_length=50, default='0')
-    #version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
+    version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
 
     class Meta:
         managed = False
         db_table = 'cc_manucost_if'
 
 
-class CcMaterialcostIf(models.Model):  # 제조비용
+class CcMaterialcostIf(models.Model):  # 제료비용
     id = models.AutoField(db_column='id', primary_key=True)
     factory = models.ForeignKey(BFactory, on_delete=models.CASCADE)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
-    mc_ym = models.CharField(db_column='mc_ym', max_length=8, blank=True, null=True)
-    #version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
+    periodym_cd = models.CharField(db_column='periodym_cd', max_length=6)
+    version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
     workcenter = models.ForeignKey(BWorkcenter, on_delete=models.CASCADE)
     mc_amount = models.IntegerField(db_column='mc_amount', default=0)
     mc_price = models.IntegerField(db_column='mc_price', default=0)
@@ -363,8 +363,7 @@ class CcItempermanucostIf(models.Model):  # 품목별제조비용
     version = models.ForeignKey(BVersion, on_delete=models.CASCADE)
     costeleaccnt = models.ForeignKey(BCosteleaccnt, on_delete=models.CASCADE)
     bom = models.ForeignKey(BBom, on_delete=models.CASCADE)
-    period_cd = models.IntegerField(db_column='period_cd')
-    ipmc_ym = models.CharField(db_column='ipmc_ym', max_length=8, blank=True, null=True)
+    ipmc_ym = models.CharField(db_column='ipmc_ym', max_length=6)
     ipmc_cost = models.IntegerField(db_column='ipmc_cost', default=0)
 
     class Meta:
@@ -390,7 +389,7 @@ class CcProductcostpaymentIf(models.Model):  # 제품원가수불
     development_cost = models.IntegerField(db_column='development_cost', default=0)
     endingstock_amt = models.IntegerField(db_column='endingstock_amt', default=0)
     endingstock_cost = models.IntegerField(db_column='endingstock_cost', default=0)
-    pcp_dt = models.CharField(db_column='pcp_dt', max_length=8, blank=True, null=True)
+    pcp_dt = models.CharField(db_column='pcp_dt', max_length=6)
 
     class Meta:
         managed = False

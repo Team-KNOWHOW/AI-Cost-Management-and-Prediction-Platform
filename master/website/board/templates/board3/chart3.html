@@ -35,21 +35,13 @@
                                 <div class="col-lg-6">
                                     <section class="panel">
                                         <header class="panel-heading">
-                                            1.
+                                            제조원가 예측
                                         </header>
                                         <div class="panel-body text-center">
-                                            <canvas height="300" width="450"></canvas>
-                                        </div>
-                                    </section>
-                                </div>
-                                <!-- Bar -->
-                                <div class="col-lg-6">
-                                    <section class="panel">
-                                        <header class="panel-heading">
-                                            2.
-                                        </header>
-                                        <div class="panel-body text-center">
-                                            <canvas height="300" width="500"></canvas>
+                                            <select id="change_rate_selectbox">
+                                                <option>100%</option>
+                                            </select>
+                                            <canvas id="mychart" height="250" width="1000"></canvas>
                                         </div>
                                     </section>
                                 </div>
@@ -63,5 +55,69 @@
     </section>
     <!--main content end-->
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+    var months=['20.05', '20.06', '20.07', '20.08', '20.09', '20.10', '20.11',
+        '20.12', '21.01', '21.02', '21.03', '21.04'];
+    var cost_data=[56, 56, 100, 110, 50, 110, 50, 60, 110, 86, 79, 115];
+    var predict=115;
+
+    // 데이터를 저장할 때 cost_data['년월']={원가 데이터 or 예측 원가} ex)cost_data['2103']=120
+    // 데이터를 모두 불러와서 딕셔너리 cost_data에 화면 로딩 시마다 값을 바꿔넣어줌
+    // 조회 기능 시 데이터만, 초기 화면은 데이터 + 예측원가(빨간색 임시)
+    // 올해 조회 시 전년도(파란색 임시) 차월까지 조회 기능
+
+    var ctx = document.getElementById('mychart').getContext('2d');
+
+    window.onload = function () {
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: '제조원가',
+                    type: 'bar',
+                    backgroundColor: ['#3399FF', '#3399FF', '#3399FF', '#3399FF', '#3399FF', '#3399FF',
+                        '#3399FF', '#3399FF', '#3399FF', '#3399FF', '#3399FF', '#FF7777'],
+                    borderColor: '#3399FF',
+                    data: cost_data,
+                    borderWidth: 0,
+                    hoverBorderWidth: 6
+                }]
+            },
+
+            // Configuration options
+            options: {
+                responsive: false,
+                legend: {
+                    labels: {
+                        fontColor: '#000000'
+                    }
+                },
+                scales: {
+                    // y축
+                    yAxes: [{
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000' // y축 폰트 color
+                        }
+                    }],
+                    // x축
+                    xAxes: [{
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000' // x축 폰트 color
+                        }
+                    }]
+                }
+            }
+        });
+    }
+</script>
 
 {% endblock %}

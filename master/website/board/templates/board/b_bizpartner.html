@@ -21,9 +21,6 @@
             </div>
         </div>
 
-        <div>
-
-        </div>
         <br>
 
         <div class="row">
@@ -189,9 +186,16 @@
                                     </td>
                                 </tr>
                                 {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td>
+                                    <span>내용이 없습니다.</span>
+                                    </td>
+                                </tr>
+                            {% endif %}
                             </tbody>
                         </table>
-                        {% endif %}
+
                     </div>
                 </section>
             </div>
