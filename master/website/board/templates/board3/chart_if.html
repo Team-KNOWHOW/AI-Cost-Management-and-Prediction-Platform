@@ -13,6 +13,38 @@
 {% include "navbar.html" %}
 {% include "sidebar.html" %}
 
+<!-- Styles -->
+<style>
+ul.tabs{
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+
+ul.tabs li{
+  display: inline-block;
+	background: #898989;
+	color: white;
+	padding: 10px 15px;
+	cursor: pointer;
+}
+
+ul.tabs li.current{
+	background: #e0e0e0;
+	color: #222;
+}
+
+.tab-content {
+    display: none;
+    padding: 12px;
+    width: 1100px;
+}
+
+.tab-content.current{
+	display: inherit;
+}
+</style>
+
 <!--main content start-->
 <section id="main-content">
     <section class="wrapper">
@@ -26,34 +58,172 @@
             <div class="col-lg-12">
                 <section class="panel">
                     <header class="panel-heading">
-                        <h3>General Chart</h3>
+                        <h3>Chart 1</h3>
                     </header>
                     <div class="panel-body">
                         <div class="tab-pane" id="chartjs">
                             <div class="row">
                                 <!-- Line -->
                                 <div class="col-lg-6">
-                                    <section class="panel">
-                                        <header class="panel-heading">
-                                            1. 변동비 ~ 매출액
-                                        </header>
-                                        <div class="panel-body text-center">
-                                            <canvas id="line" height="300" width="450"></canvas>
-                                        </div>
+                                            <div class="container">
+                                            <!-- 탭 메뉴 상단 시작 -->
+                                                <ul class="tabs">
+                                                    <li class="tab-link current" data-tab="tab-1">당기 투입</li>
+                                                    <li class="tab-link" data-tab="tab-2">당기 사용</li>
+                                                </ul>
+
+                                                <div id="tab-1" class="tab-content current">
+                                                    <canvas id="chart_injection" height="300" width="1000"></canvas>
+                                                    <div class="table-responsive">
+                                                        <table class="table" width="100%">
+                                                            <tr>
+                                                                <th></th>
+                                                                <th>1월</th>
+                                                                <th>2월</th>
+                                                                <th>3월</th>
+                                                                <th>4월</th>
+                                                                <th>5월</th>
+                                                                <th>6월</th>
+                                                                <th>7월</th>
+                                                                <th>8월</th>
+                                                                <th>9월</th>
+                                                                <th>10월</th>
+                                                                <th>11월</th>
+                                                                <th>12월</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>변동비</th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>고정비</th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>매출액</th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <div id="tab-2" class="tab-content">
+                                                    <canvas id="chart_usage" height="300" width="1000"></canvas>
+                                                    <table class="table" width="100%">
+                                                        <tr>
+                                                            <th></th>
+                                                            <th>1월</th>
+                                                            <th>2월</th>
+                                                            <th>3월</th>
+                                                            <th>4월</th>
+                                                            <th>5월</th>
+                                                            <th>6월</th>
+                                                            <th>7월</th>
+                                                            <th>8월</th>
+                                                            <th>9월</th>
+                                                            <th>10월</th>
+                                                            <th>11월</th>
+                                                            <th>12월</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>재료비</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>노무비</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>경비</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>매출액</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            <!-- 탭 메뉴 내용 끝 -->
+                                            </div>
                                     </section>
                                 </div>
-                                <!-- Bar -->
-                                <div class="col-lg-6">
-                                    <section class="panel">
-                                        <header class="panel-heading">
-                                            2. 변동비 + 고정비 ~ 매출액
-                                        </header>
-                                        <div class="panel-body text-center">
-                                            <canvas id="bar" height="300" width="500"></canvas>
-                                        </div>
-                                    </section>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
@@ -64,6 +234,265 @@
     <!--main content end-->
 </section>
 
-<script src="{%static 'js/chartjs-custom.js'%}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+<script>
+    var csrftoken = getCookie('csrftoken');
+    var xhr;
+
+    var months=['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+    var mater_cost=[120, 56, 56, 100, 110, 50, 110, 50, 60, 110, 86, 79];
+    var labor_cost=[115, 55, 55, 95, 105, 50, 105, 50, 55, 105, 88, 81];
+    var out_pro_cost=[90, 40, 40, 70, 80, 50, 80, 50, 55, 80, 90, 83];
+    var manu_cost=[95, 42, 42, 75, 85, 50, 85, 50, 55, 85, 81, 84];
+    var sales_cost=[480, 400, 385, 420, 500, 530, 400, 450, 430, 430, 440, 460];
+
+    var inj_canvas = document.getElementById('chart_injection').getContext('2d');
+    var usa_canvas = document.getElementById('chart_usage').getContext('2d');
+
+    $(document).ready(function() {
+        $('ul.tabs li').click(function () {
+            var tab_id = $(this).attr('data-tab');
+
+            $('ul.tabs li').removeClass('current');
+            $('.tab-content').removeClass('current');
+
+            $(this).addClass('current');
+            $("#" + tab_id).addClass('current');
+        })
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var inj_chart = new Chart(inj_canvas, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '매출액',
+                type: 'line',
+                yAxisID: 'sales_line',
+                fill: false,
+                lineTension: 0,
+                pointRadius: 0,
+                borderColor: '#808080',
+                hoverPointRadius: 5,
+                data: sales_cost
+            }, {
+                label: '고정비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: '#E38785',
+                data: manu_cost
+            }, {
+                label: '변동비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: '#F49FEA',
+                data: manu_cost
+            }]
+        },
+
+        options: {
+            responsive: false,
+            legend: {
+                labels: {
+                    fontColor: '#000000'
+                }
+            },
+            scales: {
+                // y축
+                yAxes: [{
+                    id: 'sales_line',
+                    name: 'A',
+                    type: 'linear',
+                    position: 'left',
+                    scalePositionLeft: true,
+                    stacked: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: '매출액(원)'
+                    },
+                    ticks: {
+                        step: 10,
+                        fontColor: '#808080',
+                        fontStyle: 'bold'
+                    }
+                }, {
+                    id: 'cost_bar',
+                    name: 'B',
+                    type: 'linear',
+                    position: 'right',
+                    scalePositionLeft: true,
+                    stacked: true,
+                    ticks: {
+                        fontColor: '#FF0000',
+                        fontStyle: 'bold'
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '당기 투입(원)'
+                    },
+                    gridLines:{
+                        display: false
+                    }
+                }],
+                xAxes: [{
+                    id: 'x_down',
+                    stacked: true,
+                    ticks: {
+                        fontColor: '#000000',
+                        fontStyle: 'bold',
+                        padding: 10
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '기간(월)'
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        zeroLineColor: '#808080',
+                        zeroLineWidth: 3
+                    }
+                }, {
+                    // 이 x축은 우측 y축의 색상을 변경하기 위해 넣은 축 (기능 X)
+                    id: 'x_top',
+                    type: 'linear',
+                    position: 'top',
+                    stacked: true,
+                    ticks: {
+                        display: false,
+                        reverse: true,
+                        fontColor: '#000000',
+                        fontStyle: 'bold'
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '기간(월)'
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        color: 'transparent',
+                        zeroLineColor: 'rgba(255, 0, 0, 0.6)',
+                        zeroLineWidth: 3
+                    }
+                }]
+            }
+        }
+    });
+
+    var usa_chart = new Chart(usa_canvas, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '매출액',
+                type: 'line',
+                yAxisID: 'sales_line',
+                fill: false,
+                lineTension: 0,
+                pointRadius: 1,
+                borderColor: '#808080',
+                borderWidth: 5,
+                data: sales_cost
+            }, {
+                label: '재료비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(0, 0, 255, 0.6)',
+                data: manu_cost
+            }, {
+                label: '노무비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(93, 119, 255, 0.4)',
+                data: manu_cost
+            }, {
+                label: '경비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(135, 175, 255, 0.4)',
+                data: manu_cost
+            }]
+        },
+
+        options: {
+            responsive: false,
+            legend: {
+                labels: {
+                    fontColor: '#000000'
+                }
+            },
+            scales: {
+                yAxes: [
+                    {
+                        id: 'sales_line',
+                        name: 'A',
+                        type: 'linear',
+                        position: 'left',
+                        display: true,
+                        scalePositionLeft: true,
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000'
+                        },
+                        scaleLabel:{
+                            display: true,
+                            labelString: '매출액(원)'
+                        }
+                    }, {
+                        id: 'cost_bar',
+                        name: 'B',
+                        type: 'linear',
+                        position: 'right',
+                        scalePositionLeft: true,
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000'
+                        },
+                        scaleLabel:{
+                            display: true,
+                            labelString: '매출액(원)'
+                        },
+                        gridLines: {
+                            color: ['rgba(0, 0, 255, 0.6)', '#D9D9D9', '#D9D9D9', '#D9D9D9', '#D9D9D9', '#D9D9D9'],
+                            lineWidth: [5, 1, 1, 1, 1, 1]
+                        }
+                    }],
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        fontColor: '#000000'
+                    },
+                    gridLines: {
+                        zeroLineColor: '#808080',
+                        zeroLineWidth: 3
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '매출액(원)'
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
+
 
 {% endblock %}
+
