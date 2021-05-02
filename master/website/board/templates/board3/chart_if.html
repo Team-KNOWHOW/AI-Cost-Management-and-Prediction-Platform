@@ -222,8 +222,8 @@ ul.tabs li.current{
                                                 </div>
                                             <!-- 탭 메뉴 내용 끝 -->
                                             </div>
-                                    </section>
                                 </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -240,11 +240,12 @@ ul.tabs li.current{
     var csrftoken = getCookie('csrftoken');
     var xhr;
 
-    var months=['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+    var inj_period=['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+    var fixed_cost=[120, 56, 56, 100, 110, 50, 110, 50, 60, 110, 86, 79];
+    var variable_cost=[115, 55, 55, 95, 105, 50, 105, 50, 55, 105, 88, 81];
     var mater_cost=[120, 56, 56, 100, 110, 50, 110, 50, 60, 110, 86, 79];
     var labor_cost=[115, 55, 55, 95, 105, 50, 105, 50, 55, 105, 88, 81];
-    var out_pro_cost=[90, 40, 40, 70, 80, 50, 80, 50, 55, 80, 90, 83];
-    var manu_cost=[95, 42, 42, 75, 85, 50, 85, 50, 55, 85, 81, 84];
+    var expense_cost=[90, 40, 40, 70, 80, 50, 80, 50, 55, 80, 90, 83];
     var sales_cost=[480, 400, 385, 420, 500, 530, 400, 450, 430, 430, 440, 460];
 
     var inj_canvas = document.getElementById('chart_injection').getContext('2d');
@@ -278,127 +279,170 @@ ul.tabs li.current{
         return cookieValue;
     }
 
+    window.onload = function() {
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    var data = xhr.responseText;
+                    costbill_data = JSON.parse(data);
+
+                    cal_val(costbill_data);
+
+                    last_year_take="";
+
+                    for(let i=0; i<3; i++) {
+                        var each_data = costbill_data[i];
+                        last_year_take += each_data['version_cd'];
+                    }
+                }
+            } else {
+                if (xhr.status == 400) {
+                    var data = xhr.responseText;
+                    var obj = JSON.parse(data);
+                }
+            }
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/costbill";
+        xhr.open("GET", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(null);
+    }
+
+    function cal_val(data) {
+        // 1번 아이템
+        alert(Math.floor(data[1]['periodym_cd']/100));
+        alert(data[1]['periodym_cd']%100);
+        /*
+        for (var i = 0; i < data.length; i++) {
+            var cur_data = data[i];
+            if(cur_data[''])
+        }
+
+         */
+    }
+
+    var inj_data= {
+        labels: inj_period,
+        datasets: [{
+            label: '매출액',
+            type: 'line',
+            xAxisID: 'x_down',
+            yAxisID: 'sales_line',
+            fill: false,
+            lineTension: 0,
+            pointRadius: 0,
+            borderColor: '#808080',
+            hoverPointRadius: 5,
+            data: sales_cost
+        }, {
+            label: '고정비',
+            type: 'bar',
+            xAxisID: 'x_down',
+            yAxisID: 'cost_bar',
+            backgroundColor: '#E38785',
+            data: fixed_cost
+        }, {
+            label: '변동비',
+            type: 'bar',
+            xAxisID: 'x_down',
+            yAxisID: 'cost_bar',
+            backgroundColor: '#F49FEA',
+            data: variable_cost
+        }]
+    };
+
+    var inj_opt= {
+        responsive: false,
+        legend: {
+            labels: {
+                fontColor: '#000000'
+            }
+        },
+        scales: {
+            // y축
+            yAxes: [{
+                id: 'sales_line',
+                name: 'A',
+                type: 'linear',
+                position: 'left',
+                scalePositionLeft: true,
+                stacked: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: '매출액(원)'
+                },
+                ticks: {
+                    stepSize: 120,
+                    fontColor: '#808080'
+                }
+            }, {
+                id: 'cost_bar',
+                name: 'B',
+                type: 'linear',
+                position: 'right',
+                scalePositionLeft: true,
+                stacked: true,
+                ticks: {
+                    fontColor: '#FF0000',
+                    stepSize: 40
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: '당기 투입(원)'
+                }
+            }],
+            xAxes: [{
+                id: 'x_down',
+                stacked: true,
+                ticks: {
+                    fontColor: '#000000',
+                    fontStyle: 'bold',
+                    padding: 10
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: '기간(월)'
+                },
+                gridLines: {
+                    color: 'transparent',
+                    drawTicks: false,
+                    zeroLineColor: '#808080',
+                    zeroLineWidth: 3
+                }
+            }, {
+                // 이 x축은 우측 y축의 색상을 변경하기 위해 넣은 축 (기능 X)
+                id: 'x_top',
+                position: 'top',
+                stacked: true,
+                ticks: {
+                    display: false,
+                    reverse: true,
+                    fontColor: '#000000',
+                    fontStyle: 'bold'
+                },
+                gridLines: {
+                    drawTicks: false,
+                    color: 'transparent',
+                    zeroLineColor: 'rgba(255, 0, 0, 0.6)',
+                    zeroLineWidth: 3
+                }
+            }]
+        }
+    };
+
     var inj_chart = new Chart(inj_canvas, {
         type: 'bar',
-        data: {
-            labels: months,
-            datasets: [{
-                label: '매출액',
-                type: 'line',
-                yAxisID: 'sales_line',
-                fill: false,
-                lineTension: 0,
-                pointRadius: 0,
-                borderColor: '#808080',
-                hoverPointRadius: 5,
-                data: sales_cost
-            }, {
-                label: '고정비',
-                type: 'bar',
-                yAxisID: 'cost_bar',
-                backgroundColor: '#E38785',
-                data: manu_cost
-            }, {
-                label: '변동비',
-                type: 'bar',
-                yAxisID: 'cost_bar',
-                backgroundColor: '#F49FEA',
-                data: manu_cost
-            }]
-        },
-
-        options: {
-            responsive: false,
-            legend: {
-                labels: {
-                    fontColor: '#000000'
-                }
-            },
-            scales: {
-                // y축
-                yAxes: [{
-                    id: 'sales_line',
-                    name: 'A',
-                    type: 'linear',
-                    position: 'left',
-                    scalePositionLeft: true,
-                    stacked: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: '매출액(원)'
-                    },
-                    ticks: {
-                        step: 10,
-                        fontColor: '#808080',
-                        fontStyle: 'bold'
-                    }
-                }, {
-                    id: 'cost_bar',
-                    name: 'B',
-                    type: 'linear',
-                    position: 'right',
-                    scalePositionLeft: true,
-                    stacked: true,
-                    ticks: {
-                        fontColor: '#FF0000',
-                        fontStyle: 'bold'
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: '당기 투입(원)'
-                    },
-                    gridLines:{
-                        display: false
-                    }
-                }],
-                xAxes: [{
-                    id: 'x_down',
-                    stacked: true,
-                    ticks: {
-                        fontColor: '#000000',
-                        fontStyle: 'bold',
-                        padding: 10
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: '기간(월)'
-                    },
-                    gridLines: {
-                        drawTicks: false,
-                        zeroLineColor: '#808080',
-                        zeroLineWidth: 3
-                    }
-                }, {
-                    // 이 x축은 우측 y축의 색상을 변경하기 위해 넣은 축 (기능 X)
-                    id: 'x_top',
-                    type: 'linear',
-                    position: 'top',
-                    stacked: true,
-                    ticks: {
-                        display: false,
-                        reverse: true,
-                        fontColor: '#000000',
-                        fontStyle: 'bold'
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: '기간(월)'
-                    },
-                    gridLines: {
-                        drawTicks: false,
-                        color: 'transparent',
-                        zeroLineColor: 'rgba(255, 0, 0, 0.6)',
-                        zeroLineWidth: 3
-                    }
-                }]
-            }
-        }
+        data: inj_data,
+        options: inj_opt
     });
 
     var usa_chart = new Chart(usa_canvas, {
         type: 'bar',
         data: {
-            labels: months,
+            labels: inj_period,
             datasets: [{
                 label: '매출액',
                 type: 'line',
@@ -414,19 +458,19 @@ ul.tabs li.current{
                 type: 'bar',
                 yAxisID: 'cost_bar',
                 backgroundColor: 'rgba(0, 0, 255, 0.6)',
-                data: manu_cost
+                data: mater_cost
             }, {
                 label: '노무비',
                 type: 'bar',
                 yAxisID: 'cost_bar',
                 backgroundColor: 'rgba(93, 119, 255, 0.4)',
-                data: manu_cost
+                data: labor_cost
             }, {
                 label: '경비',
                 type: 'bar',
                 yAxisID: 'cost_bar',
                 backgroundColor: 'rgba(135, 175, 255, 0.4)',
-                data: manu_cost
+                data: expense_cost
             }]
         },
 
