@@ -53,6 +53,65 @@
                                         </div>
                                     </section>
                                 </div>
+                                <div class="table-responsive">
+                                    <table class="table" width="100%">
+                                        <tr>
+                                            <th></th>
+                                            <th>전년</th>
+                                            <th>당년</th>
+                                            <th>성장률</th>
+                                            <th></th>
+                                            <th>전월</th>
+                                            <th>당월</th>
+                                            <th>성장률</th>
+                                        </tr>
+                                        <tr>
+                                            <th>매출액</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        <tr>
+                                            <th>고정비</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        <tr>
+                                            <th>매출액</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -69,35 +128,102 @@
     var ctx_year = document.getElementById('year_chart').getContext('2d');
     var ctx_month = document.getElementById('month_chart').getContext('2d');
 
+    var this_year = new Date().getFullYear();
+    var this_month = new Date().getMonth() + 1;
+
+    var costbill_data;
+    var last_year_data;
+    var cur_year_data;
+    var last_year_take;
+    var cur_year_take;
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    var csrftoken = getCookie('csrftoken');
+    var xhr;
+
+    window.onload = function() {
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    var data = xhr.responseText;
+                    costbill_data = JSON.parse(data);
+
+                    cal_val(costbill_data);
+
+                    last_year_take="";
+
+                    for(let i=0; i<3; i++) {
+                        var each_data = costbill_data[i];
+                        last_year_take += each_data['version_cd'];
+                    }
+                }
+            } else {
+                if (xhr.status == 400) {
+                    var data = xhr.responseText;
+                    var obj = JSON.parse(data);
+                }
+            }
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/costbill";
+        xhr.open("GET", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(null);
+    }
+
+    function cal_val(data) {
+        alert(data.length);
+    }
+
     var year_chart = new Chart(ctx_year, {
         type: 'bar',
         data: {
             labels: ['제조원가', '매출액'],
             datasets: [{
-                label: '설장률',
+                label: '성장률',
                 type: 'line',
                 yAxisID: 'y-axis-growth',
                 fill: false,
                 lineTension: 0,
-                backgroundColor: '#888888',
-                borderColor: '#888888',
+                pointRadius: 0,
+                backgroundColor: 'rgba(127, 127, 127, 0.5)',
+                borderColor: 'rgba(127, 127, 127, 0.5)',
                 data: [9, 5.7],
             }, {
                 label: '전년',
                 type: 'bar',
                 yAxisID: 'y-axis-cost',
-                backgroundColor: '#FFCC66',
-                data: [70, 110],
-                borderWidth: 0,
-                hoverBorderWidth: 0
+                backgroundColor: 'rgba(255, 127, 101, 0.4)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 4,
+                borderColor: 'rgba(255, 127, 101)',
+                data: [70, 110]
             }, {
                 label: '당년',
                 type: 'bar',
                 yAxisID: 'y-axis-cost',
-                backgroundColor: '#66CCFF',
-                data: [74, 110],
-                borderWidth: 0,
-                hoverBorderWidth: 0
+                backgroundColor: 'rgba(101, 127, 255, 0.4)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 4,
+                borderColor: 'rgba(101, 127, 255)',
+                data: [74, 110]
             }]
         },
         options: {
@@ -113,21 +239,57 @@
                     type: 'linear',
                     position: 'left',
                     ticks: {
+                        padding: 10,
                         fontColor: '#000000',
                         beginAtZero: true
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        color: '#000000',
+                        lineWidth: 0.5,
+                        zeroLineColor: '#000000',
+                        zeroLineWidth: 0.5
                     }
                 }, {
                     id: 'y-axis-growth',
                     type: 'linear',
                     position: 'right',
                     ticks: {
+                        padding: 10,
                         fontColor: '#000000',
                         beginAtZero: true
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        display: false
                     }
                 }],
                 xAxes: [{
+                    id: 'x-bottom',
+                    position: 'bottom',
                     ticks: {
+                        fontColor: '#000000',
+                        padding: 10
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        color: 'transparent',
+                        zeroLineWidth: 3,
+                        zeroLineColor: '#808080'
+                    }
+                }, {
+                    id: 'x-top',
+                    position: 'top',
+                    ticks: {
+                        reverse: true,
+                        display: false,
                         fontColor: '#000000'
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        color: 'transparent',
+                        zeroLineWidth: 3,
+                        zeroLineColor: '#FF0000'
                     }
                 }]
             }
@@ -146,6 +308,8 @@
                 lineTension: 0,
                 backgroundColor: '#888888',
                 borderColor: '#888888',
+                borderRadius: 10,
+
                 data: [3.7, 4.3]
             }, {
                 label: '전월',

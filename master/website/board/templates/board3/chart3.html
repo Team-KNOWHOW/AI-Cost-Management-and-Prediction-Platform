@@ -35,21 +35,13 @@
                                 <div class="col-lg-6">
                                     <section class="panel">
                                         <header class="panel-heading">
-                                            1.
+                                            제조원가 예측
                                         </header>
                                         <div class="panel-body text-center">
-                                            <canvas id="mychart" height="300" width="450"></canvas>
-                                        </div>
-                                    </section>
-                                </div>
-                                <!-- Bar -->
-                                <div class="col-lg-6">
-                                    <section class="panel">
-                                        <header class="panel-heading">
-                                            2.
-                                        </header>
-                                        <div class="panel-body text-center">
-                                            <canvas height="300" width="500"></canvas>
+                                            <select id="change_rate_selectbox">
+                                                <option>100%</option>
+                                            </select>
+                                            <canvas id="mychart" height="250" width="1000"></canvas>
                                         </div>
                                     </section>
                                 </div>
@@ -90,8 +82,8 @@
                 datasets: [{
                     label: '제조원가',
                     type: 'bar',
-                    backgroundColor: ['#FFFF77', '#FFFF77', '#FFFF77', '#FFFF77', '#FFFF77', '#FFFF77',
-                        '#FFFF77', '#FFFF77', '#3399FF', '#3399FF', '#3399FF', '#FF7777'],
+                    backgroundColor: ['#3399FF', '#3399FF', '#3399FF', '#3399FF', '#3399FF', '#3399FF',
+                        '#3399FF', '#3399FF', '#3399FF', '#3399FF', '#3399FF', '#FF7777'],
                     borderColor: '#3399FF',
                     data: cost_data,
                     borderWidth: 0,
@@ -104,7 +96,7 @@
                 responsive: false,
                 legend: {
                     labels: {
-                        fontColor: '#000000' // label color
+                        fontColor: '#000000'
                     }
                 },
                 scales: {
@@ -120,58 +112,6 @@
                         stacked: true,
                         ticks: {
                             fontColor: '#000000' // x축 폰트 color
-                        }
-                    }]
-                }
-            }
-        });
-    }
-
-    function select_year() {
-        var year_select_box = document.getElementById('year_box');
-        var selected_year = year_select_box.options[year_select_box.selectedIndex].value * 1;
-        var year_short = selected_year % 100;
-
-        months = [year_short + '.01', year_short + '.02', year_short + '.03', year_short + '.04',
-            year_short + '.05', year_short + '.06', year_short + '.07', year_short + '.08',
-            year_short + '.09', year_short + '.10', year_short + '.11', year_short + '.12']
-
-        //cost_data=그 해의 데이터 data[month]
-
-        var chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: months,
-                datasets: [{
-                    label: year_short,
-                    type: 'bar',
-                    backgroundColor: '#3399FF',
-                    borderColor: '#3399FF',
-                    data: cost_data,
-                    borderWidth: 3,
-                    hoverBorderWidth: 6
-                }]
-            },
-
-            options: {
-                responsive: false,
-                legend: {
-                    labels: {
-                        fontColor: '#000000'
-                    }
-                },
-                scales: {
-                    yAxes: [{
-                        stacked: true,
-                        ticks: {
-                            fontColor: '#000000'
-                        }
-                    }],
-                    xAxes: [{
-                        stacked: true,
-                        ticks: {
-                            fontColor: '#000000'
-
                         }
                     }]
                 }

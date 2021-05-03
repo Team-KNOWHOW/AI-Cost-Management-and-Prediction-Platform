@@ -35,18 +35,10 @@
                                 <div class="col-lg-6">
                                     <section class="panel">
                                         <header class="panel-heading">
-                                            1.
+                                            당기 투입
                                         </header>
                                         <div class="panel-body text-center">
-                                            <select id="graph_select" onchange="select_graph()">
-                                                <option value="injection">
-                                                    당기 투입
-                                                </option>
-                                                <option value="expense">
-                                                    당기 사용
-                                                </option>
-                                            </select>
-                                            <canvas id="mychart" height="300" width="450"></canvas>
+                                              <canvas id="chart_injection" height="300" width="500"></canvas>
                                         </div>
                                     </section>
                                 </div>
@@ -54,10 +46,10 @@
                                 <div class="col-lg-6">
                                     <section class="panel">
                                         <header class="panel-heading">
-                                            2.
+                                            당기 사용
                                         </header>
                                         <div class="panel-body text-center">
-                                            <canvas height="300" width="500"></canvas>
+                                            <canvas id="chart_usage" height="300" width="500"></canvas>
                                         </div>
                                     </section>
                                 </div>
@@ -103,9 +95,10 @@
     var manu_cost=[95, 42, 42, 75, 85, 50, 85, 50, 55, 85, 81, 84];
     var sales_cost=[480, 400, 385, 420, 500, 530, 400, 450, 430, 430, 440, 460];
 
-    var ctx = document.getElementById('mychart').getContext('2d');
+    var inj_canvas = document.getElementById('chart_injection').getContext('2d');
+    var usa_canvas = document.getElementById('chart_usage').getContext('2d');
 
-    var chart = new Chart(ctx, {
+    var inj_chart = new Chart(inj_canvas, {
         type: 'bar',
         data: {
             labels: months,
@@ -124,20 +117,20 @@
                 label: '고정비',
                 type: 'bar',
                 yAxisID: 'cost_bar',
-                backgroundColor: '#FF3333',
-                borderColor: '#FF3333',
-                data: manu_cost,
-                borderWidth: 3,
-                hoverBorderWidth: 6
+                backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                borderColor: 'rgba(255, 84, 84)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
             }, {
                 label: '변동비',
                 type: 'bar',
                 yAxisID: 'cost_bar',
-                backgroundColor: '#FFAAAA',
-                borderColor: '#FFAAAA',
-                data: manu_cost,
-                borderWidth: 3,
-                hoverBorderWidth: 6
+                backgroundColor: 'rgba(255, 127, 101, 0.5)',
+                borderColor: 'rgba(255, 153, 110)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
             }]
         },
 
@@ -161,7 +154,8 @@
                         stacked: true,
                         ticks: {
                             fontColor: '#000000'
-                        }
+                        },
+                        lineWidth: 10
                     }, {
                         id: 'cost_bar',
                         name: 'B',
@@ -172,218 +166,119 @@
                         ticks: {
                             fontColor: '#000000'
                         }
-                    }],
-                xAxes: [
-                    {
-                        id: 'x1',
-                        stacked: true,
-                        ticks: {
-                            fontColor: '#000000'
-                        }
-                    },
-                    {
-                        id: 'x2',
-                        stacked: true,
-                        ticks: {
-                            fontColor: '#000000'
-                        }
                     }
-                ]
+                ],
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        fontColor: '#000000'
+                    },
+          callback: function(val, index) {
+            // Hide the label of every 2nd dataset
+            return index % 2 === 0 ? this.getLabelForValue(val) : '';
+          },
+          color: 'red'
+                }]
             }
         }
     });
 
-    function select_graph() {
-        var selectbox = document.getElementById('graph_select');
-        var graph_type = selectbox.options[selectbox.selectedIndex].value;
-
-        if (graph_type == 'injection') {
-            var chart1 = new Chart(ctx, {
+    var usa_chart = new Chart(usa_canvas, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: '매출액',
+                type: 'line',
+                yAxisID: 'sales_line',
+                fill: false,
+                lineTension: 0,
+                pointRadius: 1,
+                backgroundColor: '#FFCC00',
+                borderColor: '#FFCC00',
+                borderWidth: 3,
+                data: sales_cost
+            }, {
+                label: '재료비',
                 type: 'bar',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: '매출액',
-                        type: 'line',
-                        yAxisID: 'sales_line',
-                        fill: false,
-                        lineTension: 0,
-                        pointRadius: 1,
-                        backgroundColor: '#FFCC00',
-                        borderColor: '#FFCC00',
-                        borderWidth: 3,
-                        data: sales_cost
-                    }, {
-                        label: '고정비',
-                        type: 'bar',
-                        yAxisID: 'cost_bar',
-                        backgroundColor: '#FF3333',
-                        borderColor: '#FF3333',
-                        data: manu_cost,
-                        borderWidth: 3,
-                        hoverBorderWidth: 6
-                    }, {
-                        label: '변동비',
-                        type: 'bar',
-                        yAxisID: 'cost_bar',
-                        backgroundColor: '#FFAAAA',
-                        borderColor: '#FFAAAA',
-                        data: manu_cost,
-                        borderWidth: 3,
-                        hoverBorderWidth: 6
-                    }]
-                },
-
-                // Configuration options
-                options: {
-                    responsive: false,
-                    legend: {
-                        labels: {
-                            fontColor: '#000000' // label color
-                        }
-                    },
-                    scales: {
-                        // y축
-                        yAxes: [
-                            {
-                                id: 'sales_line',
-                                name: 'A',
-                                type: 'linear',
-                                position: 'left',
-                                scalePositionLeft: true,
-                                stacked: true,
-                                ticks: {
-                                    fontColor: '#000000'
-                                }
-                            }, {
-                                id: 'cost_bar',
-                                name: 'B',
-                                type: 'linear',
-                                position: 'right',
-                                scalePositionLeft: true,
-                                stacked: true,
-                                ticks: {
-                                    fontColor: '#000000'
-                                }
-                            }],
-                        xAxes: [
-                            {
-                                id: 'x1',
-                                stacked: true,
-                                ticks: {
-                                    fontColor: '#000000'
-                                }
-                            },
-                            {
-                                id: 'x2',
-                                stacked: true,
-                                ticks: {
-                                    fontColor: '#000000'
-                                }
-                            }
-                        ]
-                    }
-                }
-            });
-        } else if (graph_type == 'expense') {
-            var chart1 = new Chart(ctx, {
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(0, 0, 255, 0.6)',
+                borderColor: 'rgba(101, 101, 255)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
+            }, {
+                label: '노무비',
                 type: 'bar',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: '매출액',
-                        type: 'line',
-                        yAxisID: 'sales_line',
-                        fill: false,
-                        lineTension: 0,
-                        pointRadius: 1,
-                        backgroundColor: '#FFCC00',
-                        borderColor: '#FFCC00',
-                        borderWidth: 3,
-                        data: sales_cost
-                    }, {
-                        label: '재료비',
-                        type: 'bar',
-                        yAxisID: 'cost_bar',
-                        backgroundColor: '#3399FF',
-                        borderColor: '#3399FF',
-                        data: manu_cost,
-                        borderWidth: 3,
-                        hoverBorderWidth: 6
-                    }, {
-                        label: '노무비',
-                        type: 'bar',
-                        yAxisID: 'cost_bar',
-                        backgroundColor: '#88BBFF',
-                        borderColor: '#88BBFF',
-                        data: manu_cost,
-                        borderWidth: 3,
-                        hoverBorderWidth: 6
-                    }, {
-                        label: '경비',
-                        type: 'bar',
-                        yAxisID: 'cost_bar',
-                        backgroundColor: '#BBEEFF',
-                        borderColor: '#BBEEFF',
-                        data: manu_cost,
-                        borderWidth: 3,
-                        hoverBorderWidth: 6
-                    }]
-                },
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(93, 119, 255, 0.4)',
+                borderColor: 'rgba(127, 170, 255)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
+            }, {
+                label: '경비',
+                type: 'bar',
+                yAxisID: 'cost_bar',
+                backgroundColor: 'rgba(135, 175, 255, 0.4)',
+                borderColor: 'rgba(163, 196, 255)',
+                borderWidth: 1.5,
+                hoverBorderWidth: 2.5,
+                data: manu_cost
+            }]
+        },
 
-                // Configuration options
-                options: {
-                    responsive: false,
-                    legend: {
-                        labels: {
-                            fontColor: '#000000' // label color
-                        }
-                    },
-                    scales: {
-                        // y축
-                        yAxes: [
-                            {
-                                id: 'sales_line',
-                                name: 'A',
-                                type: 'linear',
-                                position: 'left',
-                                scalePositionLeft: true,
-                                stacked: true,
-                                ticks: {
-                                    fontColor: '#000000'
-                                }
-                            }, {
-                                id: 'cost_bar',
-                                name: 'B',
-                                type: 'linear',
-                                position: 'right',
-                                scalePositionLeft: true,
-                                stacked: true,
-                                ticks: {
-                                    fontColor: '#000000'
-                                }
-                            }],
-                        xAxes: [
-                            {
-                                id: 'x1',
-                                stacked: true,
-                                ticks: {
-                                    fontColor: '#000000'
-                                }
-                            },
-                            {
-                                id: 'x2',
-                                stacked: true,
-                                ticks: {
-                                    fontColor: '#000000'
-                                }
-                            }
-                        ]
-                    }
+        options: {
+            responsive: false,
+            legend: {
+                labels: {
+                    fontColor: '#000000'
                 }
-            });
+            },
+            scales: {
+                yAxes: [
+                    {
+                        id: 'sales_line',
+                        name: 'A',
+                        type: 'linear',
+                        position: 'left',
+                        display: true,
+                        scalePositionLeft: true,
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000'
+                        }
+                    }, {
+                        id: 'cost_bar',
+                        name: 'B',
+                        type: 'linear',
+                        position: 'right',
+                        scalePositionLeft: true,
+                        stacked: true,
+                        ticks: {
+                            fontColor: '#000000'
+                        },
+                        gridLines: {
+                            color: ['rgba(0, 0, 255, 0.6)', '#D9D9D9', '#D9D9D9', '#D9D9D9', '#D9D9D9', '#D9D9D9'],
+                            lineWidth: [3, 1, 1, 1, 1, 1],
+                            borderColor: '#D9D9D9',
+                            borderWidth: 1
+                        }
+                    }],
+                xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        fontColor: '#000000'
+                    },
+                    gridLines: {
+                        zeroLineColor: '#FFCC00',
+                        zeroLineWidth: 3
+                    }
+                }]
+            }
         }
-    }
+    });
+
 </script>
 
 {% endblock %}
