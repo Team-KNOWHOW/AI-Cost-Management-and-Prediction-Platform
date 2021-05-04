@@ -19,6 +19,9 @@ from . import views
 app_name = 'rest_api'
 
 urlpatterns = [
+
+    # 1단계 기준정보 CRUD API
+
     path('corporations', views.co_list, name='co_list'),
     path('corporations/<int:pk>', views.co_detail, name='co_detail'),
 
@@ -57,4 +60,7 @@ urlpatterns = [
 
     path('cost-element-accounts', views.costeleaccnt_list, name='costeleaccnt_list'),
     path('cost-element-accounts/<int:pk>', views.costeleaccnt_detail, name='costeleaccnt_detail'),
+
+    # 2단계 Excel Upload, Download API
+    path('cc-manu-cost-if', views.cc_manucost_if, name='cc_manucost_if_template'),
 ]
