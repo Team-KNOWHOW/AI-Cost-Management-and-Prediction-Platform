@@ -26,25 +26,22 @@
 
     function downloadTemplate()
     {
-        var strurl = "cc_manucost_if/manucosttemplate_download"
+        var strurl = "http://127.0.0.1:8080/board/cc-manu-cost-if"
 
         xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
-                var data = xhr.responseText;
+               var data = this.response;
+               var blob = new Blob([data], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
 
-                var obj = JSON.parse(data);
-                if(obj.flag == '0') {
-                    //alert(obj.template_url);
-                    location.href = obj.template_url;
-                }
-                else {
-                    alert(obj.result_msg);
-                }
-
+               var link = document.createElement('a');
+               link.href = window.URL.createObjectURL(blob);
+               link.download = 'manucost.xlsx';
+               link.click();
             }
         };
-        xhr.open("POST", strurl);
+        xhr.open("GET", strurl);
+        xhr.responseType = 'blob';
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.send(null);
     }

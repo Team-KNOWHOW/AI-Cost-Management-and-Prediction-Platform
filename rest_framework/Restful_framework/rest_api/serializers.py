@@ -1,6 +1,8 @@
 from .models import *
 from rest_framework import serializers
 
+# 1단계 기준정보 CRUD API
+
 
 class BcoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -78,3 +80,7 @@ class BCosteleaccntSerializer(serializers.ModelSerializer):
     class Meta:
         model = BCosteleaccnt
         fields = ('pl_cd', 'pl_nm', 'accnt_cd', 'accnt_nm', 'fv_div', 'costeleaccnt_rmrk')
+
+
+# 2단계 Excel Upload, Download API
+
