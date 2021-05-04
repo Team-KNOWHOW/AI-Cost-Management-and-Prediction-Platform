@@ -286,7 +286,7 @@ class BomDtl(models.Model):  # BOM 디테일
 class BBom(models.Model):  # BOM 메인
     id = models.AutoField(db_column='id', primary_key=True)
     bom_type = models.CharField(db_column='bom_type', max_length=20)
-    item_cd =models.CharField(db_column='item_cd', max_length=50)
+    item_cd = models.CharField(db_column='item_cd', max_length=50)
     item = models.ForeignKey(BItem, on_delete=models.DO_NOTHING)
     parent_id = models.IntegerField(db_column='parent_id', default=0)
     top_id = models.IntegerField(db_column='top_id', default=0)
