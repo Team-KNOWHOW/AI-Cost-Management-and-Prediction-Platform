@@ -396,7 +396,9 @@ class CcProductcostpaymentIf(models.Model):  # 제품원가수불
         db_table = 'cc_productcostpayment_if'
 
 
-class CcCostbill1(models.Model):  # 분석용
+
+
+class CcCostbill1(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)
     version_id = models.IntegerField(db_column='version_id', default=0)
     itemplan_id = models.IntegerField(db_column='itemplan_id', default=0)
@@ -417,6 +419,36 @@ class CcCostbill1(models.Model):  # 분석용
         db_table = 'cc_costbill1'
 
 
+class CcCostbill(models.Model):
+    version_cd = models.CharField(db_column='version_cd', max_length=6, default=0)
+    periodym_cd = models.IntegerField(db_column='periodym_cd', blank=True, null=True)
+    item_cd = models.CharField(db_column='item_cd', max_length=50, default=0)
+    bi_brm = models.IntegerField(db_column='bi_brm')
+    ra_rm = models.IntegerField(db_column='ra_rm')
+    ei_erm = models.IntegerField(db_column='ei_erm')
+    ei_elc = models.IntegerField(db_column='ei_elc')
+    ei_eoh = models.IntegerField(db_column='ei_eoh')
+    ic_idlc = models.IntegerField(db_column='ic_idlc', default=0)
+    ic_dlfc = models.IntegerField(db_column='ic_dlfc', default=0)
+    ic_dlvc = models.IntegerField(db_column='ic_dlvc', default=0)
+    ic_idohc = models.IntegerField(db_column='ic_idohc', default=0)
+    ic_ohdfe = models.IntegerField(db_column='ic_ohdfe', default=0)
+    ic_ohdfd = models.IntegerField(db_column='ic_ohdfd', default=0)
+    ic_ohdvc = models.IntegerField(db_column='ic_ohdvc', default=0)
+    ic_arm = models.IntegerField(db_column='ic_arm')
+    proq = models.IntegerField(db_column='proq', default=0)
+    proamt_unit = models.IntegerField(db_column='proamt_unit', default=0)
+    uc_srw = models.IntegerField(db_column='uc_srw', default=0)
+    uc_dlc = models.IntegerField(db_column='uc_dlc', default=0)
+    uc_idlc = models.IntegerField(db_column='uc_idlc', default=0)
+    uc_idohc = models.IntegerField(db_column='uc_idohc', default=0)
+    uc_dohc = models.IntegerField(db_column='uc_dohc', default=0)
+
+
+
+    class Meta:
+        managed = False
+        db_table = 'cc_costbill'
 
 class DmPeriod(models.Model):   #기간테이블
     id = models.AutoField(db_column='id', primary_key=True)
