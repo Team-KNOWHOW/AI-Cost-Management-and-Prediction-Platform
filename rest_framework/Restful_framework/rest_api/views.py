@@ -7,6 +7,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from rest_framework import exceptions
 from openpyxl import Workbook
+import openpyxl as xl
 import pymysql
 from django.conf import settings
 
@@ -673,15 +674,17 @@ def cc_manucost_if(request):
                 sheet_in.cell(row=2, column=idx).value = i[8]
                 idx += 1
 
-            filename = "static/datatemplates/manucost.xlsx"
+            filename = "manucost.xlsx"
             bookin.save(filename)
             bookin.close()
+            file_data = xl.load_workbook('manucost.xlsx')
 
-            with open(filename, 'r') as f:
-                file_data = f.read()
+            #with open(filename, 'rt', encoding='UTF-8') as f:
+                #file_data = f.read()
 
             response = HttpResponse(file_data, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename="manucost.xlsx"'
+            file_data.close()
 
         return response
 
