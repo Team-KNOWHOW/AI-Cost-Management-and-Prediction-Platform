@@ -31,13 +31,18 @@
         xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
-               var data = this.response;
-               var blob = new Blob([data], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                var blob = this.response;
+                var fileName = "manucost.xlsx"
 
-               var link = document.createElement('a');
-               link.href = window.URL.createObjectURL(blob);
-               link.download = 'manucost.xlsx';
-               link.click();
+                var downloadLink = window.document.createElement('a');
+                var contentTypeHeader = xhr.getResponseHeader("Content-Type");
+                alert(contentTypeHeader)
+                downloadLink.href = window.URL.createObjectURL(new Blob([blob], { type: contentTypeHeader }));
+                downloadLink.download = fileName;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+
             }
         };
         xhr.open("GET", strurl);
@@ -45,6 +50,63 @@
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.send(null);
     }
+
+      function uploadTemplate()
+      {
+          var coCd = document.getElementById("co_cd").value;
+          var coNm = document.getElementById("co_nm").value;
+
+          if(coCd == '') {
+              alert('법인코드를 입력해주십시오.');
+              document.getElementById("co_cd").focus();
+              return false;
+          }
+
+          var unitCurSelect = document.querySelector('.cur');
+          var unitCurId = unitCurSelect.options[unitCurSelect.selectedIndex].value;
+
+          var unitCnSelect = document.querySelector('.cn');
+          var unitCnId = unitCnSelect.options[unitCnSelect.selectedIndex].value;
+
+          var payload = {
+              "co_cd": coCd,
+              "co_nm": coNm,
+              "co_shnm": coShnm,
+              "co_rpr": coRpr,
+              "co_type": coType,
+              "co_div": coDiv,
+              "unitcur": unitCurId,
+              "unitcn": unitCnId
+          };
+
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState == 4) {
+                  if(xhr.status==201)
+                      alert("생성이 완료되었습니다.");
+                  location.reload();
+              }
+              else {
+                  if(xhr.status==400) {
+                      var data = xhr.responseText;
+                      var obj = JSON.parse(data);
+
+                      if (obj.detail == "DuplicateCode") {
+                          alert("법인 코드가 이미 존재합니다.");
+                      }
+                      else {
+                          alert("400 Bad Request");
+                      }
+                  }
+              }
+          };
+
+          var strurl = "http://127.0.0.1:8080/rest_api/cc-manu-cost-if";
+          xhr.open("POST", strurl, true);
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send(JSON.stringify(payload));
+      }
 
 
 </script>
@@ -75,7 +137,7 @@
                             <input type="file" name="ufile" accept=".xlsx" style="width:200px">
                         </td>
                         <td>
-                            <button type="submit" class="btn btn-primary btn-sm" >액셀업로드</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="uploadTemplate()">액셀업로드</button>
                         </td>
                     </tr>
                 </table>
