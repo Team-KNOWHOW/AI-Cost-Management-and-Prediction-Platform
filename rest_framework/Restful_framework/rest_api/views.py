@@ -701,4 +701,42 @@ def cc_manucost_if(request):
     return JsonResponse(serializer.errors, status=400)
 
 
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def costbill_list(request):
+    if request.method == 'GET':
+        query_set = CcCostBill.objects.raw("SELECT * FROM cc_costbill")
+        serializer = CcCostBillSerializer(query_set, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@csrf_exempt
+def costbill_detail(request, pk):
+    obj = CbCostCenter.objects.get(id=pk)
+
+    if request.method == 'GET':  # 현재 화면에선 개별조회 미지원.
+        serializer = CbCostCenterSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+
+        if CbCostCenter.objects.filter(cstctr_nm=data['cstctr_nm'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Name")
+
+        serializer = CbCostCenterSerializer(obj, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        obj.usage_fg = 'N'
+        obj.save()
+        return HttpResponse(status=204)
 

@@ -30,12 +30,13 @@
                     </header>
                     <div class="panel-body">
                         <div class="tab-pane" id="chartjs">
+                            <select size="3" id="item_selectbox" onchange="select_item()"></select>
                             <div class="row">
                                 <!-- Line -->
                                 <div class="col-lg-6">
                                     <section class="panel">
                                         <header class="panel-heading">
-                                            1.
+                                            1. 전냔 대비
                                         </header>
                                         <div class="panel-body text-center">
                                             <canvas id="year_chart" height="300" width="450"></canvas>
@@ -46,7 +47,7 @@
                                 <div class="col-lg-6">
                                     <section class="panel">
                                         <header class="panel-heading">
-                                            2.
+                                            2. 전월 대비
                                         </header>
                                         <div class="panel-body text-center">
                                             <canvas id="month_chart" height="300" width="500"></canvas>
@@ -65,50 +66,25 @@
                                             <th>당월</th>
                                             <th>성장률</th>
                                         </tr>
-                                        <tr>
-                                            <th>매출액</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
+                                        <tr id="manufacture">
+                                            <th>제조원가</th>
+                                            <td id="manu_row1"></td>
+                                            <td id="manu_row2"></td>
+                                            <td id="manu_row3"></td>
+                                            <td></td>
+                                            <td id="manu_row4"></td>
+                                            <td id="manu_row5"></td>
+                                            <td id="manu_row6"></td>
                                         </tr>
-                                        <tr>
-                                            <th>고정비</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                        <tr>
+                                        <tr id="sales">
                                             <th>매출액</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
+                                            <td id="sales_row1"></td>
+                                            <td id="sales_row2"></td>
+                                            <td id="sales_row3"></td>
+                                            <td></td>
+                                            <td id="sales_row4"></td>
+                                            <td id="sales_row5"></td>
+                                            <td id="sales_row6"></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -128,14 +104,33 @@
     var ctx_year = document.getElementById('year_chart').getContext('2d');
     var ctx_month = document.getElementById('month_chart').getContext('2d');
 
-    var this_year = new Date().getFullYear();
+    var this_year = 2020;
     var this_month = new Date().getMonth() + 1;
 
-    var costbill_data;
-    var last_year_data;
-    var cur_year_data;
-    var last_year_take;
-    var cur_year_take;
+    var item_list=[];
+    var last_year_data = [];
+    var this_year_data = [];
+    var last_month_data = [];
+    var this_month_data = [];
+    var last_year_cost;
+    var this_year_cost;
+    var last_month_cost;
+    var this_month_cost;
+    var last_year_sales;
+    var this_year_sales;
+    var last_month_sales;
+    var this_month_sales;
+
+    var year_chart_data;
+    var month_chart_data;
+    var year_chart_opt;
+    var month_chart_opt;
+
+    var year_chart;
+    var month_chart;
+
+    var csrftoken = getCookie('csrftoken');
+    var xhr;
 
     function getCookie(name) {
         let cookieValue = null;
@@ -153,68 +148,147 @@
         return cookieValue;
     }
 
-    var csrftoken = getCookie('csrftoken');
-    var xhr;
-
     window.onload = function() {
-        xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    var data = xhr.responseText;
-                    costbill_data = JSON.parse(data);
+         xhr = new XMLHttpRequest();
+         xhr.onreadystatechange = function () {
+             if (xhr.readyState == 4) {
+                 if (xhr.status == 200) {
+                     var data = xhr.responseText;
+                     var json_data = JSON.parse(data);
 
-                    cal_val(costbill_data);
+                     var ty_idx = 0, ly_idx = 0, tm_idx = 0, lm_idx = 0;
 
-                    last_year_take="";
+                     for (var i = 0; i < json_data.length; i++) {
+                         if (json_data[i]['periodym_cd'] > this_year * 100 && json_data[i]['periodym_cd'] < this_year * 100 + this_month) {
+                             this_year_data[ty_idx++] = json_data[i];
+                         } else if (json_data[i]['periodym_cd'] > (this_year - 1) * 100 && json_data[i]['periodym_cd'] < (this_year - 1) * 100 + this_month) {
+                             last_year_data[ly_idx++] = json_data[i];
+                         }
 
-                    for(let i=0; i<3; i++) {
-                        var each_data = costbill_data[i];
-                        last_year_take += each_data['version_cd'];
-                    }
-                }
-            } else {
-                if (xhr.status == 400) {
-                    var data = xhr.responseText;
-                    var obj = JSON.parse(data);
-                }
+                         if (this_month == 1) {
+                             if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
+                                 this_month_data[tm_idx++] = json_data[i];
+                             } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 11) {
+                                 last_month_data[lm_idx++] = json_data[i];
+                             }
+                         } else if (this_month == 2) {
+                             if (json_data[i]['periodym_cd'] == this_year * 100 + 1) {
+                                 this_month_data[tm_idx++] = json_data[i];
+                             } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
+                                 last_month_data[lm_idx++] = json_data[i];
+                             }
+                         } else {
+                             if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 1) {
+                                 this_month_data[tm_idx++] = json_data[i];
+                             } else if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 2) {
+                                 last_month_data[lm_idx++] = json_data[i];
+                             }
+                         }
+
+                         item_list[item_list.length] = json_data[i]['item_cd'];
+                     }
+
+                     var item_set = new Set(item_list);
+                     item_list = [...item_set];
+                     item_list.sort();
+
+                     set_item_selectbox();
+                     cal_val();
+                     set_chart_data();
+                     draw_chart();
+                     fill_table();
+                 }
+             } else {
+                 if (xhr.status == 400) {
+                     var data = xhr.responseText;
+                     var obj = JSON.parse(data);
+                 }
+             }
+         };
+
+         var strurl = "http://127.0.0.1:8080/rest_api/costbill";
+         xhr.open("GET", strurl, true);
+         xhr.setRequestHeader("X-CSRFToken", csrftoken);
+         xhr.setRequestHeader("Content-Type", "application/json");
+         xhr.send(null);
+     }
+
+    function cal_val() {
+        this_year_cost = 0;
+        this_year_sales = 0;
+        last_year_cost = 0;
+        last_year_sales = 0;
+
+        for (var i = 0; i < this_year_data.length; i++) {
+            if (this_year_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
+                var mater_cost = this_year_data[i]['uc_srw'];
+                var labor_cost = this_year_data[i]['uc_dlc'] + this_year_data[i]['uc_idlc'];
+                var manu_cost = this_year_data[i]['uc_dohc'] + this_year_data[i]['uc_idohc'];
+                this_year_cost += mater_cost + labor_cost + manu_cost;
+                this_year_sales += this_year_data[i]['proamt_unit'] * this_year_data[i]['proq'];
             }
-        };
+        }
 
-        var strurl = "http://127.0.0.1:8080/rest_api/costbill";
-        xhr.open("GET", strurl, true);
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(null);
+        for (var i = 0; i < last_year_data .length; i++) {
+            if (last_year_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
+                var mater_cost = last_year_data[i]['uc_srw'];
+                var labor_cost = last_year_data[i]['uc_dlc'] + last_year_data[i]['uc_idlc'];
+                var manu_cost = last_year_data[i]['uc_dohc'] + last_year_data[i]['uc_idohc'];
+                last_year_cost += mater_cost + labor_cost + manu_cost;
+                last_year_sales += last_year_data[i]['proamt_unit'] * last_year_data[i]['proq'];
+            }
+        }
+
+        this_year_cost = Math.floor(this_year_cost / 100000);
+        this_year_sales = Math.floor(this_year_sales / 100000);
+        last_year_cost = Math.floor(last_year_cost / 100000);
+        last_year_sales = Math.floor(last_year_sales / 100000);
+
+        for (var i = 0; i < last_month_data .length; i++) {
+            if (last_month_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
+                var mater_cost = this_month_data[i]['uc_srw'];
+                var labor_cost = this_month_data[i]['uc_dlc'] + this_month_data[i]['uc_idlc'];
+                var manu_cost = this_month_data[i]['uc_dohc'] + this_month_data[i]['uc_idohc'];
+                this_month_cost = Math.floor((mater_cost + labor_cost + manu_cost)/100000);
+                this_month_sales = Math.floor((this_month_data[i]['proamt_unit'] * this_month_data[i]['proq'])/100000);
+            }
+        }
+
+        for (var i = 0; i < last_month_data .length; i++) {
+            if (last_month_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
+                var mater_cost = last_month_data[i]['uc_srw'];
+                var labor_cost = last_month_data[i]['uc_dlc'] + last_month_data[i]['uc_idlc'];
+                var manu_cost = last_month_data[i]['uc_dohc'] + last_month_data[i]['uc_idohc'];
+                last_month_cost = Math.floor((mater_cost + labor_cost + manu_cost)/100000);
+                last_month_sales = Math.floor((last_month_data[i]['proamt_unit'] * last_month_data[i]['proq'])/100000);
+            }
+        }
     }
 
-    function cal_val(data) {
-        alert(data.length);
-    }
-
-    var year_chart = new Chart(ctx_year, {
-        type: 'bar',
-        data: {
+    function set_chart_data() {
+        year_chart_data = {
             labels: ['제조원가', '매출액'],
             datasets: [{
                 label: '성장률',
                 type: 'line',
+                xAxisID: 'x-bottom',
                 yAxisID: 'y-axis-growth',
                 fill: false,
                 lineTension: 0,
                 pointRadius: 0,
                 backgroundColor: 'rgba(127, 127, 127, 0.5)',
                 borderColor: 'rgba(127, 127, 127, 0.5)',
-                data: [9, 5.7],
+                data: [(this_year_cost - last_year_cost)/last_year_cost*100,(this_year_sales-last_year_sales)/last_year_sales*100],
             }, {
                 label: '전년',
                 type: 'bar',
+                xAxisID: 'x-bottom',
                 yAxisID: 'y-axis-cost',
                 backgroundColor: 'rgba(255, 127, 101, 0.4)',
                 borderWidth: 1.5,
                 hoverBorderWidth: 4,
                 borderColor: 'rgba(255, 127, 101)',
-                data: [70, 110]
+                data: [last_year_cost, last_year_sales]
             }, {
                 label: '당년',
                 type: 'bar',
@@ -223,10 +297,10 @@
                 borderWidth: 1.5,
                 hoverBorderWidth: 4,
                 borderColor: 'rgba(101, 127, 255)',
-                data: [74, 110]
+                data: [this_year_cost, this_year_sales]
             }]
-        },
-        options: {
+        };
+        year_chart_opt = {
             responsive: false,
             legend: {
                 labels: {
@@ -293,12 +367,9 @@
                     }
                 }]
             }
-        }
-    });
+        };
 
-    var month_chart = new Chart(ctx_month, {
-        type: 'bar',
-        data: {
+        month_chart_data = {
             labels: ['제조원가', '매출액'],
             datasets: [{
                 type: 'line',
@@ -309,26 +380,24 @@
                 backgroundColor: '#888888',
                 borderColor: '#888888',
                 borderRadius: 10,
-
-                data: [3.7, 4.3]
+                data: [(this_month_cost - last_month_cost) / last_month_cost*100, (this_month_sales-last_month_sales)/last_month_sales*100]
             }, {
                 label: '전월',
                 yAxisID: 'y-axis-cost',
                 backgroundColor: '#FFCC66',
-                data: [6.7, 14],
+                data: [last_month_cost, last_month_sales],
                 borderWidth: 0,
                 hoverBorderWidth: 0
             }, {
                 label: '당월',
                 yAxisID: 'y-axis-cost',
                 backgroundColor: '#66CCFF',
-                data: [7.1, 15.5],
+                data: [this_month_cost, this_month_sales],
                 borderWidth: 0,
                 hoverBorderWidth: 0
             }]
-        },
-
-        options: {
+        };
+        month_chart_opt = {
             responsive: false,
             legend: {
                 labels: {
@@ -359,8 +428,71 @@
                     }
                 }]
             }
+        };
+    }
+
+    function draw_chart() {
+        year_chart = new Chart(ctx_year, {
+            type: 'bar',
+            data: year_chart_data,
+            options: year_chart_opt
+        });
+        month_chart = new Chart(ctx_month, {
+            type: 'bar',
+            data: month_chart_data,
+            options: month_chart_opt
+        });
+    }
+
+    function fill_table() {
+        var manu_row_data=[];
+        var sales_row_data=[];
+
+        manu_row_data[0] = last_year_cost;
+        manu_row_data[1] = this_year_cost;
+        manu_row_data[2] = (this_year_cost - last_year_cost) / last_year_cost * 100;
+        manu_row_data[3] = last_month_cost;
+        manu_row_data[4] = this_month_cost;
+        manu_row_data[5] = (this_month_cost - last_month_cost) / last_month_cost * 100;
+
+        for(var i=0; i<6; i++) {
+            var td=document.getElementById('manu_row' + (i+1));
+            td.innerText=manu_row_data[i];
         }
-    });
+
+        sales_row_data[0] = last_year_sales;
+        sales_row_data[1] = this_year_sales;
+        sales_row_data[2] = (this_year_sales - last_year_sales) / last_year_sales * 100;
+        sales_row_data[3] = last_month_sales;
+        sales_row_data[4] = this_month_sales;
+        sales_row_data[5] = (this_month_sales - last_month_sales) / last_month_sales * 100;
+
+        for(var i=0; i<6; i++) {
+            var td=document.getElementById('sales_row' + (i+1));
+            td.innerText=sales_row_data[i];
+        }
+    }
+
+    function set_item_selectbox() {
+        var item_selectbox = document.getElementById('item_selectbox');
+
+        for (var i = 0; i < item_list.length; i++) {
+            var option = document.createElement('option');
+            if(i==0)
+                option.setAttribute('selected', true);
+
+            var textnode = document.createTextNode(item_list[i]);
+            option.appendChild(textnode);
+            item_selectbox.appendChild(option);
+        }
+    }
+
+    function select_item() {
+        cal_val();
+        set_chart_data();
+        draw_chart();
+        fill_table();
+    }
 </script>
 
 {% endblock %}
