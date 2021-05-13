@@ -6,6 +6,16 @@ from .serializers import *
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from rest_framework import exceptions
+from openpyxl import Workbook
+import pymysql
+from django.conf import settings
+
+MYDB = getattr(settings, "DATABASES", None)
+MYDB_NAME = MYDB["default"]["NAME"]
+MYDB_USER = MYDB["default"]["USER"]
+MYDB_PWD = MYDB["default"]["PASSWORD"]
+MYDB_HOST = MYDB["default"]["HOST"]
+dbCon = pymysql.connect(host=MYDB_HOST, user=MYDB_USER, passwd=MYDB_PWD, database=MYDB_NAME)
 
 
 @api_view(['GET', 'POST'])
@@ -631,6 +641,64 @@ def costeleaccnt_detail(request, pk):
         obj.save()
         return HttpResponse(status=204)
 
+
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def cc_manucost_if(request):
+    if request.method == 'GET':  # Excel Template Download
+
+        strsql1 = "SHOW TABLES LIKE 'cc_manucost_if'"
+
+        cursor1 = dbCon.cursor()
+        cursor1.execute(strsql1)
+        rsTmp = cursor1.fetchone()
+        cursor1.close()
+
+        rsColumns = None
+        if rsTmp:
+            strsql1 = "SHOW FULL COLUMNS FROM cc_manucost_if"
+
+            cursor2 = dbCon.cursor()
+            cursor2.execute(strsql1)
+            rsColumns = cursor2.fetchall()
+            cursor2.close()
+
+            idx = 1
+
+            bookin = Workbook()
+            sheet_in = bookin.active
+
+            for i in rsColumns:
+                sheet_in.cell(row=1, column=idx).value = i[1]
+                sheet_in.cell(row=2, column=idx).value = i[8]
+                idx += 1
+
+            filename = "manucost.xlsx"
+
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="manucost.xlsx"'
+
+            bookin.save(response)
+            bookin.close()
+
+        return response
+
+    elif request.method == 'POST':  # Excel Template Upload
+        data = JSONParser().parse(request)
+
+        if BCosteleaccnt.objects.filter(pl_cd=data['pl_cd'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate PL Code")
+
+        if BCosteleaccnt.objects.filter(accnt_cd=data['accnt_cd'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Account Code")
+
+        serializer = BCosteleaccntSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+
+    return JsonResponse(serializer.errors, status=400)
 
 
 
