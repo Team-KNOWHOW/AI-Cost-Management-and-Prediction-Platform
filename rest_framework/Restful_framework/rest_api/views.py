@@ -286,7 +286,7 @@ def bizpartner_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=200)
-        #print(serializer.errors.values())
+        # print(serializer.errors.values())
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
@@ -740,3 +740,28 @@ def costbill_detail(request, pk):
         obj.save()
         return HttpResponse(status=204)
 
+
+def ca_prediction(request):
+    if request.method == 'GET':  # 가장 최근에 생성된 row 겍체를 반환.
+        obj = CaPrediction.objects.last()
+        serializer = CaPredictionSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+
+        obj = CaPrediction.objects.filter(variableperc_cost=data['variableperc_cost'],
+                                          fixedperc_cost=data['fixedperc_cost'],
+                                          materialperc_cost=data['materialperc_cost'])
+        if obj.exists():  # 변동비, 고정비, 재료비가 같은 row가 존재하면 해당 row 객체 반환.
+            serializer = CaPredictionSerializer(obj)
+            return JsonResponse(serializer.data, status=201)
+
+        serializer = CaPredictionSerializer(data=data)  # 새로운 row 객체를 생성해서 변동비, 고정비, 재료비 속성에 입력 받은 값을 넣음.
+
+        if serializer.is_valid():
+            serializer.save()
+            print("모델 동작 시키는 view 함수실행.")
+            return JsonResponse(serializer.data, status=201)
+
+    return JsonResponse(serializer.errors, status=400)
