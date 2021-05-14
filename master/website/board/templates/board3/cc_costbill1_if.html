@@ -67,60 +67,60 @@
     <section class="wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h3 class="page-header"><i class="fa fa-table"></i>분석용 I/F</h3>
+                <h3 class="page-header"><i class="fa fa-table"></i>원가 계산서 I/F</h3>
             </div>
         </div>
-        <section class='skills' data-aos='fade-up'>
-            <div class='container'>
-                <div class='row'>
-                    <div class="col-lg-2">
-                        <i>버전
-                            <select class="form-control" onchange="location = this.value;">
-                                {% for i in rsVersioncd %}
-                                {% if i.version_cd == versioncd %}
-                                <option value="?versioncd={{ i.version_cd }}" selected>{{ i.version_cd }}</option>
-                                {% else %}
-                                <option value="?versioncd={{ i.version_cd }}">{{ i.version_cd }}</option>
-                                {% endif %}
-                                {% endfor %}
-                            </select>
-                        </i>
-                    </div>
-                    <div class="col-lg-10">
-                        <div class="table-responsive">
-                            <table align="right">
-                                <tr>
-                                    <td width="10%"><br>조회설정&nbsp&nbsp&nbsp:&nbsp&nbsp&nbsp </td>
-                                    <td width="20%">
-                                        <i>모델명
-                                            <select class="form-control" id="itemcd">
-                                                <option value="">-----SELECT-----</option>
-                                                {% for i in rsItemcd %}
-                                                {% if i.모델명 == itemcd %}
-                                                <option value="{{ i.item_cd }}" selected>{{ i.모델명 }}</option>
-                                                {% else %}
-                                                <option value="{{ i.item_cd }}">{{ i.모델명 }}</option>
-                                                {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                        </i>
-                                    </td>
-                                    <td width="20%">
-                                        <i>날짜
-                                            <input type="number" maxlength="6" class="form-control" id="date" placeholder="YYYYMM" oninput="maxLengthCheck(this)" value="{{ periodcd }}">
-                                        </i>
-                                    </td>
-                                    <td width="20%">
-                                        <br>
-                                        <button class="btn btn-primary btn-sm" onclick="searchCostbill()">조회</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
+        <div class='row'>
+            <div class="col-lg-12">
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <td width="20%">
+                                <i>버전
+                                    <select class="form-control" onchange="location = this.value;">
+                                        {% for i in rsVersioncd %}
+                                        {% if i.version_cd == versioncd %}
+                                        <option value="?versioncd={{ i.version_cd }}" selected>{{ i.version_cd }}</option>
+                                        {% else %}
+                                        <option value="?versioncd={{ i.version_cd }}">{{ i.version_cd }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </i>
+                            </td>
+                            <td width="10%" align="right"><br>조회설정:&nbsp&nbsp&nbsp&nbsp </td>
+                            <td width="20%">
+                                <i>모델명
+                                    <select class="form-control" id="itemcd">
+                                        <option value="">-----SELECT-----</option>
+                                        {% for i in rsItemcd %}
+                                        {% if i.모델명 == itemcd %}
+                                        <option value="{{ i.item_cd }}" selected>{{ i.모델명 }}</option>
+                                        {% else %}
+                                        <option value="{{ i.item_cd }}">{{ i.모델명 }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </i>
+                            </td>
+                            <td width="20%">
+                                <i>날짜
+                                    <input type="number" maxlength="6" class="form-control" id="date" placeholder="YYYYMM" oninput="maxLengthCheck(this)" value="{{ periodcd }}">
+                                </i>
+                            </td>
+                            <td width="20%">
+                                <br>
+                                <button class="btn btn-primary btn-sm" onclick="searchCostbill()">조회</button>
+                            </td>
+                            <td>
+                                <br>
+                                <h5>(단위:KRW)</h5>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
-        </section>
+        </div>
         <br>
         <div class="row">
             <div class="col-lg-12">
@@ -140,7 +140,7 @@
                             <tr>
                                 <th>생산량</th>
                                 {% for i in rsCostbill1 %}
-                                 <td>
+                                <td>
                                     {{i.생산량}}
                                 </td>
                                 {% endfor %}
@@ -154,15 +154,15 @@
                                 {% endfor %}
                             </tr>
                             <tr>
-                                <th>매출</th>
+                                <th>매출액</th>
                                 {% for i in rsCostbill1 %}
-                                 <td>
+                                <td>
                                     {{i.매출}}
                                 </td>
                                 {% endfor %}
                             </tr>
                             <tr>
-                                <th>기초제공품재료비</th>
+                                <th>기초재공품재료비</th>
                                 {% for i in rsCostbill1 %}
                                 <td>
                                     {{i.기초제공품합계}}
@@ -194,7 +194,7 @@
                                 {% endfor %}
                             </tr>
                             <tr>
-                                <th>당기투입총합</th>
+                                <th>당기투입합계</th>
                                 {% for i in rsCostbill1 %}
                                 <td>
                                     {{i.당기투입합계}}
@@ -220,13 +220,13 @@
                             <tr>
                                 <th>당기사용제조경비소계</th>
                                 {% for i in rsCostbill1 %}
-                                 <td>
+                                <td>
                                     {{i.당기사용제조경비합}}
                                 </td>
                                 {% endfor %}
                             </tr>
                             <tr>
-                                <th>당기사용제조원가총액</th>
+                                <th>당기사용제조원가합계</th>
                                 {% for i in rsCostbill1 %}
                                 <td>
                                     {{i.당기사용제조원가총액}}
@@ -242,7 +242,7 @@
                                 {% endfor %}
                             </tr>
                             <tr>
-                                <th>기말제공품재료비</th>
+                                <th>기말재공품재료비</th>
                                 {% for i in rsCostbill1 %}
                                 <td>
                                     {{i.기말제공품합계}}
