@@ -44,6 +44,8 @@ def home(request):  # 홈 화면.
     res = req.urlopen(url)
     soup = BeautifulSoup(res, "html.parser")
     price = soup.select_one("div.head_info > span.value").string
+    graph = soup.select_one("#exchangeList > li.on > a.graph_img > img")['src']
+    context['graph'] =graph
     context['price'] = price
 
 
