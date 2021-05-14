@@ -92,3 +92,10 @@ class CcCostBillSerializer(serializers.ModelSerializer):
                   'uc_dlc', 'uc_idlc', 'uc_idohc', 'uc_dohc')
 # 2단계 Excel Upload, Download API
 
+# 3단계 분석 결과 data API
+
+class CaPredictionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CaPrediction
+        fields = ('prediction1_cost', 'prediction1_cost', 'prediction1_cost',
+                  'periodym1_cd', 'periodym1_cd', 'periodym1_cd', 'variableperc_cost', 'fixedperc_cost')
