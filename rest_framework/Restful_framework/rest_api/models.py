@@ -416,8 +416,6 @@ class CcCostbill1(models.Model):  # 분석용
         db_table = 'cc_costbill1'
 
 
-
-
 class CcCostBill(models.Model):  # 원가 영수증
     id = models.AutoField(db_column='id', primary_key=True)
     version_cd = models.CharField(db_column='version_cd', max_length=10, default='A')
@@ -450,12 +448,40 @@ class CcCostBill(models.Model):  # 원가 영수증
         db_table = 'cc_costbill'
 
 
-
-class DmPeriod(models.Model):   #기간테이블
-
 class DmPeriod(models.Model):  # 기간테이블
+    id = models.AutoField(db_column='id', primary_key=True)
+    period_ym = models.IntegerField(blank=True, null=True)
+    period_y = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'dm_period'
 
 
+class DmManucost(models.Model):  # 제조비용마트
+    id = models.AutoField(db_column='id', primary_key=True)
+    itemaccnt = models.ForeignKey(BItemaccnt, blank=True, null=True, on_delete=models.CASCADE)
+    period = models.ForeignKey(DmPeriod, blank=True, null=True, on_delete=models.CASCADE)
+    manucost_price = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'dm_manucost'
 
 
+class CaPrediction(models.Model):  # 분석 결과 DB
+    id = models.AutoField(db_column='id', primary_key=True)
+    prediction1_cost = models.IntegerField(db_column='prediction1_cost', default=0)
+    prediction2_cost = models.IntegerField(db_column='prediction2_cost', default=0)
+    prediction3_cost = models.IntegerField(db_column='prediction3_cost', default=0)
+    periodym1_cd = models.IntegerField(db_column='periodym1_cd', default=0)
+    periodym2_cd = models.IntegerField(db_column='periodym2_cd', default=0)
+    periodym3_cd = models.IntegerField(db_column='periodym3_cd', default=0)
+    variableperc_cost = models.FloatField(db_column='variableperc_cost', default=0)
+    fixedperc_cost = models.FloatField(db_column='fixedperc_cost', default=0)
+    materialperc_cost = models.FloatField(db_column='materialperc_cost', default=0)
+
+    class Meta:
+        managed = False
+        db_table = 'ca_prediction'
 
