@@ -286,7 +286,7 @@ def bizpartner_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=200)
-        #print(serializer.errors.values())
+        # print(serializer.errors.values())
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
@@ -673,15 +673,13 @@ def cc_manucost_if(request):
                 sheet_in.cell(row=2, column=idx).value = i[8]
                 idx += 1
 
-            filename = "static/datatemplates/manucost.xlsx"
-            bookin.save(filename)
-            bookin.close()
+            filename = "manucost.xlsx"
 
-            with open(filename, 'r') as f:
-                file_data = f.read()
-
-            response = HttpResponse(file_data, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename="manucost.xlsx"'
+
+            bookin.save(response)
+            bookin.close()
 
         return response
 
@@ -703,4 +701,67 @@ def cc_manucost_if(request):
     return JsonResponse(serializer.errors, status=400)
 
 
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def costbill_list(request):
+    if request.method == 'GET':
+        query_set = CcCostBill.objects.raw("SELECT * FROM cc_costbill")
+        serializer = CcCostBillSerializer(query_set, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@csrf_exempt
+def costbill_detail(request, pk):
+    obj = CbCostCenter.objects.get(id=pk)
+
+    if request.method == 'GET':  # 현재 화면에선 개별조회 미지원.
+        serializer = CbCostCenterSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+
+        if CbCostCenter.objects.filter(cstctr_nm=data['cstctr_nm'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Name")
+
+        serializer = CbCostCenterSerializer(obj, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        obj.usage_fg = 'N'
+        obj.save()
+        return HttpResponse(status=204)
+
+
+def ca_prediction(request):
+    if request.method == 'GET':  # 가장 최근에 생성된 row 겍체를 반환.
+        obj = CaPrediction.objects.last()
+        serializer = CaPredictionSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+
+        obj = CaPrediction.objects.filter(variableperc_cost=data['variableperc_cost'],
+                                          fixedperc_cost=data['fixedperc_cost'],
+                                          materialperc_cost=data['materialperc_cost'])
+        if obj.exists():  # 변동비, 고정비, 재료비가 같은 row가 존재하면 해당 row 객체 반환.
+            serializer = CaPredictionSerializer(obj)
+            return JsonResponse(serializer.data, status=201)
+
+        serializer = CaPredictionSerializer(data=data)  # 새로운 row 객체를 생성해서 변동비, 고정비, 재료비 속성에 입력 받은 값을 넣음.
+
+        if serializer.is_valid():
+            serializer.save()
+            print("모델 동작 시키는 view 함수실행.")
+            return JsonResponse(serializer.data, status=201)
+
+    return JsonResponse(serializer.errors, status=400)

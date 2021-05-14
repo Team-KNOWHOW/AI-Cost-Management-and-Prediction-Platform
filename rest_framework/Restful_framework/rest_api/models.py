@@ -238,25 +238,25 @@ class BWorkcenter(models.Model):  # 작업장
         db_table = 'b_workcenter'
 
 
-class BCosteleaccnt(models.Model):  #원가요소계정
+class BCosteleaccnt(models.Model):  # 원가요소계정
     id = models.AutoField(db_column='id', primary_key=True)
-    #itemaccnt = models.ForeignKey(BItemaccnt, blank=True, null=True, on_delete=models.CASCADE)
+    # itemaccnt = models.ForeignKey(BItemaccnt, blank=True, null=True, on_delete=models.CASCADE)
     accnt_cd = models.CharField(db_column='accnt_cd', max_length=50, blank=True, null=True)
-    accnt_nm = models.CharField(db_column='accnt_nm',max_length=50, blank=True, null=True)
+    accnt_nm = models.CharField(db_column='accnt_nm', max_length=50, blank=True, null=True)
     placcnt_cd = models.CharField(db_column='placcnt_cd', max_length=50, blank=True, null=True)
     placcnt_nm = models.CharField(db_column='placcnt_nm', max_length=50, blank=True, null=True)
     fv_div = models.CharField(db_column='fv_div', max_length=1, blank=True, null=True)
     costeleaccnt_rmrk = models.CharField(db_column='costeleaccnt_rmrk', max_length=255, blank=True, null=True)
-    #updt_dt = models.DateTimeField(blank=True, null=True)
-    #insrt_dt = models.DateTimeField(blank=True, null=True)
+    # updt_dt = models.DateTimeField(blank=True, null=True)
+    # insrt_dt = models.DateTimeField(blank=True, null=True)
     usage_fg = models.CharField(max_length=1, blank=True, null=True, default='Y')
-    #insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
-    #updt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
+
+    # insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
+    # updt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
 
     class Meta:
         managed = False
         db_table = 'b_costeleaccnt'
-
 
 
 class BomDtl(models.Model):  # BOM 디테일
@@ -286,7 +286,7 @@ class BomDtl(models.Model):  # BOM 디테일
 class BBom(models.Model):  # BOM 메인
     id = models.AutoField(db_column='id', primary_key=True)
     bom_type = models.CharField(db_column='bom_type', max_length=20)
-    item_cd =models.CharField(db_column='item_cd', max_length=50)
+    item_cd = models.CharField(db_column='item_cd', max_length=50)
     item = models.ForeignKey(BItem, on_delete=models.DO_NOTHING)
     parent_id = models.IntegerField(db_column='parent_id', default=0)
     top_id = models.IntegerField(db_column='top_id', default=0)
@@ -316,7 +316,7 @@ class BBom(models.Model):  # BOM 메인
 
 class BVersion(models.Model):
     id = models.IntegerField(primary_key=True)
-    #insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
+    # insrt = models.ForeignKey(BUser, related_name='+', on_delete=models.CASCADE)
     version_cd = models.CharField(max_length=50, blank=True, null=True)
     version_dt = models.CharField(max_length=8, blank=True, null=True)
 
@@ -411,14 +411,44 @@ class CcCostbill1(models.Model):  # 분석용
     proamt_acc = models.BigIntegerField(db_column='proamt_acc', default=0)
     proq = models.IntegerField(db_column='proq', default=0)
 
-
     class Meta:
         managed = False
         db_table = 'cc_costbill1'
 
 
+class CcCostBill(models.Model):  # 원가 영수증
+    id = models.AutoField(db_column='id', primary_key=True)
+    version_cd = models.CharField(db_column='version_cd', max_length=10, default='A')
+    periodym_cd = models.IntegerField(db_column='periodym_cd', default=0)
+    #itemplan_id = models.ForeignKey(CcItemplan, on_delete=models.CASCADE)
+    item_cd = models.CharField(db_column='item_cd', max_length=10)
+    bi_brm = models.IntegerField(db_column='bi_brm', default=0)
+    ra_rm = models.IntegerField(db_column='ra_rm', default=0)
+    ei_erm = models.IntegerField(db_column='ei_erm', default=0)
+    ei_elc = models.IntegerField(db_column='ei_elc', default=0)
+    ei_eoh = models.IntegerField(db_column='ei_eoh', default=0)
+    ic_dlfc = models.IntegerField(db_column='ic_dlfc', default=0)
+    ic_ohdfe = models.IntegerField(db_column='ic_ohdfe', default=0)
+    ic_ohdfd = models.IntegerField(db_column='ic_ohdfd', default=0)
+    ic_dlvc = models.IntegerField(db_column='ic_dlvc', default=0)
+    ic_ohdvc = models.IntegerField(db_column='ic_ohdvc', default=0)
+    ic_idlc = models.IntegerField(db_column='ic_idlc', default=0)
+    ic_idohc = models.IntegerField(db_column='ic_idohc', default=0)
+    proq = models.IntegerField(db_column='proq', default=0)
+    proamt_unit = models.IntegerField(db_column='proamt_unit', default=0)
+    ic_arm = models.IntegerField(db_column='ic_arm', default=0)
+    uc_srw = models.IntegerField(db_column='uc_srw', default=0)
+    uc_dlc = models.IntegerField(db_column='uc_dlc', default=0)
+    uc_idlc = models.IntegerField(db_column='uc_idlc', default=0)
+    uc_idohc = models.IntegerField(db_column='uc_idohc', default=0)
+    uc_dohc = models.IntegerField(db_column='uc_dohc', default=0)
 
-class DmPeriod(models.Model):   #기간테이블
+    class Meta:
+        managed = False
+        db_table = 'cc_costbill'
+
+
+class DmPeriod(models.Model):  # 기간테이블
     id = models.AutoField(db_column='id', primary_key=True)
     period_ym = models.IntegerField(blank=True, null=True)
     period_y = models.IntegerField(blank=True, null=True)
@@ -428,7 +458,7 @@ class DmPeriod(models.Model):   #기간테이블
         db_table = 'dm_period'
 
 
-class DmManucost(models.Model): #제조비용마트
+class DmManucost(models.Model):  # 제조비용마트
     id = models.AutoField(db_column='id', primary_key=True)
     itemaccnt = models.ForeignKey(BItemaccnt, blank=True, null=True, on_delete=models.CASCADE)
     period = models.ForeignKey(DmPeriod, blank=True, null=True, on_delete=models.CASCADE)
@@ -437,3 +467,21 @@ class DmManucost(models.Model): #제조비용마트
     class Meta:
         managed = False
         db_table = 'dm_manucost'
+
+
+class CaPrediction(models.Model):  # 분석 결과 DB
+    id = models.AutoField(db_column='id', primary_key=True)
+    prediction1_cost = models.IntegerField(db_column='prediction1_cost', default=0)
+    prediction2_cost = models.IntegerField(db_column='prediction2_cost', default=0)
+    prediction3_cost = models.IntegerField(db_column='prediction3_cost', default=0)
+    periodym1_cd = models.IntegerField(db_column='periodym1_cd', default=0)
+    periodym2_cd = models.IntegerField(db_column='periodym2_cd', default=0)
+    periodym3_cd = models.IntegerField(db_column='periodym3_cd', default=0)
+    variableperc_cost = models.FloatField(db_column='variableperc_cost', default=0)
+    fixedperc_cost = models.FloatField(db_column='fixedperc_cost', default=0)
+    materialperc_cost = models.FloatField(db_column='materialperc_cost', default=0)
+
+    class Meta:
+        managed = False
+        db_table = 'ca_prediction'
+
