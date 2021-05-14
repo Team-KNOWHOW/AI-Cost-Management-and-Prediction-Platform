@@ -82,5 +82,13 @@ class BCosteleaccntSerializer(serializers.ModelSerializer):
         fields = ('pl_cd', 'pl_nm', 'accnt_cd', 'accnt_nm', 'fv_div', 'costeleaccnt_rmrk')
 
 
+class CcCostBillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CcCostBill
+        fields = ('id', 'version_cd', 'periodym_cd', 'item_cd', 'bi_brm',
+                  'ra_rm', 'ei_erm', 'ei_elc', 'ei_eoh', 'ic_dlfc',
+                  'ic_ohdfe', 'ic_ohdfd', 'ic_dlvc', 'ic_ohdvc', 'ic_idlc',
+                  'ic_idohc', 'proq', 'proamt_unit', 'ic_arm', 'uc_srw',
+                  'uc_dlc', 'uc_idlc', 'uc_idohc', 'uc_dohc')
 # 2단계 Excel Upload, Download API
 

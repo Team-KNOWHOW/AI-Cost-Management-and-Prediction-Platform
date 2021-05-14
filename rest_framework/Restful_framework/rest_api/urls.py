@@ -61,6 +61,9 @@ urlpatterns = [
     path('cost-element-accounts', views.costeleaccnt_list, name='costeleaccnt_list'),
     path('cost-element-accounts/<int:pk>', views.costeleaccnt_detail, name='costeleaccnt_detail'),
 
+    path('costbill', views.costbill_list, name='costbill_list'),
+    path('costbill/<int:pk>', views.costbill_detail, name='costbill_detail'),
+
     # 2단계 Excel Upload, Download API
     path('cc-manu-cost-if', views.cc_manucost_if, name='cc_manucost_if_template'),
 ]
