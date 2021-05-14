@@ -64,8 +64,8 @@ home
                     </div>
                     <div class="info-box dark-bg" onclick="location.href='#';">
                         <i class="fa fa-money"></i>
-                        <div class="count">₩1126.52</div>
-                        <div class="title">오늘의 환율</div>
+                        <div class="count">₩{{price}}</div>
+                        <div class="title">1달러 환율</div>
                     </div>
                 </div>
                 <!--/.info-box-->
@@ -77,7 +77,7 @@ home
                     <div class="panel-heading">
                         <h2><strong>Simulator</strong></h2>
                     </div>
-                    <div class="info-box green-bg" onclick="location.href='{% url 'board:chart3' %}';"">
+                    <div class="info-box green-bg" onclick="location.href='{% url 'board:chart3' %}';">
                         <i class="fa fa-desktop"></i>
                         <div class="count">Simulate</div>
                         <div class="title">(고정비, 변동비)</div>
