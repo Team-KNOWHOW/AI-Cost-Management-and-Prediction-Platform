@@ -28,6 +28,9 @@ urlpatterns = [
     path('chart1', views.chart1, name='chart1'),
     path('chart2', views.chart2, name='chart2'),
     path('chart3', views.chart3, name='chart3'),
+    path('simulate', views.simulate, name='simulate'),
+    path('insertSimulate', views.insertSimulate, name='insertSimulate'),
+
 
     # 사용자 관리
     path('member_register', views.member_register, name="member_register"),
