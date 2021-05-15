@@ -1,29 +1,242 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}
-    home
+home
 {% endblock %}
 
 
 {% block body %}
 
-    {% include "navbar.html" %}
-    {% include "sidebar.html" %}
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
 
-     <!--main content start-->
-    <section id="main-content">
-      <section class="wrapper">
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
         <!--overview start-->
         <div class="row">
-          <div class="col-lg-12">
-            <h3 class="page-header"><i class="fa fa-laptop"></i> Dashboard</h3>
-            <ol class="breadcrumb">
-              <li><i class="fa fa-home"></i><a href="/">Home</a></li>
-              <li><i class="fa fa-laptop"></i>Dashboard</li>
-            </ol>
-          </div>
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-laptop"></i> Dashboard</h3>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-home"></i><a href="/">Home</a></li>
+                    <li><i class="fa fa-laptop"></i>Dashboard</li>
+                </ol>
+            </div>
         </div>
-      </section>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>제조원가</strong></h2>
+                    </div>
+                    <div class="info-box blue-bg" onclick="location.href='{% url 'board:chart1' %}';">
+                        <i class="fa fa-krw"></i>
+                        <div class="count">6.674%</div>
+                        <div class="title">Download</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>전년 | 전월 성장률</strong></h2>
+                    </div>
+                    <div class="info-box brown-bg" onclick="location.href='{% url 'board:chart2' %}';">
+                        <i class="fa fa-bar-chart-o"></i>
+                        <div class="count">7.538</div>
+                        <div class="title">성장률</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>환율</strong></h2>
+                    </div>
+                    <div class="info-box dark-bg" onclick="location.href='#';" data-target="#myModal" data-toggle="modal">
+                        <i class="fa fa-money"></i>
+                        <div class="count">₩{{price}}</div>
+                        <div class="title">미국USD</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>Simulator</strong></h2>
+                    </div>
+                    <div class="info-box green-bg" onclick="location.href='{% url 'board:chart3' %}';">
+                        <i class="fa fa-desktop"></i>
+                        <div class="count">Simulate</div>
+                        <div class="title">(고정비, 변동비)</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+        </div>
+        <!--/.row-->
+
+        <div class="row">
+            <div class="col-lg-11 col-md-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><i class="icon_piechart"></i><strong>예측데이터</strong></h2>
+                        <div class="panel-actions">
+                            <a href="#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
+                            <a href="#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
+                            <a href="#" class="btn-close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <section class="panel">
+                        <div class="panel-body text-center">
+                            <canvas id="" height="400"></canvas>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+            <div class="col-md-1">
+                <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal">예측</button>
+            </div>
+            <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                            <h4 class="modal-title">Form Tittle</h4>
+                        </div>
+                        <div class="modal-body" align="center">
+                            <img src="{{graph}}" width="500px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <!--Project Activity start-->
+                <section class="panel">
+                    <div class="panel-body progress-panel">
+                        <div class="row">
+                            <div class="col-lg-8 task-progress pull-left">
+                                <h1>To Do Everyday</h1>
+                            </div>
+                            <div class="col-lg-4">
+                    <span class="profile-ava pull-right">
+                                        {{user_id}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-hover personal-task">
+                        <tbody>
+                        <tr>
+                            <td>Today</td>
+                            <td>
+                                web design
+                            </td>
+                            <td>
+                                <span class="badge bg-important">Upload</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Yesterday</td>
+                            <td>
+                                Project Design Task
+                            </td>
+                            <td>
+                                <span class="badge bg-success">Task</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>21-05-14</td>
+                            <td>
+                                Generate Invoice
+                            </td>
+                            <td>
+                                <span class="badge bg-success">Task</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>21-05-15</td>
+                            <td>
+                                Project Testing
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">To-Do</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>21-05-16</td>
+                            <td>
+                                Project Release Date
+                            </td>
+                            <td>
+                                <span class="badge bg-info">Milestone</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>21-05-18</td>
+                            <td>
+                                Project Release Date
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">To-Do</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Last week</td>
+                            <td>
+                                Project Development
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">To-Do</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>last month</td>
+                            <td>
+                                Project Development
+                            </td>
+                            <td>
+                                <span class="badge bg-success">To-Do</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <!--Project Activity end-->
+            </div>
+        </div>
     </section>
+</section>
 
 {% endblock %}
