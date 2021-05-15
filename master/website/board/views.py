@@ -11,6 +11,9 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from datetime import datetime
 
+from bs4 import BeautifulSoup
+import urllib.request as req
+
 import pymysql
 from django.conf import settings
 
@@ -37,8 +40,20 @@ def home(request):  # 홈 화면.
 
         return redirect('/')
 
+    url = "http://finance.naver.com/marketindex/"
+    res = req.urlopen(url)
+    soup = BeautifulSoup(res, "html.parser")
+    price = soup.select_one("div.head_info > span.value").string
+    graph = soup.select_one("#exchangeList > li.on > a.graph_img > img")['src']
+    context['graph'] =graph
+    context['price'] = price
+
+
+
     context["id"] = member_no
     context["user_id"] = member_id
+
+
 
     return render(request, 'home.html', context)
 
@@ -1809,7 +1824,7 @@ def cc_costbill_if(request):
 # costbill 코드 끝
 # *********************************************************************************************************************
 
-def cc_costbill1_if(request):
+def cc_costbill1_if(request): #분석용
     context = {}
 
     if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
@@ -1824,9 +1839,64 @@ def cc_costbill1_if(request):
     context["id"] = member_no
     context["user_id"] = member_id
 
+    versioncd = request.GET.get('versioncd', '')
+    if versioncd == '':
+        versioncd = CcCostbill.objects.all().values_list('version_cd', flat=True).order_by('version_cd')[0]
 
-    rsCostbill1 = CcCostbill1.objects.all()
-    context["rsCostbill1"] = rsCostbill1
+    periodcd = request.GET.get('periodcd', '')
+    if(periodcd == ''):
+        periodcd = CcCostbill.objects.all().values_list('periodym_cd', flat=True).order_by('periodym_cd').last()
+
+    itemcd = request.GET.get('itemcd', '')
+
+
+
+    sql = "SELECT id, version_cd, periodym_cd,item_cd AS 모델명, proq*proamt_unit AS 매출, " \
+          "bi_brm AS 기초제공품합계, proq AS 생산량, proamt_unit AS 단가, proq*proamt_unit AS 매출, " \
+          "ic_dlvc+ic_dlfc+ic_idlc AS 당기투입노무비합, " \
+          "ic_ohdvc+ic_ohdfd+ic_ohdfe+ic_idohc AS 당기투입제조경비합, " \
+          "ic_ohdvc+ic_ohdfd+ic_ohdfe+ic_idohc+ ic_dlvc+ic_dlfc+ic_idlc+ic_arm  AS 당기투입합계, " \
+          "ic_arm AS 당기투입재료비, " \
+          "uc_dlc+ uc_idlc AS 당기사용노무비합, " \
+          "uc_dohc+uc_idohc AS 당기사용제조경비합, " \
+          "ra_rm AS 타계정으로대체재료비, " \
+          "uc_srw AS 당기사용재료비, " \
+          "uc_dlc+ uc_idlc+uc_dohc+uc_idohc +uc_srw AS 당기사용제조원가총액, " \
+          "ei_erm+ei_elc+ei_eoh AS 기말제공품합계 " \
+          "FROM cc_costbill WHERE version_cd= '" + versioncd + "' AND periodym_cd = "+ str(periodcd)
+
+    sql1 = '''SELECT id, item_cd AS 모델명
+            FROM cc_costbill group by item_cd;'''
+    sql2 = '''SELECT id, version_cd
+                FROM cc_costbill group by version_cd;'''
+
+    if(itemcd != ''):
+        sql = "SELECT id, version_cd, periodym_cd,item_cd AS 모델명, proq*proamt_unit AS 매출, " \
+          "bi_brm AS 기초제공품합계, proq AS 생산량, proamt_unit AS 단가, proq*proamt_unit AS 매출, " \
+          "ic_dlvc+ic_dlfc+ic_idlc AS 당기투입노무비합, " \
+          "ic_ohdvc+ic_ohdfd+ic_ohdfe+ic_idohc AS 당기투입제조경비합, " \
+          "ic_ohdvc+ic_ohdfd+ic_ohdfe+ic_idohc+ ic_dlvc+ic_dlfc+ic_idlc+ic_arm  AS 당기투입합계, " \
+          "ic_arm AS 당기투입재료비, " \
+          "uc_dlc+ uc_idlc AS 당기사용노무비합, " \
+          "uc_dohc+uc_idohc AS 당기사용제조경비합, " \
+          "ra_rm AS 타계정으로대체재료비, " \
+          "uc_srw AS 당기사용재료비, " \
+          "uc_dlc+ uc_idlc+uc_dohc+uc_idohc +uc_srw AS 당기사용제조원가총액, " \
+          "ei_erm+ei_elc+ei_eoh AS 기말제공품합계 " \
+          "FROM cc_costbill WHERE version_cd= '" + versioncd + "' AND periodym_cd = " + str(periodcd) + " AND item_cd = '" + itemcd + "'"
+
+    rsCosbtill1 = CcCostbill.objects.raw(sql)
+    rsItemcd = CcCostbill.objects.raw(sql1)
+    rsVersioncd = CcCostbill.objects.raw(sql2)
+
+    context["versioncd"] = versioncd
+    context["itemcd"] = itemcd
+    context["periodcd"] = periodcd
+
+    context["rsCostbill1"] = rsCosbtill1
+    context["rsItemcd"] = rsItemcd
+    context["rsVersioncd"] = rsVersioncd
+
 
     return render(request, 'board3/cc_costbill1_if.html', context)
 

@@ -6,6 +6,16 @@ from .serializers import *
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
 from rest_framework import exceptions
+from openpyxl import Workbook
+import pymysql
+from django.conf import settings
+
+MYDB = getattr(settings, "DATABASES", None)
+MYDB_NAME = MYDB["default"]["NAME"]
+MYDB_USER = MYDB["default"]["USER"]
+MYDB_PWD = MYDB["default"]["PASSWORD"]
+MYDB_HOST = MYDB["default"]["HOST"]
+dbCon = pymysql.connect(host=MYDB_HOST, user=MYDB_USER, passwd=MYDB_PWD, database=MYDB_NAME)
 
 
 @api_view(['GET', 'POST'])
@@ -276,7 +286,7 @@ def bizpartner_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=200)
-        #print(serializer.errors.values())
+        # print(serializer.errors.values())
         return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
@@ -632,5 +642,126 @@ def costeleaccnt_detail(request, pk):
         return HttpResponse(status=204)
 
 
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def cc_manucost_if(request):
+    if request.method == 'GET':  # Excel Template Download
+
+        strsql1 = "SHOW TABLES LIKE 'cc_manucost_if'"
+
+        cursor1 = dbCon.cursor()
+        cursor1.execute(strsql1)
+        rsTmp = cursor1.fetchone()
+        cursor1.close()
+
+        rsColumns = None
+        if rsTmp:
+            strsql1 = "SHOW FULL COLUMNS FROM cc_manucost_if"
+
+            cursor2 = dbCon.cursor()
+            cursor2.execute(strsql1)
+            rsColumns = cursor2.fetchall()
+            cursor2.close()
+
+            idx = 1
+
+            bookin = Workbook()
+            sheet_in = bookin.active
+
+            for i in rsColumns:
+                sheet_in.cell(row=1, column=idx).value = i[1]
+                sheet_in.cell(row=2, column=idx).value = i[8]
+                idx += 1
+
+            filename = "manucost.xlsx"
+
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="manucost.xlsx"'
+
+            bookin.save(response)
+            bookin.close()
+
+        return response
+
+    elif request.method == 'POST':  # Excel Template Upload
+        data = JSONParser().parse(request)
+
+        if BCosteleaccnt.objects.filter(pl_cd=data['pl_cd'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate PL Code")
+
+        if BCosteleaccnt.objects.filter(accnt_cd=data['accnt_cd'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Account Code")
+
+        serializer = BCosteleaccntSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+
+    return JsonResponse(serializer.errors, status=400)
 
 
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def costbill_list(request):
+    if request.method == 'GET':
+        query_set = CcCostBill.objects.raw("SELECT * FROM cc_costbill")
+        serializer = CcCostBillSerializer(query_set, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@csrf_exempt
+def costbill_detail(request, pk):
+    obj = CbCostCenter.objects.get(id=pk)
+
+    if request.method == 'GET':  # 현재 화면에선 개별조회 미지원.
+        serializer = CbCostCenterSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+
+        if CbCostCenter.objects.filter(cstctr_nm=data['cstctr_nm'], usage_fg='Y').exists():
+            raise exceptions.ParseError("Duplicate Name")
+
+        serializer = CbCostCenterSerializer(obj, data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=200)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        obj.usage_fg = 'N'
+        obj.save()
+        return HttpResponse(status=204)
+
+
+def ca_prediction(request):
+    if request.method == 'GET':  # 가장 최근에 생성된 row 겍체를 반환.
+        obj = CaPrediction.objects.last()
+        serializer = CaPredictionSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+
+        obj = CaPrediction.objects.filter(variableperc_cost=data['variableperc_cost'],
+                                          fixedperc_cost=data['fixedperc_cost'],
+                                          materialperc_cost=data['materialperc_cost'])
+        if obj.exists():  # 변동비, 고정비, 재료비가 같은 row가 존재하면 해당 row 객체 반환.
+            serializer = CaPredictionSerializer(obj)
+            return JsonResponse(serializer.data, status=201)
+
+        serializer = CaPredictionSerializer(data=data)  # 새로운 row 객체를 생성해서 변동비, 고정비, 재료비 속성에 입력 받은 값을 넣음.
+
+        if serializer.is_valid():
+            serializer.save()
+            print("모델 동작 시키는 view 함수실행.")
+            return JsonResponse(serializer.data, status=201)
+
+    return JsonResponse(serializer.errors, status=400)

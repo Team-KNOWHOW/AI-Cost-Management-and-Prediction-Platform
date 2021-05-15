@@ -48,8 +48,8 @@ urlpatterns = [
 
 
     # 제조비용 기능 항목
-    path('cc_manucost_if/manucosttemplate_download', views.manucosttemplate_download, name='manucosttemplate_download'),
-    path('cc_manucost_if/manucostdata_upload', views.manucostdata_upload, name='manucostdata_upload'),
+    #path('cc_manucost_if/manucosttemplate_download', views.manucosttemplate_download, name='manucosttemplate_download'),
+    #path('cc_manucost_if/manucostdata_upload', views.manucostdata_upload, name='manucostdata_upload'),
 
     # 재료비용 기능항목
     path('cc_materialcost_if/materialcosttemplate_download', views.materialcosttemplate_download,

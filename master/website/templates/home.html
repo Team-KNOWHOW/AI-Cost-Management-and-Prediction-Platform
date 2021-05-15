@@ -1,29 +1,542 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}
-    home
+home
 {% endblock %}
 
 
 {% block body %}
 
-    {% include "navbar.html" %}
-    {% include "sidebar.html" %}
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
 
-     <!--main content start-->
-    <section id="main-content">
-      <section class="wrapper">
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
         <!--overview start-->
         <div class="row">
-          <div class="col-lg-12">
-            <h3 class="page-header"><i class="fa fa-laptop"></i> Dashboard</h3>
-            <ol class="breadcrumb">
-              <li><i class="fa fa-home"></i><a href="/">Home</a></li>
-              <li><i class="fa fa-laptop"></i>Dashboard</li>
-            </ol>
-          </div>
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-laptop"></i> Dashboard</h3>
+                <ol class="breadcrumb">
+                    <li><i class="fa fa-home"></i><a href="/">Home</a></li>
+                    <li><i class="fa fa-laptop"></i>Dashboard</li>
+                </ol>
+            </div>
         </div>
-      </section>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>제조원가</strong></h2>
+                    </div>
+                    <div class="info-box blue-bg" onclick="location.href='{% url 'board:chart1' %}';">
+                        <i class="fa fa-krw"></i>
+                        <div class="count">6.674%</div>
+                        <div class="title">Download</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>전년 | 전월 성장률</strong></h2>
+                    </div>
+                    <div class="info-box brown-bg" onclick="location.href='{% url 'board:chart2' %}';">
+                        <i class="fa fa-bar-chart-o"></i>
+                        <div class="count">7.538</div>
+                        <div class="title">성장률</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>환율</strong></h2>
+                    </div>
+                    <div class="info-box dark-bg" onclick="location.href='#';" data-target="#myModal" data-toggle="modal">
+                        <i class="fa fa-money"></i>
+                        <div class="count">₩{{price}}</div>
+                        <div class="title">미국USD</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>Simulator</strong></h2>
+                    </div>
+                    <div class="info-box green-bg" onclick="location.href='{% url 'board:chart3' %}';">
+                        <i class="fa fa-desktop"></i>
+                        <div class="count">Simulate</div>
+                        <div class="title">(고정비, 변동비)</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+        </div>
+        <!--/.row-->
+
+        <div class="row">
+            <div class="col-lg-11 col-md-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><i class="icon_piechart"></i><strong>예측데이터</strong></h2>
+                        <div class="panel-actions">
+                            <a href="#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
+                            <a href="#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
+                            <a href="#" class="btn-close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <section class="panel">
+                        <div class="panel-body text-center">
+                            <label>조회 시작 시점</label>
+                            <select id="year_selectbox" onchange="change_data_year()"></select>
+                            <canvas id="mychart" height="300" width="1500"></canvas>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+            <div class="col-md-1">
+                <button class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal" id="btn_get_predict" onclick="get_predict()">예측</button>
+            </div>
+            <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                            <h4 class="modal-title">Form Tittle</h4>
+                        </div>
+                        <div class="modal-body" align="center">
+                            <img src="{{graph}}" width="500px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <!--Project Activity start-->
+                <section class="panel">
+                    <div class="panel-body progress-panel">
+                        <div class="row">
+                            <div class="col-lg-8 task-progress pull-left">
+                                <h1>To Do Everyday</h1>
+                            </div>
+                            <div class="col-lg-4">
+                    <span class="profile-ava pull-right">
+                                        {{user_id}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-hover personal-task">
+                        <tbody>
+                        <tr>
+                            <td>Today</td>
+                            <td>
+                                web design
+                            </td>
+                            <td>
+                                <span class="badge bg-important">Upload</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Yesterday</td>
+                            <td>
+                                Project Design Task
+                            </td>
+                            <td>
+                                <span class="badge bg-success">Task</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>21-05-14</td>
+                            <td>
+                                Generate Invoice
+                            </td>
+                            <td>
+                                <span class="badge bg-success">Task</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>21-05-15</td>
+                            <td>
+                                Project Testing
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">To-Do</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>21-05-16</td>
+                            <td>
+                                Project Release Date
+                            </td>
+                            <td>
+                                <span class="badge bg-info">Milestone</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>21-05-18</td>
+                            <td>
+                                Project Release Date
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">To-Do</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Last week</td>
+                            <td>
+                                Project Development
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">To-Do</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>last month</td>
+                            <td>
+                                Project Development
+                            </td>
+                            <td>
+                                <span class="badge bg-success">To-Do</span>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <!--Project Activity end-->
+            </div>
+        </div>
     </section>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+    var this_year = new Date().getFullYear();
+    var this_month = new Date().getMonth() + 1;
+    var year_index = 0;
+    var is_predict_data_given = false;
+
+    var period_list = [];
+    var cost_list = [];
+
+    var chart_data;
+    var chart_opt;
+    var chart;
+
+    var cost_data1 = [];
+    var cost_data2 = [];
+
+    var ctx = document.getElementById('mychart').getContext('2d');
+
+    var csrftoken = getCookie('csrftoken');
+    var xhr;
+    var xhr_costbill;
+    var xhr_prediction;
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    window.onload = function() {
+        xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    var data = xhr.responseText;
+                    var json_data = JSON.parse(data);
+                    var temp_period = [];
+
+                    for (var i = 0; i < json_data.length; i++) {
+                        temp_period[i] = json_data[i]['periodym_cd'];
+                    }
+                    var item_set = new Set(temp_period);
+                    temp_period = [...item_set];
+                    temp_period.sort();
+
+
+                    for (var i = 0; i < temp_period.length; i++) {
+                        period_list[i] = Math.floor(temp_period[i] / 100) + "." + temp_period[i] % 100;
+                    }
+
+                    for (var i = 1; i <= 3; i++) {
+                        period_list.push(this_year + "." + (this_month++));
+
+                        if (this_month == 13) {
+                            this_year++;
+                            this_month = 1;
+                        }
+                    }
+
+                    set_year_selectbox();
+                    set_whole_data(json_data);
+                    initialize_chart_data();
+                    draw_chart();
+                }
+            } else {
+                if (xhr.status == 400) {
+                    var data = xhr.responseText;
+                    var obj = JSON.parse(data);
+                }
+            }
+        };
+
+        /*
+        var payload = {
+            "prediction1_cost":,
+            "prediction2_cost":,
+            "prediction3_cost":,
+            "periodym1_cd":,
+            "periodym2_cd":,
+            "periodym3_cd":,
+            "variableperc_cost":,
+            "fixedperc_cost":,
+            "materialperc_cost":
+        }
+        */
+
+        var strurl = "http://127.0.0.1:8080/rest_api/costbill";
+        xhr.open("GET", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(null);
+        xhr.close();
+
+        var strurl = "http://127.0.0.1:8080/rest_api/ca-prediction";
+        xhr.open("GET", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(null);
+    }
+
+    function set_whole_data(data) {
+        for (var i = 0; i < period_list.length - 3; i++) {
+            cost_list[i] = 0;
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            var idx = period_list.indexOf(Math.floor(data[i]['periodym_cd'] / 100) + "." + data[i]['periodym_cd'] % 100);
+            var mater_cost = data[i]['uc_srw'];
+            var labor_cost = data[i]['uc_dlc'] + data[i]['uc_idlc'];
+            var manu_cost = data[i]['uc_dohc'] + data[i]['uc_idohc'];
+
+            cost_list[idx] += (mater_cost + labor_cost + manu_cost);
+            cost_data1[idx] = NaN;
+            cost_data2[idx] = NaN;
+        }
+    }
+
+    function initialize_chart_data() {
+        chart_data = {
+            labels: period_list,
+            datasets: [{
+                label: "원가값",
+                fill: false,
+                borderColor: 'black',
+                borderWidth: 1,
+                pointRadius: 0,
+                data: cost_list
+            }, {
+                label: "불확실도 최대값",
+                fill: false,
+                borderColor: 'transparent',
+                pointRadius: 0,
+                data: cost_data1
+            }, {
+                label: "불확실도 최소값",
+                backgroundColor: 'rgba(55, 173, 221, 0.3)',
+                borderColor: 'transparent',
+                pointRadius: 0,
+                fill: '-1',
+                data: cost_data2
+            }]
+        };
+
+        chart_opt = {
+            responsive: false,
+            legend: {
+                display: false
+            },
+            elements: {
+                line: {
+                    tension: 0.1
+                }
+            },
+            plugins: {
+                filler: {
+                    propagate: false
+                }
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false,
+                        callback: function (value, index, values) {
+                            if(is_predict_data_given) {
+                                if (index == 0 || index >= values.length - 4)
+                                    return value;
+                                else
+                                    return "";
+                            }
+                            else {
+                                if (index%12 == 0 || index == values.length - 4)
+                                    return value;
+                                else
+                                    return "";
+                            }
+                        },
+                    },
+                    gridLines: {
+                        color: 'transparent',
+                        zeroLineColor: 'black',
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        max: 410000000,
+                        min: 360000000
+                    },
+                    gridLines: {
+                        zeroLineColor: 'black',
+                        zeroLineWidth: 2,
+                        color: 'transparent'
+                    }
+                }]
+            }
+        };
+    }
+
+    function draw_chart() {
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: chart_data,
+            options: chart_opt
+        });
+    }
+
+    function set_year_selectbox() {
+        var year_selectbox = document.getElementById('year_selectbox');
+        var starting_year = Math.floor(period_list[0]);
+
+        for(var i=starting_year; i<=this_year; i++) {
+            var option = document.createElement('option');
+            option.innerText = i + "";
+            year_selectbox.appendChild(option);
+        }
+    }
+
+    function get_predict() {
+        var btn_get_predict = document.getElementById('btn_get_predict');
+        btn_get_predict.innerText = '예측 완료';
+        btn_get_predict.setAttribute('disabled', true);
+        is_predict_data_given = true;
+
+
+        cost_data1[cost_data1.length - 1] = Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] + 5000000);
+        cost_data2[cost_data2.length - 1] = Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] - 15000000);
+
+        for (var i = 0; i < 3; i++) {
+            cost_list.push(Math.floor(Math.random() * 20000000) + 390000000);
+            cost_data1.push(Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] + 5000000));
+            cost_data2.push(Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] - 15000000));
+        }
+
+        var displayed_period = [];
+        var displayed_cost = [];
+        var temp_min = [];
+        var temp_max = [];
+
+        for (var i = year_index; i < period_list.length; i++) {
+            displayed_period.push(period_list[i]);
+        }
+
+        for (var i = year_index; i < cost_list.length; i++) {
+            displayed_cost.push(cost_list[i]);
+            temp_min.push(cost_data1[i]);
+            temp_max.push(cost_data2[i]);
+        }
+
+        chart_data.labels = displayed_period;
+        chart_data.datasets[0].data = displayed_cost;
+        chart_data.datasets[1].data = temp_max;
+        chart_data.datasets[2].data = temp_min;
+
+        chart.update();
+    }
+
+    function change_data_year() {
+        var year_selectbox = document.getElementById('year_selectbox');
+        var selected_year = year_selectbox.options[year_selectbox.selectedIndex].value;
+        year_index = 0;
+
+        while(selected_year >  Math.floor(period_list[year_index])) {
+            year_index++;
+        }
+
+        var displayed_period = [];
+        var displayed_cost = [];
+        var temp_min = [];
+        var temp_max = [];
+
+        for (var i=year_index; i<period_list.length; i++) {
+            displayed_period.push(period_list[i]);
+        }
+
+        for (var i=year_index; i<cost_list.length; i++) {
+            displayed_cost.push(cost_list[i]);
+            temp_min.push(cost_data1[i]);
+            temp_max.push(cost_data2[i]);
+        }
+
+        chart_data.labels = displayed_period;
+        chart_data.datasets[0].data = displayed_cost;
+        chart_data.datasets[1].data = temp_max;
+        chart_data.datasets[2].data = temp_min;
+        chart.update();
+    }
+</script>
 
 {% endblock %}
