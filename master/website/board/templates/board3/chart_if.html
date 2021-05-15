@@ -128,6 +128,7 @@ ul.tabs li.current{
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script></script>
 
 <script>
     var csrftoken = getCookie('csrftoken');
@@ -148,12 +149,12 @@ ul.tabs li.current{
     var manu_cost = [];
     var sales_cost = [];
 
-    var sales_max = 0;
-    var sales_min = 0;
-    var variable_max = 0;
-    var variable_min = 0;
-    var mater_max = 0;
-    var mater_mim = 0;
+    var sales_max, sales_min;
+    var variable_max, variable_min;
+    var fixed_max, fixed_min;
+    var mater_max, mater_min;
+    var labor_max, labor_min;
+    var manu_max, manu_min;
 
     var inj_data;
     var inj_opt;
@@ -203,6 +204,7 @@ ul.tabs li.current{
                     set_period();
                     set_item_selectbox();
                     set_whole_data(costbill_data);
+                    set_min_max();
                     set_chart_data();
                     draw_chart();
                     fill_table();
@@ -291,15 +293,6 @@ ul.tabs li.current{
             manu_cost[item_list.length - 1][period_idx] += manu_cost[item_idx][period_idx];
             sales_cost[item_list.length - 1][period_idx] += sales_cost[item_idx][period_idx];
         }
-
-        for (var i = 0; i < period_list.length; i++) {
-            if (mater_max < mater_cost[cur_item_idx][i])
-                mater_max = mater_cost[cur_item_idx][i];
-            if (sales_max < sales_cost[cur_item_idx][i])
-                sales_max = sales_cost[cur_item_idx][i];
-            if (variable_max < variable_cost[cur_item_idx][i])
-                variable_max = variable_cost[cur_item_idx][i];
-        }
     }
 
     // 차트 데이터, 옵션 설정
@@ -350,8 +343,6 @@ ul.tabs li.current{
                     stacked: true,
                     ticks: {
                         fontColor: '#808080',
-                        min: 270,
-                        max: sales_max+20,
                         startAtZero: false
                     },
                     scaleLabel: {
@@ -364,8 +355,6 @@ ul.tabs li.current{
                     position: 'right',
                     stacked: true,
                     ticks: {
-                        min: 320,
-                        max: 380,
                         fontColor: '#FF0000'
                     },
                     scaleLabel: {
@@ -455,30 +444,30 @@ ul.tabs li.current{
             scales: {
                 // y축
                 yAxes: [{
-                        id: 'sales_line',
-                        name: 'A',
-                        position: 'left',
-                        stacked: true,
-                        ticks: {
-                            fontColor: '#000000'
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: '매출액(원)'
-                        }
-                    }, {
-                        id: 'cost_bar',
-                        name: 'B',
-                        position: 'right',
-                        stacked: true,
-                        ticks: {
-                            fontColor: '#000000'
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: '매출액(원)'
-                        }
-                    }],
+                    id: 'sales_line',
+                    name: 'A',
+                    position: 'left',
+                    stacked: true,
+                    ticks: {
+                        fontColor: '#000000'
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '매출액(원)'
+                    }
+                }, {
+                    id: 'cost_bar',
+                    name: 'B',
+                    position: 'right',
+                    stacked: true,
+                    ticks: {
+                        fontColor: '#000000'
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '매출액(원)'
+                    }
+                }],
                 xAxes: [{
                     id: 'x_bottom',
                     stacked: true,
@@ -517,6 +506,24 @@ ul.tabs li.current{
                 }]
             }
         };
+
+        set_min_max();
+
+        // 각 y축 tick 최대 최소 설정
+        inj_opt.scales.yAxes[0].ticks.max = Math.floor((sales_max + (sales_max - sales_min)) / 10) * 10;
+        inj_opt.scales.yAxes[0].ticks.min = Math.floor((sales_min - 3 * (sales_max - sales_min)) / 10) * 10;
+        inj_opt.scales.yAxes[1].ticks.max = Math.ceil((variable_max + fixed_max) / 10) * 10;
+        inj_opt.scales.yAxes[1].ticks.min = Math.ceil((variable_max - fixed_min) / 10) * 10;
+        usa_opt.scales.yAxes[0].ticks.max = sales_max + (sales_max - sales_min);
+        usa_opt.scales.yAxes[0].ticks.min = sales_min - 3 * (sales_max - sales_min);
+        usa_opt.scales.yAxes[1].ticks.max = mater_max + labor_max + manu_max;
+        usa_opt.scales.yAxes[1].ticks.min = mater_min - (labor_min + manu_min);
+
+        // 각 y축 tick stepSize 설정
+        inj_opt.scales.yAxes[0].ticks.stepSize = (inj_opt.scales.yAxes[0].ticks.max - inj_opt.scales.yAxes[0].ticks.min) / 5;
+        inj_opt.scales.yAxes[1].ticks.stepSize = (inj_opt.scales.yAxes[1].ticks.max - inj_opt.scales.yAxes[1].ticks.min) / 5;
+        usa_opt.scales.yAxes[0].ticks.stepSize = (usa_opt.scales.yAxes[0].ticks.max - usa_opt.scales.yAxes[0].ticks.min) / 5;
+        usa_opt.scales.yAxes[1].ticks.stepSize = (usa_opt.scales.yAxes[1].ticks.max - usa_opt.scales.yAxes[1].ticks.min) / 5;
     }
 
     // 차트 그리기
@@ -671,11 +678,69 @@ ul.tabs li.current{
                 variable_max = variable_cost[cur_item_idx][i];
         }
 
-        alert(mater_max + " " + sales_max + " " + variable_max);
+        inj_data.datasets[0].data = sales_cost[cur_item_idx];
+        inj_data.datasets[1].data = variable_cost[cur_item_idx];
+        inj_data.datasets[2].data = fixed_cost[cur_item_idx];
 
+        usa_data.datasets[0].data = sales_cost[cur_item_idx];
+        usa_data.datasets[1].data = mater_cost[cur_item_idx];
+        usa_data.datasets[2].data = labor_cost[cur_item_idx];
+        usa_data.datasets[3].data = manu_cost[cur_item_idx];
+
+        inj_chart.destroy();
+        usa_chart.destroy();
         set_chart_data();
         draw_chart();
         fill_table();
+    }
+
+    function set_min_max() {
+        sales_max = 0;
+        variable_max = 0;
+        fixed_max = 0;
+        mater_max = 0;
+        labor_max = 0;
+        manu_max = 0;
+        sales_min = sales_cost[cur_item_idx][0];
+        variable_min = variable_cost[cur_item_idx][0];
+        fixed_min = fixed_cost[cur_item_idx][0];
+        mater_min = mater_cost[cur_item_idx][0];
+        labor_min = labor_cost[cur_item_idx][0];
+        manu_min = manu_cost[cur_item_idx][0];
+
+        for (var i = 1; i < period_list.length; i++) {
+            if (sales_min > sales_cost[cur_item_idx][i] && sales_cost[cur_item_idx][i] != 0)
+                sales_min = sales_cost[cur_item_idx][i];
+
+            if (variable_min > variable_cost[cur_item_idx][i] && variable_cost[cur_item_idx][i] != 0)
+                variable_min = variable_cost[cur_item_idx][i];
+            if (fixed_min > fixed_cost[cur_item_idx][i] && fixed_cost[cur_item_idx][i] != 0)
+                fixed_min = fixed_cost[cur_item_idx][i];
+
+            if (mater_min > mater_cost[cur_item_idx][i] && mater_cost[cur_item_idx][i] != 0)
+                mater_min = mater_cost[cur_item_idx][i];
+            if (labor_min > labor_cost[cur_item_idx][i] && labor_cost[cur_item_idx][i] != 0)
+                labor_min = labor_cost[cur_item_idx][i];
+            if (manu_min > manu_cost[cur_item_idx][i] && manu_cost[cur_item_idx][i] != 0)
+                manu_min = manu_cost[cur_item_idx][i];
+        }
+
+        for (var i = 0; i < period_list.length; i++) {
+            if (sales_max < sales_cost[cur_item_idx][i])
+                sales_max = sales_cost[cur_item_idx][i];
+
+            if (variable_max < variable_cost[cur_item_idx][i])
+                variable_max = variable_cost[cur_item_idx][i];
+            if (fixed_max < fixed_cost[cur_item_idx][i])
+                fixed_max = fixed_cost[cur_item_idx][i];
+
+            if (mater_max < mater_cost[cur_item_idx][i])
+                mater_max = mater_cost[cur_item_idx][i];
+            if (labor_max < labor_cost[cur_item_idx][i])
+                labor_max = labor_cost[cur_item_idx][i];
+            if (manu_max < manu_cost[cur_item_idx][i])
+                manu_max = manu_cost[cur_item_idx][i];
+        }
     }
 </script>
 

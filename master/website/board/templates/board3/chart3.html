@@ -42,6 +42,7 @@
                                             <select id="year_selectbox" onchange="change_data_year()"></select>
                                             <button id="btn_get_predict" onclick="get_predict()">예측 받기</button>
                                             <canvas id="mychart" height="300" width="1500"></canvas>
+                                            <canvas id="newchart" ></canvas>
                                         </div>
                                     </section>
                                 </div>
@@ -61,6 +62,7 @@
     var this_year = new Date().getFullYear();
     var this_month = new Date().getMonth() + 1;
     var year_index = 0;
+    var is_predict_data_given = false;
 
     var period_list = [];
     var cost_list = [];
@@ -124,7 +126,7 @@
 
                     set_year_selectbox();
                     set_whole_data(json_data);
-                    set_chart_data();
+                    initialize_chart_data();
                     draw_chart();
                 }
             } else {
@@ -135,7 +137,21 @@
             }
         };
 
-        var strurl = "http://127.0.0.1:8080/rest_api/costbill";
+        /*
+        var payload = {
+            "prediction1_cost":,
+            "prediction2_cost":,
+            "prediction3_cost":,
+            "periodym1_cd":,
+            "periodym2_cd":,
+            "periodym3_cd":,
+            "variableperc_cost":,
+            "fixedperc_cost":,
+            "materialperc_cost":
+        }
+        */
+
+        var strurl = "http://127.0.0.1:8080/rest_api/ca-prediction";
         xhr.open("GET", strurl, true);
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.setRequestHeader("Content-Type", "application/json");
@@ -143,46 +159,32 @@
     }
 
     function set_whole_data(data) {
-        cost_list = new Array(period_list.length);
-
         for (var i = 0; i < period_list.length - 3; i++) {
             cost_list[i] = 0;
         }
 
         for (var i = 0; i < data.length; i++) {
-            var idx = period_list.indexOf(Math.floor(data[i]['periodym_cd']/100) + "." + data[i]['periodym_cd']%100);
+            var idx = period_list.indexOf(Math.floor(data[i]['periodym_cd'] / 100) + "." + data[i]['periodym_cd'] % 100);
             var mater_cost = data[i]['uc_srw'];
             var labor_cost = data[i]['uc_dlc'] + data[i]['uc_idlc'];
             var manu_cost = data[i]['uc_dohc'] + data[i]['uc_idohc'];
 
             cost_list[idx] += (mater_cost + labor_cost + manu_cost);
+            cost_data1[idx] = NaN;
+            cost_data2[idx] = NaN;
         }
     }
 
-    function set_chart_data() {
-        for (var i = 0; i < cost_list.length; i++) {
-            cost_data1[i] = Math.random() * 50000000 + cost_list[i];
-            cost_data2[i] = - Math.random() * 50000000 + cost_list[i];
-        }
-
-        var displayed_period = [];
-        var displayed_cost = [];
-
-        for (var i=year_index; i<period_list.length; i++) {
-            displayed_period.push(period_list[i]);
-            displayed_cost.push(cost_list[i]);
-        }
-        alert(displayed_period[0]);
-
+    function initialize_chart_data() {
         chart_data = {
-            labels: displayed_period,
+            labels: period_list,
             datasets: [{
                 label: "원가값",
                 fill: false,
                 borderColor: 'black',
                 borderWidth: 1,
                 pointRadius: 0,
-                data: displayed_cost
+                data: cost_list
             }, {
                 label: "불확실도 최대값",
                 fill: false,
@@ -217,14 +219,31 @@
             scales: {
                 xAxes: [{
                     ticks: {
-                        display: false,
-                        autoSkip: false
+                        autoSkip: false,
+                        callback: function (value, index, values) {
+                            if(is_predict_data_given) {
+                                if (index == 0 || index >= values.length - 4)
+                                    return value;
+                                else
+                                    return "";
+                            }
+                            else {
+                                if (index == 0 || index == values.length - 4)
+                                    return value;
+                                else
+                                    return "";
+                            }
+                        },
                     },
                     gridLines: {
                         zeroLineColor: 'black',
                     }
                 }],
                 yAxes: [{
+                    ticks: {
+                        max: 450000000,
+                        min: 350000000
+                    },
                     gridLines: {
                         zeroLineColor: 'black',
                         zeroLineWidth: 2,
@@ -243,14 +262,6 @@
         });
     }
 
-    function get_predict() {
-        for(var i=1; i<=3; i++) {
-            cost_list.push(Math.floor(Math.random() * 100000000) + 350000000);
-        }
-
-        chart.update();
-    }
-
     function set_year_selectbox() {
         var year_selectbox = document.getElementById('year_selectbox');
         var starting_year = Math.floor(period_list[0]);
@@ -262,6 +273,45 @@
         }
     }
 
+    function get_predict() {
+        var btn_get_predict = document.getElementById('btn_get_predict');
+        btn_get_predict.innerText = '예측 완료';
+        btn_get_predict.setAttribute('disabled', true);
+        is_predict_data_given = true;
+
+
+        cost_data1[cost_data1.length - 1] = Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] + 5000000);
+        cost_data2[cost_data2.length - 1] = Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] - 15000000);
+
+        for (var i = 0; i < 3; i++) {
+            cost_list.push(Math.floor(Math.random() * 20000000) + 390000000);
+            cost_data1.push(Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] + 5000000));
+            cost_data2.push(Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] - 15000000));
+        }
+
+        var displayed_period = [];
+        var displayed_cost = [];
+        var temp_min = [];
+        var temp_max = [];
+
+        for (var i = year_index; i < period_list.length; i++) {
+            displayed_period.push(period_list[i]);
+        }
+
+        for (var i = year_index; i < cost_list.length; i++) {
+            displayed_cost.push(cost_list[i]);
+            temp_min.push(cost_data1[i]);
+            temp_max.push(cost_data2[i]);
+        }
+
+        chart_data.labels = displayed_period;
+        chart_data.datasets[0].data = displayed_cost;
+        chart_data.datasets[1].data = temp_max;
+        chart_data.datasets[2].data = temp_min;
+
+        chart.update();
+    }
+
     function change_data_year() {
         var year_selectbox = document.getElementById('year_selectbox');
         var selected_year = year_selectbox.options[year_selectbox.selectedIndex].value;
@@ -271,8 +321,26 @@
             year_index++;
         }
 
-        set_chart_data();
-        draw_chart();
+        var displayed_period = [];
+        var displayed_cost = [];
+        var temp_min = [];
+        var temp_max = [];
+
+        for (var i=year_index; i<period_list.length; i++) {
+            displayed_period.push(period_list[i]);
+        }
+
+        for (var i=year_index; i<cost_list.length; i++) {
+            displayed_cost.push(cost_list[i]);
+            temp_min.push(cost_data1[i]);
+            temp_max.push(cost_data2[i]);
+        }
+
+        chart_data.labels = displayed_period;
+        chart_data.datasets[0].data = displayed_cost;
+        chart_data.datasets[1].data = temp_max;
+        chart_data.datasets[2].data = temp_min;
+        chart.update();
     }
 </script>
 

@@ -153,7 +153,7 @@ ul.tabs li.current{
     var variable_max = 0;
     var variable_min = 0;
     var mater_max = 0;
-    var mater_mim = 0;
+    var mater_min = 0;
 
     var inj_data;
     var inj_opt;
@@ -671,6 +671,7 @@ ul.tabs li.current{
                 variable_max = variable_cost[cur_item_idx][i];
         }
 
+        inj_chart.destroy();
         set_chart_data();
         draw_chart();
         fill_table();
