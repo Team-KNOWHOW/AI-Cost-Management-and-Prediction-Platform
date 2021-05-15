@@ -1977,3 +1977,48 @@ def chart3(request):
 
 
     return render(request, 'board3/chart3.html', context)
+
+def simulate(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+        return redirect('board:home')
+
+
+
+    return render(request, 'board3/simulate.html', context)
+
+@csrf_exempt
+def insertSimulate(request):
+    context = {}
+
+    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
+        member_no = request.session['id']
+        member_id = request.session['user_id']
+    else:
+        member_no = None
+        member_id = None
+
+        return redirect('board:home')
+
+    variable = request.GET['variable']
+    fixed = request.GET['fixed']
+    material = request.GET['material']
+
+    context['success'] = True
+    context['message'] = '선박 삭제되었습니다.'
+
+    rs = CaPridiction.objects.create(variableperc_cost=variable,
+                                     fixedperc_cost=fixed,
+                                     materialperc_cost=material)
+
+    context['result_msg'] = '등록.'
+
+
+    return JsonResponse(context, content_type='application/json')

@@ -469,3 +469,26 @@ class DmManucost(models.Model): #제조비용마트
     class Meta:
         managed = False
         db_table = 'dm_manucost'
+
+class CaPridiction(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    prediction1_cost = models.IntegerField(db_column='prediction1_cost', default=0)
+    prediction2_cost = models.IntegerField(db_column='prediction2_cost', default=0)
+    prediction3_cost = models.IntegerField(db_column='prediction3_cost', default=0)
+    periodym1_cd = models.IntegerField(db_column='periodym1_cd', default=0)
+    periodym2_cd = models.IntegerField(db_column='periodym2_cd', default=0)
+    periodym3_cd = models.IntegerField(db_column='periodym3_cd', default=0)
+    variableperc_cost = models.FloatField(db_column='variableperc_cost', default=0)
+    fixedperc_cost = models.FloatField(db_column='fixedperc_cost', default=0)
+    materialperc_cost = models.FloatField(db_column='materialperc_cost', default=0)
+    prediction1_max = models.IntegerField(db_column='prediction1_max', default=0)
+    prediction2_max = models.IntegerField(db_column='prediction2_max', default=0)
+    prediction3_max = models.IntegerField(db_column='prediction3_max', default=0)
+    prediction1_min = models.IntegerField(db_column='prediction1_min', default=0)
+    prediction2_min = models.IntegerField(db_column='prediction2_min', default=0)
+    prediction3_min = models.IntegerField(db_column='prediction3_min', default=0)
+
+    class Meta:
+        managed = False
+        db_table = 'ca_prediction'
+
