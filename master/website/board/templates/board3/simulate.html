@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    var xhr;
+
+    function insertData(){
+
+        alert('hh');
+
+        var variable = document.getElementById('variable').value;
+        var fixed = document.getElementById('fixed').value;
+        var material = document.getElementById('material').value;
+
+        var strurl = 'insertSimulate?variable=' + variable + '&fixed=' + fixed + '&material=' + material;
+
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                var data = xhr.responseText;
+
+                var obj = JSON.parse(data);
+                if(obj.flag == '0') {
+                    //alert(obj.template_url);
+                    location.href = obj.template_url;
+                }
+                else {
+                    alert(obj.result_msg);
+                }
+
+            }
+        };
+        xhr.open("POST", strurl);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.send(null);
+
+    }
+
+</script>
+{% endblock %}
+
+
+
+{% block body %}
+
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+
+
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="fa fa-desktop"></i>Simulate</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-11 col-md-12">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><i class="icon_piechart"></i><strong>예측데이터</strong></h2>
+                        <div class="panel-actions">
+                            <a href="#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
+                            <a href="#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
+                            <a href="#" class="btn-close"><i class="fa fa-times"></i></a>
+                        </div>
+                    </div>
+                    <section class="panel">
+                        <div class="panel-body text-center">
+                            <canvas height="300" width="1500"></canvas>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+            <div class="col-md-1">
+                <i><strong>변동비%</strong></i><input type="number" id="variable" class="form-control">
+                <br>
+                <i><strong>고정비%</strong></i><input type="number" id="fixed" class="form-control">
+                <br>
+                <i><strong>재료비%</strong></i><input type="number" id="material" class="form-control">
+                <br>
+                <button class="btn btn-default btn-lg" onclick="insertData();">예측</button>
+            </div>
+
+        </div>
+    </section>
+    <!--main content end-->
+</section>
+
+<script>
+
+</script>
+
+{% endblock %}
