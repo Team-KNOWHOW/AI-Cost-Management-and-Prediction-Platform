@@ -3,62 +3,7 @@
 
 {% block scripts %}
 {{ block.super }}
-<script>
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    var csrftoken = getCookie('csrftoken');
-
-    var xhr;
-
-    function insertData(){
-
-        alert('hh');
-
-        var variable = document.getElementById('variable').value;
-        var fixed = document.getElementById('fixed').value;
-        var material = document.getElementById('material').value;
-
-        var strurl = 'insertSimulate?variable=' + variable + '&fixed=' + fixed + '&material=' + material;
-
-        xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-                var data = xhr.responseText;
-
-                var obj = JSON.parse(data);
-                if(obj.flag == '0') {
-                    //alert(obj.template_url);
-                    location.href = obj.template_url;
-                }
-                else {
-                    alert(obj.result_msg);
-                }
-
-            }
-        };
-        xhr.open("POST", strurl);
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        xhr.send(null);
-
-    }
-
-</script>
 {% endblock %}
-
-
 
 {% block body %}
 
@@ -86,7 +31,7 @@
                         </div>
                     </div>
                     <section class="panel">
-                        <div class="panel-body text-center">
+                        <div class="panel-body text-center" id="simul_canvas">
                             <canvas height="300" width="1500"></canvas>
                         </div>
                     </section>
@@ -108,8 +53,94 @@
     <!--main content end-->
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script>
+    //var simul_canvas = document.getElementById('simul_canvas').getContext('2d');
+    var simul_data;
+    var simul_opt;
+    var simul_chart;
 
+    var this_year = new Date().getFullYear();
+    var this_month = new Date().getMonth() + 1;
+
+    var csrftoken = getCookie('csrftoken');
+    function getCookie(name) {
+        var cookieValue = null;
+
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                var data = xhr.responseText;
+
+                var obj = JSON.parse(data);
+                if (obj.flag == '0') {
+                    //alert(obj.template_url);
+                    location.href = obj.template_url;
+                } else {
+                    alert(obj.result_msg);
+                }
+            }
+        }
+    };
+
+    function insertData() {
+        var variable = document.getElementById('variable').value;
+        var fixed = document.getElementById('fixed').value;
+        var material = document.getElementById('material').value;
+        var payload = {
+            "prediction1_cost": 0,
+            "prediction2_cost": 0,
+            "prediction3_cost": 0,
+            "periodym1_cd": (this_year * 100 + this_month) * 100 + 1,
+            "periodym2_cd": (this_year + Math.floor((this_month + 1) / 13)) * 10000 + (this_month % 12 + 1) * 100 + 1,
+            "periodym3_cd": (this_year + Math.floor((this_month + 2) / 13)) * 10000 + ((this_month + 1) % 12 + 1) * 100 + 1,
+            "variableperc_cost": variable,
+            "fixedperc_cost": fixed,
+            "materialperc_cost": material,
+            'prediction1_max': 0,
+            'prediction2_max': 0,
+            'prediction3_max': 0,
+            'prediction1_min': 0,
+            'prediction2_min': 0,
+            'prediction3_min': 0
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/ca-prediction";
+        xhr.open("POST", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
+    }
+
+    function initialize_chart_data() {
+        simul_data = {};
+        simul_opt = {};
+    }
+
+    function draw_chart() {
+        simul_chart = new Chart(simul_canvas, {
+            type: 'line',
+            data: simul_data,
+            options: simul_opt
+        });
+    }
 </script>
 
 {% endblock %}
