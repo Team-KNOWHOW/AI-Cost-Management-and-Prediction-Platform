@@ -673,8 +673,6 @@ def cc_manucost_if(request):
                 sheet_in.cell(row=2, column=idx).value = i[8]
                 idx += 1
 
-            filename = "manucost.xlsx"
-
             response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename="manucost.xlsx"'
 
@@ -684,21 +682,17 @@ def cc_manucost_if(request):
         return response
 
     elif request.method == 'POST':  # Excel Template Upload
-        data = JSONParser().parse(request)
+        file = request.get('input_file')
 
-        if BCosteleaccnt.objects.filter(pl_cd=data['pl_cd'], usage_fg='Y').exists():
-            raise exceptions.ParseError("Duplicate PL Code")
+        print(file)
 
-        if BCosteleaccnt.objects.filter(accnt_cd=data['accnt_cd'], usage_fg='Y').exists():
-            raise exceptions.ParseError("Duplicate Account Code")
+        #if BCosteleaccnt.objects.filter(pl_cd=data['pl_cd'], usage_fg='Y').exists():
+            #raise exceptions.ParseError("Duplicate PL Code")
 
-        serializer = BCosteleaccntSerializer(data=data)
+        #if BCosteleaccnt.objects.filter(accnt_cd=data['accnt_cd'], usage_fg='Y').exists():
+           #raise exceptions.ParseError("Duplicate Account Code")
 
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-
-    return JsonResponse(serializer.errors, status=400)
+    return JsonResponse(status=201)
 
 
 @api_view(['GET', 'POST'])
