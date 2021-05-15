@@ -15,3 +15,5 @@ PyMySQL==1.0.2
 pytz==2020.1
 sqlparse @ file:///tmp/build/80754af9/sqlparse_1602184451250/work
 wincertstore==0.2
+beautifulsoup4==4.9.3
+

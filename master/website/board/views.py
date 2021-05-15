@@ -11,6 +11,9 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from datetime import datetime
 
+from bs4 import BeautifulSoup
+import urllib.request as req
+
 import pymysql
 from django.conf import settings
 
@@ -37,8 +40,20 @@ def home(request):  # 홈 화면.
 
         return redirect('/')
 
+    url = "http://finance.naver.com/marketindex/"
+    res = req.urlopen(url)
+    soup = BeautifulSoup(res, "html.parser")
+    price = soup.select_one("div.head_info > span.value").string
+    graph = soup.select_one("#exchangeList > li.on > a.graph_img > img")['src']
+    context['graph'] =graph
+    context['price'] = price
+
+
+
     context["id"] = member_no
     context["user_id"] = member_id
+
+
 
     return render(request, 'home.html', context)
 
