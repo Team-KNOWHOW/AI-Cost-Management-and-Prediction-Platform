@@ -112,7 +112,7 @@ home
                 <button class="btn btn-primary btn-lg" onclick="train()">학습</button>
                 <br>
                 {% if model %}
-                    <button class="btn btn-secondary btn-lg" id="btn_get_predict" onclick="get_predict()">예측</button>
+                    <button class="btn btn-secondary btn-lg" id="btn_get_predict" onclick="predict()">예측</button>
                 {% else %}
                     <button class="btn btn-default btn-lg" disabled>예측</button>
                 {% endif %}
@@ -534,10 +534,58 @@ home
         chart_data.datasets[2].data = temp_min;
         chart.update();
     }
-</script>
 
-<script>
     function train(){
+
+        var payload = {
+            "flag": 'train',
+        };
+
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 201)
+                    alert("학습 완료");
+                    location.reload();
+            } else {
+                if (xhr.status == 400) {
+                  alert("400 Bad Request");
+                }
+            }
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/trained-data";
+        xhr.open("POST", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
+
+    }
+    function predict() {
+
+        var payload = {
+            "flag": 'predict',
+        };
+
+        xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 201)
+                    alert("예측 완료");
+                    get_predict() //일단 마지막에 실행되는 것으로 보류.
+                    location.reload();
+            } else {
+                if (xhr.status == 400) {
+                  alert("400 Bad Request");
+                }
+            }
+        };
+
+        var strurl = "http://127.0.0.1:8080/rest_api/predicted-data";
+        xhr.open("POST", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify(payload));
 
     }
 </script>

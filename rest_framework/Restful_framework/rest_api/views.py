@@ -682,17 +682,17 @@ def cc_manucost_if(request):
         return response
 
     elif request.method == 'POST':  # Excel Template Upload
-        file = request.get('input_file')
+        file = request.FILES['input_file']
 
-        print(file)
+        print(file.name)
 
-        #if BCosteleaccnt.objects.filter(pl_cd=data['pl_cd'], usage_fg='Y').exists():
-            #raise exceptions.ParseError("Duplicate PL Code")
+        # if BCosteleaccnt.objects.filter(pl_cd=data['pl_cd'], usage_fg='Y').exists():
+        # raise exceptions.ParseError("Duplicate PL Code")
 
-        #if BCosteleaccnt.objects.filter(accnt_cd=data['accnt_cd'], usage_fg='Y').exists():
-           #raise exceptions.ParseError("Duplicate Account Code")
+        # if BCosteleaccnt.objects.filter(accnt_cd=data['accnt_cd'], usage_fg='Y').exists():
+        # raise exceptions.ParseError("Duplicate Account Code")
 
-    return JsonResponse(status=201)
+    return HttpResponse(status=201)
 
 
 @api_view(['GET', 'POST'])
@@ -735,6 +735,8 @@ def costbill_detail(request, pk):
         return HttpResponse(status=204)
 
 
+@api_view(['GET', 'POST'])
+@csrf_exempt
 def ca_prediction(request):
     if request.method == 'GET':  # 가장 최근에 생성된 row 겍체를 반환.
         obj = CaPrediction.objects.last()
@@ -759,3 +761,22 @@ def ca_prediction(request):
             return JsonResponse(serializer.data, status=201)
 
     return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@csrf_exempt
+def train_data(request):
+    if request.method == 'POST':
+        print("학습")
+
+        return HttpResponse(status=201)
+
+
+@api_view(['POST'])
+@csrf_exempt
+def predict_data(request):
+    if request.method == 'POST':
+        print("예측")
+
+        return HttpResponse(status=201)
+
