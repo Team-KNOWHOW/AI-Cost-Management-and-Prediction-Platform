@@ -49,14 +49,12 @@ def home(request):  # 홈 화면.
     context['price'] = price
 
     file_name = 'khmodel.h5'
-    fs = FileSystemStorage(location='static/models')
-    if (fs.exists(file_name)):
+    if os.path.isfile('../../rest_framework/Restful_framework/static/model/' + file_name):
         file_name = 'khmodel.h5'
         context["model"] = file_name
 
     context["id"] = member_no
     context["user_id"] = member_id
-
 
 
     return render(request, 'home.html', context)
