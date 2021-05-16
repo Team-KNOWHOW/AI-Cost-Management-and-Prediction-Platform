@@ -49,7 +49,7 @@ def home(request):  # 홈 화면.
     context['price'] = price
 
     file_name = 'khmodel.h5'
-    if os.path.isfile('../../rest_framework/Restful_framework/static/' + file_name):
+    if os.path.isfile('../../rest_framework/Restful_framework/static/model/' + file_name):
         file_name = 'khmodel.h5'
         context["model"] = file_name
 
