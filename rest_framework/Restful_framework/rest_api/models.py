@@ -480,6 +480,12 @@ class CaPrediction(models.Model):  # 분석 결과 DB
     variableperc_cost = models.FloatField(db_column='variableperc_cost', default=0)
     fixedperc_cost = models.FloatField(db_column='fixedperc_cost', default=0)
     materialperc_cost = models.FloatField(db_column='materialperc_cost', default=0)
+    prediction1_max = models.IntegerField(db_column='prediction1_max', default=0)
+    prediction2_max = models.IntegerField(db_column='prediction2_max', default=0)
+    prediction3_max = models.IntegerField(db_column='prediction3_max', default=0)
+    prediction1_min = models.IntegerField(db_column='prediction1_min', default=0)
+    prediction2_min = models.IntegerField(db_column='prediction2_min', default=0)
+    prediction3_min = models.IntegerField(db_column='prediction3_min', default=0)
 
     class Meta:
         managed = False

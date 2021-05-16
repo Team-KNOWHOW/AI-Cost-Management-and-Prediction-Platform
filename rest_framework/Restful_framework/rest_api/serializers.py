@@ -101,6 +101,7 @@ class CcCostBillSerializer(serializers.ModelSerializer):
 class CaPredictionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CaPrediction
-        fields = ('prediction1_cost', 'prediction1_cost', 'prediction1_cost',
-                  'periodym1_cd', 'periodym1_cd', 'periodym1_cd', 'variableperc_cost',
-                  'fixedperc_cost', 'materialperc_cost')
+        fields = ('prediction1_cost', 'prediction2_cost', 'prediction3_cost',
+                  'periodym1_cd', 'periodym2_cd', 'periodym3_cd', 'variableperc_cost',
+                  'fixedperc_cost', 'materialperc_cost', 'prediction1_max', 'prediction2_max',
+                  'prediction3_max', 'prediction1_min', 'prediction2_min', 'prediction3_min')
