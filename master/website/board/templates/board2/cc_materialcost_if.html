@@ -26,28 +26,63 @@
 
     function downloadTemplate()
     {
-        var strurl = "cc_materialcost_if/materialcosttemplate_download"
+        var strurl = "http://127.0.0.1:8080/rest_api/cc-material-cost-if"
 
         xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
-                var data = xhr.responseText;
+                var blob = this.response;
+                var fileName = "materialcost.xlsx"
 
-                var obj = JSON.parse(data);
-                if(obj.flag == '0') {
-                    //alert(obj.template_url);
-                    location.href = obj.template_url;
-                }
-                else {
-                    alert(obj.result_msg);
-                }
+                var downloadLink = window.document.createElement('a');
+                var contentTypeHeader = xhr.getResponseHeader("Content-Type");
+                downloadLink.href = window.URL.createObjectURL(new Blob([blob], { type: contentTypeHeader }));
+                downloadLink.download = fileName;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
 
             }
         };
-        xhr.open("POST", strurl);
+        xhr.open("GET", strurl);
+        xhr.responseType = 'blob';
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.send(null);
     }
+
+      function uploadTemplate()
+      {
+          const file = document.getElementById("input_file").files[0];
+
+          if(file == null) {
+              alert('파일를 업로드 해주십시오.');
+              document.getElementById("input_file").focus();
+              return false;
+          }
+
+          const formData = new FormData();
+          formData.append('input_file', file);
+
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState == 4) {
+                  if(xhr.status==201)
+                      alert("파일 업로드가 완료되었습니다.");
+                  location.reload();
+              }
+              else {
+                  if(xhr.status==400) {
+                      alert("400 Bad Request");
+                  }
+              }
+          };
+
+          var strurl = "http://127.0.0.1:8080/rest_api/cc-material-cost-if";
+          xhr.open("POST", strurl, true);
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          //xhr.setRequestHeader("Content-Type", "multipart/form-data");
+          xhr.send(formData);
+      }
 
     </script>
 
@@ -75,10 +110,10 @@
                 <table>
                     <tr>
                         <td>
-                            <input type="file" name="ufile" accept=".xlsx" style="width:200px">
+                            <input id="input_file" type="file" name="ufile" accept=".xlsx" style="width:200px">
                         </td>
                         <td>
-                            <button type="submit"class="btn btn-primary btn-sm" >액셀업로드</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="uploadTemplate()">액셀업로드</button>
                         </td>
                     </tr>
                 </table>

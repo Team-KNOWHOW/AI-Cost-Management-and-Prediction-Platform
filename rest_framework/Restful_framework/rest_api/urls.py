@@ -66,7 +66,14 @@ urlpatterns = [
 
     # 2단계 Excel Upload, Download API
     path('cc-manu-cost-if', views.cc_manucost_if, name='cc_manucost_if_template'),
+    path('cc-material-cost-if', views.cc_materialcost_if, name='cc_materialcost_if_template'),
+    path('cc-item-per-manu-cost-if', views.cc_itempermanucost_if, name='cc_itempermanucost_template'),
+    path('cc-product-cost-payment-if', views.cc_productcostpayment_if, name='cc_productcostpayment_if_template'),
 
     # 3단계 분석 결과 data API
     path('ca-prediction', views.ca_prediction, name='ca_prediction_result'),
+
+    # 3단계 분석 기능 API
+    path('trained-data', views.train_data, name='train_data'),
+    path('predicted-data', views.predict_data, name='predict_data'),
 ]

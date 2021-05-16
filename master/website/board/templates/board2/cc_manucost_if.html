@@ -72,16 +72,7 @@
               }
               else {
                   if(xhr.status==400) {
-                      alert("Bad Request");
-                      // var data = xhr.responseText;
-                      // var obj = JSON.parse(data);
-                      //
-                      // if (obj.detail == "DuplicateCode") {
-                      //     alert("법인 코드가 이미 존재합니다.");
-                      // }
-                      // else {
-                      //     alert("400 Bad Request");
-                      // }
+                      alert("400 Bad Request");
                   }
               }
           };
@@ -89,7 +80,7 @@
           var strurl = "http://127.0.0.1:8080/rest_api/cc-manu-cost-if";
           xhr.open("POST", strurl, true);
           xhr.setRequestHeader("X-CSRFToken", csrftoken);
-          xhr.setRequestHeader("Content-Type", "multipart/form-data");
+          //xhr.setRequestHeader("Content-Type", "multipart/form-data");
           xhr.send(formData);
       }
 
