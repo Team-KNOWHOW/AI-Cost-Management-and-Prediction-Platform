@@ -89,7 +89,6 @@
           var strurl = "http://127.0.0.1:8080/rest_api/cc-manu-cost-if";
           xhr.open("POST", strurl, true);
           xhr.setRequestHeader("X-CSRFToken", csrftoken);
-          xhr.setRequestHeader("Content-Type", "multipart/form-data");
           xhr.send(formData);
       }
 
