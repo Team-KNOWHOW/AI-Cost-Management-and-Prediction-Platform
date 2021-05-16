@@ -109,7 +109,14 @@ home
                 </div>
             </div>
             <div class="col-md-1">
-                <button class="btn btn-default btn-lg" id="btn_get_predict" onclick="get_predict()">예측</button>
+                <button class="btn btn-primary btn-lg" onclick="train()">학습</button>
+                <br>
+                {% if model %}
+                    <button class="btn btn-secondary btn-lg" id="btn_get_predict" onclick="get_predict()">예측</button>
+                {% else %}
+                    <button class="btn btn-default btn-lg" disabled>예측</button>
+                {% endif %}
+
             </div>
             <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
                 <div class="modal-dialog">
@@ -250,43 +257,23 @@ home
 
     var period_list = [];
     var cost_list = [];
+    var predict_list = [];
+    var predict_max = [];
+    var predict_min = [];
 
     var chart_data;
     var chart_opt;
     var chart;
 
-    var cost_data1 = [];
-    var cost_data2 = [];
-
     var ctx = document.getElementById('mychart').getContext('2d');
 
     var csrftoken = getCookie('csrftoken');
-    var xhr;
-    var xhr_costbill;
-    var xhr_prediction;
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-    window.onload = function() {
-        xhr = new XMLHttpRequest();
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    var data = xhr.responseText;
+    var xhr_costbill = new XMLHttpRequest();
+    xhr_costbill.onreadystatechange = function () {
+            if (xhr_costbill.readyState == 4) {
+                if (xhr_costbill.status == 200) {
+                    var data = xhr_costbill.responseText;
                     var json_data = JSON.parse(data);
                     var temp_period = [];
 
@@ -317,39 +304,77 @@ home
                     draw_chart();
                 }
             } else {
-                if (xhr.status == 400) {
-                    var data = xhr.responseText;
+                if (xhr_costbill.status == 400) {
+                    var data = xhr_costbill.responseText;
                     var obj = JSON.parse(data);
                 }
             }
         };
 
-        /*
-        var payload = {
-            "prediction1_cost":,
-            "prediction2_cost":,
-            "prediction3_cost":,
-            "periodym1_cd":,
-            "periodym2_cd":,
-            "periodym3_cd":,
-            "variableperc_cost":,
-            "fixedperc_cost":,
-            "materialperc_cost":
+    var xhr_prediction = new XMLHttpRequest();
+    xhr_prediction.onreadystatechange = function () {
+        if (xhr_prediction.readyState == 4) {
+            if (xhr_prediction.status == 200) {
+                var data = xhr_prediction.responseText;
+                var json_data = JSON.parse(data);
+
+                for (var i = 1; i <= 3; i++) {
+                    cost_list.push(json_data['prediction' + i + '_cost']);
+                    predict_max.push(json_data['prediction' + i + '_max']);
+                    predict_min.push(json_data['prediction' + i + '_min']);
+                }
+
+                var displayed_period = [];
+                var displayed_cost = [];
+                var temp_min = [];
+                var temp_max = [];
+
+                for (var i = year_index; i < period_list.length; i++) {
+                    displayed_period.push(period_list[i]);
+                }
+
+                for (var i = year_index; i < cost_list.length; i++) {
+                    displayed_cost.push(cost_list[i]);
+                    temp_min.push(predict_max[i]);
+                    temp_max.push(predict_min[i]);
+                }
+
+                chart_data.labels = displayed_period;
+                chart_data.datasets[0].data = displayed_cost;
+                chart_data.datasets[1].data = temp_max;
+                chart_data.datasets[2].data = temp_min;
+
+                chart.update();
+            }
+        } else {
+            if (xhr_prediction.status == 400) {
+                var data = xhr_prediction.responseText;
+                var obj = JSON.parse(data);
+            }
         }
-        */
+    };
 
-        var strurl = "http://127.0.0.1:8080/rest_api/costbill";
-        xhr.open("GET", strurl, true);
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(null);
-        xhr.close();
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
-        var strurl = "http://127.0.0.1:8080/rest_api/ca-prediction";
-        xhr.open("GET", strurl, true);
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(null);
+    window.onload = function() {
+        var costbill_url = "http://127.0.0.1:8080/rest_api/costbill";
+        xhr_costbill.open("GET", costbill_url, true);
+        xhr_costbill.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr_costbill.setRequestHeader("Content-Type", "application/json");
+        xhr_costbill.send(null);
     }
 
     function set_whole_data(data) {
@@ -364,8 +389,8 @@ home
             var manu_cost = data[i]['uc_dohc'] + data[i]['uc_idohc'];
 
             cost_list[idx] += (mater_cost + labor_cost + manu_cost);
-            cost_data1[idx] = NaN;
-            cost_data2[idx] = NaN;
+            predict_max[idx] = NaN;
+            predict_min[idx] = NaN;
         }
     }
 
@@ -384,17 +409,16 @@ home
                 fill: false,
                 borderColor: 'transparent',
                 pointRadius: 0,
-                data: cost_data1
+                data: predict_max
             }, {
                 label: "불확실도 최소값",
                 backgroundColor: 'rgba(55, 173, 221, 0.3)',
                 borderColor: 'transparent',
                 pointRadius: 0,
                 fill: '-1',
-                data: cost_data2
+                data: predict_min
             }]
         };
-
         chart_opt = {
             responsive: false,
             legend: {
@@ -437,7 +461,7 @@ home
                 yAxes: [{
                     ticks: {
                         max: 410000000,
-                        min: 360000000
+                        min: 320000000
                     },
                     gridLines: {
                         zeroLineColor: 'black',
@@ -469,42 +493,15 @@ home
     }
 
     function get_predict() {
+        var prediction_url = "http://127.0.0.1:8080/rest_api/ca-prediction";
+        xhr_prediction.open("GET", prediction_url, true);
+        xhr_prediction.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr_prediction.setRequestHeader("Content-Type", "application/json");
+        xhr_prediction.send(null);
+
         var btn_get_predict = document.getElementById('btn_get_predict');
-        btn_get_predict.innerText = '예측 완료';
         btn_get_predict.setAttribute('disabled', true);
         is_predict_data_given = true;
-
-
-        cost_data1[cost_data1.length - 1] = Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] + 5000000);
-        cost_data2[cost_data2.length - 1] = Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] - 15000000);
-
-        for (var i = 0; i < 3; i++) {
-            cost_list.push(Math.floor(Math.random() * 20000000) + 390000000);
-            cost_data1.push(Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] + 5000000));
-            cost_data2.push(Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] - 15000000));
-        }
-
-        var displayed_period = [];
-        var displayed_cost = [];
-        var temp_min = [];
-        var temp_max = [];
-
-        for (var i = year_index; i < period_list.length; i++) {
-            displayed_period.push(period_list[i]);
-        }
-
-        for (var i = year_index; i < cost_list.length; i++) {
-            displayed_cost.push(cost_list[i]);
-            temp_min.push(cost_data1[i]);
-            temp_max.push(cost_data2[i]);
-        }
-
-        chart_data.labels = displayed_period;
-        chart_data.datasets[0].data = displayed_cost;
-        chart_data.datasets[1].data = temp_max;
-        chart_data.datasets[2].data = temp_min;
-
-        chart.update();
     }
 
     function change_data_year() {
@@ -527,8 +524,8 @@ home
 
         for (var i=year_index; i<cost_list.length; i++) {
             displayed_cost.push(cost_list[i]);
-            temp_min.push(cost_data1[i]);
-            temp_max.push(cost_data2[i]);
+            temp_min.push(predict_max[i]);
+            temp_max.push(predict_min[i]);
         }
 
         chart_data.labels = displayed_period;
@@ -536,6 +533,12 @@ home
         chart_data.datasets[1].data = temp_max;
         chart_data.datasets[2].data = temp_min;
         chart.update();
+    }
+</script>
+
+<script>
+    function train(){
+
     }
 </script>
 
