@@ -69,4 +69,8 @@ urlpatterns = [
 
     # 3단계 분석 결과 data API
     path('ca-prediction', views.ca_prediction, name='ca_prediction_result'),
+
+    # 3단계 분석 기능 API
+    path('trained-data', views.train_data, name='train_data'),
+    path('predicted-data', views.predict_data, name='predict_data'),
 ]
