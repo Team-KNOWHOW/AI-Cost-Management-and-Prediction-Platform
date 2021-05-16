@@ -109,7 +109,14 @@ home
                 </div>
             </div>
             <div class="col-md-1">
-                <button class="btn btn-default btn-lg" id="btn_get_predict" onclick="get_predict()">예측</button>
+                <button class="btn btn-primary btn-lg" onclick="train()">학습</button>
+                <br>
+                {% if model %}
+                    <button class="btn btn-secondary btn-lg" id="btn_get_predict" onclick="get_predict()">예측</button>
+                {% else %}
+                    <button class="btn btn-default btn-lg" disabled>예측</button>
+                {% endif %}
+
             </div>
             <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
                 <div class="modal-dialog">
@@ -526,6 +533,12 @@ home
         chart_data.datasets[1].data = temp_max;
         chart_data.datasets[2].data = temp_min;
         chart.update();
+    }
+</script>
+
+<script>
+    function train(){
+
     }
 </script>
 
