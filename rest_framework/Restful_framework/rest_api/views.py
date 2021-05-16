@@ -1,3 +1,4 @@
+import openpyxl
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -684,13 +685,352 @@ def cc_manucost_if(request):
     elif request.method == 'POST':  # Excel Template Upload
         file = request.FILES['input_file']
 
-        print(file.name)
+        strsql1 = "SHOW TABLES LIKE 'cc_manucost_if'"
 
-        # if BCosteleaccnt.objects.filter(pl_cd=data['pl_cd'], usage_fg='Y').exists():
-        # raise exceptions.ParseError("Duplicate PL Code")
+        cursor1 = dbCon.cursor()
+        cursor1.execute(strsql1)
+        rsTmp = cursor1.fetchone()
+        cursor1.close()
 
-        # if BCosteleaccnt.objects.filter(accnt_cd=data['accnt_cd'], usage_fg='Y').exists():
-        # raise exceptions.ParseError("Duplicate Account Code")
+        if rsTmp:
+            strsql1 = "SHOW COLUMNS FROM cc_manucost_if"
+
+            cursor2 = dbCon.cursor()
+            cursor2.execute(strsql1)
+            rsColumns = cursor2.fetchall()
+            cursor2.close()
+
+        max_col = len(rsColumns)
+        book = openpyxl.load_workbook(file, read_only=True)
+        sheet = book.active
+        max_row = sheet.max_row
+
+        if max_row > 2:
+            try:
+                for j in range(3, max_row + 1):
+                    lstTmp = []
+                    strbottom = ""
+
+                    for i in range(1, max_col + 1):
+                        valTmp = sheet.cell(row=j, column=i).value
+
+                        lstTmp.append(valTmp)
+
+                        if valTmp == '':
+                            strbottom += "default,"
+                        elif valTmp == None:
+                            strbottom += "default,"
+                        else:
+                            strbottom += "'" + str(valTmp) + "',"
+
+                    strbottom = strbottom[:-1]
+
+                    strSql = "INSERT INTO cc_manucost_if VALUES (" + strbottom + ")"
+
+                    cursor = dbCon.cursor()
+                    cursor.execute(strSql)
+                    rows = cursor.fetchone()
+                    cursor.close()
+
+                dbCon.commit()
+                book.close()
+            except:
+                print("엑셀오류")
+                raise exceptions.ParseError("Excel calculation error")
+
+    return HttpResponse(status=201)
+
+
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def cc_materialcost_if(request):
+    if request.method == 'GET':  # Excel Template Download
+
+        strsql1 = "SHOW TABLES LIKE 'cc_materialcost_if'"
+
+        cursor1 = dbCon.cursor()
+        cursor1.execute(strsql1)
+        rsTmp = cursor1.fetchone()
+        cursor1.close()
+
+        rsColumns = None
+        if rsTmp:
+            strsql1 = "SHOW FULL COLUMNS FROM cc_materialcost_if"
+
+            cursor2 = dbCon.cursor()
+            cursor2.execute(strsql1)
+            rsColumns = cursor2.fetchall()
+            cursor2.close()
+
+            idx = 1
+
+            bookin = Workbook()
+            sheet_in = bookin.active
+
+            for i in rsColumns:
+                sheet_in.cell(row=1, column=idx).value = i[1]
+                sheet_in.cell(row=2, column=idx).value = i[8]
+                idx += 1
+
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="materialcost.xlsx"'
+
+            bookin.save(response)
+            bookin.close()
+
+        return response
+
+    elif request.method == 'POST':  # Excel Template Upload
+        file = request.FILES['input_file']
+
+        strsql1 = "SHOW TABLES LIKE 'cc_materialcost_if'"
+
+        cursor1 = dbCon.cursor()
+        cursor1.execute(strsql1)
+        rsTmp = cursor1.fetchone()
+        cursor1.close()
+
+        if rsTmp:
+            strsql1 = "SHOW COLUMNS FROM cc_materialcost_if"
+
+            cursor2 = dbCon.cursor()
+            cursor2.execute(strsql1)
+            rsColumns = cursor2.fetchall()
+            cursor2.close()
+
+        max_col = len(rsColumns)
+        book = openpyxl.load_workbook(file, read_only=True)
+        sheet = book.active
+        max_row = sheet.max_row
+
+        if max_row > 2:
+            try:
+                for j in range(3, max_row + 1):
+                    lstTmp = []
+                    strbottom = ""
+
+                    for i in range(1, max_col + 1):
+                        valTmp = sheet.cell(row=j, column=i).value
+
+                        lstTmp.append(valTmp)
+
+                        if valTmp == '':
+                            strbottom += "default,"
+                        elif valTmp == None:
+                            strbottom += "default,"
+                        else:
+                            strbottom += "'" + str(valTmp) + "',"
+
+                    strbottom = strbottom[:-1]
+
+                    strSql = "INSERT INTO cc_materialcost_if VALUES (" + strbottom + ")"
+
+                    cursor = dbCon.cursor()
+                    cursor.execute(strSql)
+                    rows = cursor.fetchone()
+                    cursor.close()
+
+                dbCon.commit()
+                book.close()
+            except:
+                print("엑셀오류")
+                raise exceptions.ParseError("Excel calculation error")
+
+    return HttpResponse(status=201)
+
+
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def cc_itempermanucost_if(request):
+    if request.method == 'GET':  # Excel Template Download
+
+        strsql1 = "SHOW TABLES LIKE 'cc_itempermanucost_if'"
+
+        cursor1 = dbCon.cursor()
+        cursor1.execute(strsql1)
+        rsTmp = cursor1.fetchone()
+        cursor1.close()
+
+        rsColumns = None
+        if rsTmp:
+            strsql1 = "SHOW FULL COLUMNS FROM cc_itempermanucost_if"
+
+            cursor2 = dbCon.cursor()
+            cursor2.execute(strsql1)
+            rsColumns = cursor2.fetchall()
+            cursor2.close()
+
+            idx = 1
+
+            bookin = Workbook()
+            sheet_in = bookin.active
+
+            for i in rsColumns:
+                sheet_in.cell(row=1, column=idx).value = i[1]
+                sheet_in.cell(row=2, column=idx).value = i[8]
+                idx += 1
+
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="itempermanucost.xlsx"'
+
+            bookin.save(response)
+            bookin.close()
+
+        return response
+
+    elif request.method == 'POST':  # Excel Template Upload
+        file = request.FILES['input_file']
+
+        strsql1 = "SHOW TABLES LIKE 'cc_itempermanucost_if'"
+
+        cursor1 = dbCon.cursor()
+        cursor1.execute(strsql1)
+        rsTmp = cursor1.fetchone()
+        cursor1.close()
+
+        if rsTmp:
+            strsql1 = "SHOW COLUMNS FROM cc_itempermanucost_if"
+
+            cursor2 = dbCon.cursor()
+            cursor2.execute(strsql1)
+            rsColumns = cursor2.fetchall()
+            cursor2.close()
+
+        max_col = len(rsColumns)
+        book = openpyxl.load_workbook(file, read_only=True)
+        sheet = book.active
+        max_row = sheet.max_row
+
+        if max_row > 2:
+            try:
+                for j in range(3, max_row + 1):
+                    lstTmp = []
+                    strbottom = ""
+
+                    for i in range(1, max_col + 1):
+                        valTmp = sheet.cell(row=j, column=i).value
+
+                        lstTmp.append(valTmp)
+
+                        if valTmp == '':
+                            strbottom += "default,"
+                        elif valTmp == None:
+                            strbottom += "default,"
+                        else:
+                            strbottom += "'" + str(valTmp) + "',"
+
+                    strbottom = strbottom[:-1]
+
+                    strSql = "INSERT INTO cc_itempermanucost_if VALUES (" + strbottom + ")"
+
+                    cursor = dbCon.cursor()
+                    cursor.execute(strSql)
+                    rows = cursor.fetchone()
+                    cursor.close()
+
+                dbCon.commit()
+                book.close()
+            except:
+                print("엑셀오류")
+                raise exceptions.ParseError("Excel calculation error")
+
+    return HttpResponse(status=201)
+
+
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def cc_productcostpayment_if(request):
+    if request.method == 'GET':  # Excel Template Download
+
+        strsql1 = "SHOW TABLES LIKE 'cc_productcostpayment_if'"
+
+        cursor1 = dbCon.cursor()
+        cursor1.execute(strsql1)
+        rsTmp = cursor1.fetchone()
+        cursor1.close()
+
+        rsColumns = None
+        if rsTmp:
+            strsql1 = "SHOW FULL COLUMNS FROM cc_productcostpayment_if"
+
+            cursor2 = dbCon.cursor()
+            cursor2.execute(strsql1)
+            rsColumns = cursor2.fetchall()
+            cursor2.close()
+
+            idx = 1
+
+            bookin = Workbook()
+            sheet_in = bookin.active
+
+            for i in rsColumns:
+                sheet_in.cell(row=1, column=idx).value = i[1]
+                sheet_in.cell(row=2, column=idx).value = i[8]
+                idx += 1
+
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="productcostpayment.xlsx"'
+
+            bookin.save(response)
+            bookin.close()
+
+        return response
+
+    elif request.method == 'POST':  # Excel Template Upload
+        file = request.FILES['input_file']
+
+        strsql1 = "SHOW TABLES LIKE 'cc_productcostpayment_if'"
+
+        cursor1 = dbCon.cursor()
+        cursor1.execute(strsql1)
+        rsTmp = cursor1.fetchone()
+        cursor1.close()
+
+        if rsTmp:
+            strsql1 = "SHOW COLUMNS FROM cc_productcostpayment_if"
+
+            cursor2 = dbCon.cursor()
+            cursor2.execute(strsql1)
+            rsColumns = cursor2.fetchall()
+            cursor2.close()
+
+        max_col = len(rsColumns)
+        book = openpyxl.load_workbook(file, read_only=True)
+        sheet = book.active
+        max_row = sheet.max_row
+
+        if max_row > 2:
+            try:
+                for j in range(3, max_row + 1):
+                    lstTmp = []
+                    strbottom = ""
+
+                    for i in range(1, max_col + 1):
+                        valTmp = sheet.cell(row=j, column=i).value
+
+                        lstTmp.append(valTmp)
+
+                        if valTmp == '':
+                            strbottom += "default,"
+                        elif valTmp == None:
+                            strbottom += "default,"
+                        else:
+                            strbottom += "'" + str(valTmp) + "',"
+
+                    strbottom = strbottom[:-1]
+
+                    strSql = "INSERT INTO cc_productcostpayment_if VALUES (" + strbottom + ")"
+
+                    cursor = dbCon.cursor()
+                    cursor.execute(strSql)
+                    rows = cursor.fetchone()
+                    cursor.close()
+
+                dbCon.commit()
+                book.close()
+            except:
+                print("엑셀오류")
+                raise exceptions.ParseError("Excel calculation error")
 
     return HttpResponse(status=201)
 
@@ -779,4 +1119,3 @@ def predict_data(request):
         print("예측")
 
         return HttpResponse(status=201)
-
