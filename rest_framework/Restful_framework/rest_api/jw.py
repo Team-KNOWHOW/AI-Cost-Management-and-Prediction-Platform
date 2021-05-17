@@ -1,5 +1,21 @@
+####################21번재줄
 # multi-step bayesianlstm
-
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import concatenate
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import LSTM
+from tqdm import tqdm
+import numpy as np
+import pandas as pd
+from datetime import datetime
+from sklearn.preprocessing import RobustScaler
+import pymysql
+from .models import *
 
 def dataLoader():
 
@@ -180,11 +196,48 @@ def mainChartPredict():
     realPredict = realPredict.reshape(3, )
     rpDown = epDown.reshape(3, )
     rpUp = epUp.reshape(3, )
+    print(realPredict,rpDown,rpUp)
+    periodcd = CcCostBill.objects.all().values_list('periodym_cd', flat=True).order_by('periodym_cd').last()
+    period_list=[]
+    if periodcd%100==12:
+        periodcd=(periodcd//100+1)*100+1
+    else:
+        periodcd+=1
+    period_list=[periodcd+1,periodcd+2, periodcd+3]
+    prediction1_cost=realPredict[0]
+    prediction2_cost =realPredict[1]
+    prediction3_cost =realPredict[2]
+    periodym1_cd= period_list[0]
+    periodym2_cd= period_list[1]
+    periodym3_cd= period_list[2]
+    prediction1_max=rpUp[0]
+    prediction2_max = rpUp[1]
+    prediction3_max = rpUp[2]
+    prediction1_min=rpDown[0]
+    prediction2_min = rpDown[1]
+    prediction3_min = rpDown[2]
+    rsTmp = CaPrediction.objects.create(prediction1_cost=prediction1_cost,
+                                        prediction2_cost=prediction2_cost,
+                                        prediction3_cost=prediction3_cost,
+                                        periodym1_cd=periodym1_cd,
+                                        periodym2_cd=periodym2_cd,
+                                        periodym3_cd=periodym3_cd,
+                                        prediction1_max=prediction1_max,
+                                        prediction2_max=prediction2_max,
+                                        prediction3_max=prediction3_max,
+                                        prediction1_min=prediction1_min,
+                                        prediction2_min=prediction2_min,
+                                        prediction3_min=prediction3_min
+    )
+
+    print('save완료')
 
 
-def simulatorLoader(): # 모델 읽고 1월값 받은 후 -> 예측 3개월(2월 3월 4월) 출력함수
+
+def simulatorLoader(a1,a2,a3): # 모델 읽고 1월값 받은 후 -> 예측 3개월(2월 3월 4월) 출력함수
     # [ 3개 output(array) return : 예측값(3개월치) , 최대 예측(3개월치), 최소 예측(3개월치) ]
 # userInput 부분 처리해야 됌.
+
     df_new = dataLoader()
 
     date = df_new['version_id'].astype(str)
@@ -193,6 +246,8 @@ def simulatorLoader(): # 모델 읽고 1월값 받은 후 -> 예측 3개월(2월
 
     df_new = df_new.set_index(['version_id'])
 
+
+    #df_new[0]*(1+a1*1/100)
     # # LSTM is sensitive to scale, thus a scaler is necessary.
     scaler = RobustScaler()
 
@@ -217,7 +272,14 @@ def simulatorLoader(): # 모델 읽고 1월값 받은 후 -> 예측 3개월(2월
     test_x, test_y = test[:, :-1], test[:, -1]
 
     ###요거가 인풋받을거!!!!
-    userInput = np.array(1.05 * test_x[-1]).astype('float32')
+    arrRV = np.array(trans_dfnew[-1:])  # 최근 실제 값 데이터 불러오기
+    key1 = (1 + (0.01 * a1)) * arrRV[0][0]
+    key2 = (1 + (0.01 * a2)) * arrRV[0][1]
+    key3 = (1 + (0.01 * a3)) * arrRV[0][2]
+    threeKey = [key1, key2, key3]
+    #print(test_x[-1][0])
+    #test_x[-1][0], test_x[-1][1] , test_x[-1][3]
+    userInput = np.array(threeKey).astype('float32')
 
     # 3개월 예측 코드
     a = np.append(test_x[-2:], userInput)
@@ -256,5 +318,13 @@ def simulatorLoader(): # 모델 읽고 1월값 받은 후 -> 예측 3개월(2월
     testPredict = testPredict.reshape(3, )
     epDown = epDown.reshape(3, )
     epUp = epUp.reshape(3, )
+    periodcd = CcCostBill.objects.all().values_list('periodym_cd', flat=True).order_by('periodym_cd').last()
+    period_list = []
+    if periodcd % 100 == 12:
+        periodcd = (periodcd // 100 + 1) * 100 + 1
+    else:
+        periodcd += 1
+    period_list = [periodcd+1, periodcd + 2, periodcd + 3]
 
-    return testPredict, epUp, epDown
+
+    return period_list, testPredict, epUp, epDown
