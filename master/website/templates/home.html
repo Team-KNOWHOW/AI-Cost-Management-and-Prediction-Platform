@@ -250,6 +250,8 @@ home
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script>
+    var ctx = document.getElementById('mychart').getContext('2d');
+
     var this_year = new Date().getFullYear();
     var this_month = new Date().getMonth() + 1;
     var year_index = 0;
@@ -257,7 +259,6 @@ home
 
     var period_list = [];
     var cost_list = [];
-    var predict_list = [];
     var predict_max = [];
     var predict_min = [];
 
@@ -265,7 +266,6 @@ home
     var chart_opt;
     var chart;
 
-    var ctx = document.getElementById('mychart').getContext('2d');
 
     var csrftoken = getCookie('csrftoken');
 
@@ -283,7 +283,6 @@ home
                     var item_set = new Set(temp_period);
                     temp_period = [...item_set];
                     temp_period.sort();
-
 
                     for (var i = 0; i < temp_period.length; i++) {
                         period_list[i] = Math.floor(temp_period[i] / 100) + "." + temp_period[i] % 100;
@@ -384,6 +383,10 @@ home
 
         for (var i = 0; i < data.length; i++) {
             var idx = period_list.indexOf(Math.floor(data[i]['periodym_cd'] / 100) + "." + data[i]['periodym_cd'] % 100);
+
+            if(idx == -1)
+                continue;
+
             var mater_cost = data[i]['uc_srw'];
             var labor_cost = data[i]['uc_dlc'] + data[i]['uc_idlc'];
             var manu_cost = data[i]['uc_dohc'] + data[i]['uc_idohc'];
