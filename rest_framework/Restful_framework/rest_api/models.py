@@ -474,18 +474,22 @@ class CaPrediction(models.Model):  # 분석 결과 DB
     prediction1_cost = models.IntegerField(db_column='prediction1_cost', default=0)
     prediction2_cost = models.IntegerField(db_column='prediction2_cost', default=0)
     prediction3_cost = models.IntegerField(db_column='prediction3_cost', default=0)
+    prediction4_cost = models.IntegerField(db_column='prediction4_cost', default=0)
     periodym1_cd = models.IntegerField(db_column='periodym1_cd', default=0)
     periodym2_cd = models.IntegerField(db_column='periodym2_cd', default=0)
     periodym3_cd = models.IntegerField(db_column='periodym3_cd', default=0)
+    periodym4_cd = models.IntegerField(db_column='periodym4_cd', default=0)
     variableperc_cost = models.FloatField(db_column='variableperc_cost', default=0)
     fixedperc_cost = models.FloatField(db_column='fixedperc_cost', default=0)
     materialperc_cost = models.FloatField(db_column='materialperc_cost', default=0)
     prediction1_max = models.IntegerField(db_column='prediction1_max', default=0)
     prediction2_max = models.IntegerField(db_column='prediction2_max', default=0)
     prediction3_max = models.IntegerField(db_column='prediction3_max', default=0)
+    prediction4_max = models.IntegerField(db_column='prediction4_max', default=0)
     prediction1_min = models.IntegerField(db_column='prediction1_min', default=0)
     prediction2_min = models.IntegerField(db_column='prediction2_min', default=0)
     prediction3_min = models.IntegerField(db_column='prediction3_min', default=0)
+    prediction4_min = models.IntegerField(db_column='prediction4_min', default=0)
 
     class Meta:
         managed = False
