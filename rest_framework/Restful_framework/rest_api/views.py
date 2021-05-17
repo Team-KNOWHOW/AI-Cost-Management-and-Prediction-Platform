@@ -10,6 +10,7 @@ from rest_framework import exceptions
 from openpyxl import Workbook
 import pymysql
 from django.conf import settings
+from .jw import *
 
 MYDB = getattr(settings, "DATABASES", None)
 MYDB_NAME = MYDB["default"]["NAME"]
@@ -1075,6 +1076,7 @@ def costbill_detail(request, pk):
         return HttpResponse(status=204)
 
 
+#####################ca_prediction##########################
 @api_view(['GET', 'POST'])
 @csrf_exempt
 def ca_prediction(request):
@@ -1097,25 +1099,57 @@ def ca_prediction(request):
 
         if serializer.is_valid():
             serializer.save()
+            fData = CaPrediction.objects.filter(prediction4_cost=0, periodym4_cd=0, variableperc_cost=0, fixedperc_cost=0,
+                                                 materialperc_cost=0, prediction4_max=0).first()
+
+            rsData = CaPrediction.objects.last()
+            rsData.prediction1_cost= fData.prediction1_cost
+            rsData.periodym1_cd=fData.periodym1_cd
+            rsData.prediction1_max = fData.prediction1_max
+            rsData.prediction1_min = fData.prediction1_min
+            rsData.save()
+
+            a1=rsData.variableperc_cost
+            a2=rsData.fixedperc_cost
+            a3=rsData.materialperc_cost
+
             print("모델 동작 시키는 view 함수실행.")
+            x1,x2,x3,x4=simulatorLoader(a1,a2,a3)
+            print(x1,x2,x3,x4)
+            rsData.periodym2_cd=x1[0]
+            rsData.prediction2_cost= x2[0]
+            rsData.prediction2_max = x3[0]
+            rsData.prediction2_min = x4[0]
+
+            rsData.periodym3_cd=x1[1]
+            rsData.prediction3_cost= x2[1]
+            rsData.prediction3_max = x3[1]
+            rsData.prediction3_min = x4[1]
+
+            rsData.periodym4_cd=x1[2]
+            rsData.prediction4_cost= x2[2]
+            rsData.prediction4_max = x3[2]
+            rsData.prediction4_min = x4[2]
+            rsData.save()
             return JsonResponse(serializer.data, status=201)
 
     return JsonResponse(serializer.errors, status=400)
 
 
+####################train_data##################
 @api_view(['POST'])
 @csrf_exempt
 def train_data(request):
     if request.method == 'POST':
-        print("학습")
-
+        modelTrain()
         return HttpResponse(status=201)
 
 
+####################predict_data#####################3
 @api_view(['POST'])
 @csrf_exempt
 def predict_data(request):
     if request.method == 'POST':
-        print("예측")
-
+        # print("예측")
+        mainChartPredict()
         return HttpResponse(status=201)
