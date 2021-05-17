@@ -10,6 +10,20 @@ simulate
 {% include "navbar.html" %}
 {% include "sidebar.html" %}
 
+<div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                <h4 class="modal-title">환율 그래프</h4>
+            </div>
+            <div class="modal-body" align="center">
+                <img src="{{graph}}" width="500px">
+            </div>
+        </div>
+    </div>
+</div>
+
 <section id="main-content">
     <section class="wrapper">
         <div class="row">
@@ -17,6 +31,38 @@ simulate
                 <h3 class="page-header"><i class="fa fa-desktop"></i>Simulate</h3>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>환율</strong></h2>
+                    </div>
+                    <div class="info-box blue-bg" onclick="location.href='#';" data-target="#myModal" data-toggle="modal">
+                        <i class="fa fa-krw"></i>
+                        <div class="count">{{price}}</div>
+                        <div class="title">미국USD</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><strong>기준금리</strong></h2>
+                    </div>
+                    <div class="info-box brown-bg" onclick="#">
+                        <i class="fa fa-money"></i>
+                        <div class="count">{{interestRate}}&nbsp%</div>
+                        <div class="title">기준금리&nbsp(콜&nbsp금리)</div>
+                    </div>
+                </div>
+                <!--/.info-box-->
+            </div>
+            <!--/.col-->
+        </div>
+
         <div class="row">
             <div class="col-lg-11 col-md-12">
 
