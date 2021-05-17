@@ -1,4 +1,5 @@
 import os
+from urllib.error import HTTPError
 
 import openpyxl
 from django.core.files.storage import FileSystemStorage
@@ -39,14 +40,6 @@ def home(request):  # 홈 화면.
         member_id = None
 
         return redirect('/')
-
-    url = "http://finance.naver.com/marketindex/"
-    res = req.urlopen(url)
-    soup = BeautifulSoup(res, "html.parser")
-    price = soup.select_one("div.head_info > span.value").string
-    graph = soup.select_one("#exchangeList > li.on > a.graph_img > img")['src']
-    context['graph'] =graph
-    context['price'] = price
 
     file_name = 'khmodel.h5'
     if os.path.isfile('../../rest_framework/Restful_framework/static/model/' + file_name):
@@ -1991,6 +1984,18 @@ def simulate(request):
         member_id = None
 
         return redirect('board:home')
+
+
+    url1 = "http://finance.naver.com/marketindex/"
+    res = req.urlopen(url1)
+    soup = BeautifulSoup(res, "html.parser")
+    price = soup.select_one("div.head_info > span.value").string
+    graph = soup.select_one("#exchangeList > li.on > a.graph_img > img")['src']
+    interestRate = soup.select_one("#marketindex_aside > div:nth-child(1) > table:nth-child(2) > tbody > tr:nth-child(2) > td:nth-child(2)").string
+
+    context['graph'] =graph
+    context['price'] = price
+    context['interestRate'] = interestRate
 
 
 
