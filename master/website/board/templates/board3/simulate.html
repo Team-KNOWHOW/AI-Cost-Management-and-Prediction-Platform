@@ -106,13 +106,13 @@ simulate
     var simul_chart;
     var strurl = "";
 
-    var period_list = new Array(9);
+    var period_list = new Array(8);
     var cost_list = [];
     var predict_max = [];
     var predict_min = [];
 
-    var this_year = new Date().getFullYear();
-    var this_month = new Date().getMonth() + 1;
+    var this_year = 2021;
+    var this_month = 1;
 
     var csrftoken = getCookie('csrftoken');
     function getCookie(name) {
@@ -148,7 +148,7 @@ simulate
                 temp_period = [...item_set];
                 temp_period.sort();
 
-                for (var i = 1; i <= 9; i++) {
+                for (var i = 1; i <= 8; i++) {
                     period_list[period_list.length - i] = temp_period[temp_period.length - i];
                     cost_list[i - 1] = 0;
                 }
@@ -168,7 +168,7 @@ simulate
                     predict_min[idx] = NaN;
                 }
 
-                for (var i = 1; i <= period_list.length - 1; i++) {
+                for (var i = 0; i <= period_list.length - 1; i++) {
                     period_list[i] = Math.floor(period_list[i]/100) + "." + period_list[i]%100;
                 }
 
@@ -194,12 +194,12 @@ simulate
                 var data = xhr_prediction.responseText;
                 var json_data = JSON.parse(data);
 
-                for (var i = 1; i <= 3; i++) {
+                for (var i = 1; i <= 4; i++) {
                     var ym = json_data['periodym' + i + '_cd'];
-                    period_list[8 + i] = Math.floor(ym / 10000) + "." + Math.floor((ym % 10000) / 100);
-                    cost_list[8 + i] = json_data['prediction' + i + '_cost'];
-                    predict_max[8 + i] = json_data['prediction' + i + '_max'];
-                    predict_min[8 + i] = json_data['prediction' + i + '_min'];
+                    period_list[7 + i] = Math.floor(ym / 100) + "." + (ym % 100);
+                    cost_list[7 + i] = json_data['prediction' + i + '_cost'];
+                    predict_max[7 + i] = json_data['prediction' + i + '_max'];
+                    predict_min[7 + i] = json_data['prediction' + i + '_min'];
                 }
 
                 initialize_chart_data();
@@ -231,22 +231,27 @@ simulate
         var variable = document.getElementById('variable').value;
         var fixed = document.getElementById('fixed').value;
         var material = document.getElementById('material').value;
+
         var payload = {
-            "prediction1_cost": cost_list[9],
-            "prediction2_cost": cost_list[10],
-            "prediction3_cost": cost_list[11],
-            "periodym1_cd": (this_year * 100 + this_month) * 100 + 1,
-            "periodym2_cd": (this_year + Math.floor((this_month + 1) / 13)) * 10000 + (this_month % 12 + 1) * 100 + 1,
-            "periodym3_cd": (this_year + Math.floor((this_month + 2) / 13)) * 10000 + ((this_month + 1) % 12 + 1) * 100 + 1,
+            "prediction1_cost": 0,
+            "prediction2_cost": 0,
+            "prediction3_cost": 0,
+            "prediction4_cost": 0,
+            "periodym1_cd": 0,
+            "periodym2_cd": 0,
+            "periodym3_cd": 0,
+            "periodym4_cd": 0,
             "variableperc_cost": variable,
             "fixedperc_cost": fixed,
             "materialperc_cost": material,
-            'prediction1_max': predict_max[9],
-            'prediction2_max': predict_max[10],
-            'prediction3_max': predict_max[11],
-            'prediction1_min': predict_min[9],
-            'prediction2_min': predict_min[10],
-            'prediction3_min': predict_min[11]
+            "prediction1_max": 0,
+            "prediction2_max": 0,
+            "prediction3_max": 0,
+            "prediction4_max": 0,
+            "prediction1_min": 0,
+            "prediction2_min": 0,
+            "prediction3_min": 0,
+            "prediction4_min": 0
         };
 
         var strurl = "http://127.0.0.1:8080/rest_api/ca-prediction";
@@ -256,12 +261,8 @@ simulate
         xhr_prediction.send(JSON.stringify(payload));
     }
 
-    function set_whole_data() {
-
-    }
-
     function initialize_chart_data() {
-        simul_data =  {
+        simul_data = {
             labels: period_list,
             datasets: [{
                 label: "원가값",
@@ -273,19 +274,18 @@ simulate
             }, {
                 label: "불확실도 최대값",
                 fill: false,
-                borderColor: 'transparent',
+                borderColor: 'rgba(55, 173, 221, 0.3)',
                 pointRadius: 0,
                 data: predict_max
             }, {
                 label: "불확실도 최소값",
                 backgroundColor: 'rgba(55, 173, 221, 0.3)',
-                borderColor: 'transparent',
+                borderColor: 'rgba(55, 173, 221, 0.3)',
                 pointRadius: 0,
                 fill: '-1',
                 data: predict_min
             }]
         };
-
         simul_opt = {
             responsive: false,
             legend: {
@@ -304,17 +304,14 @@ simulate
             scales: {
                 xAxes: [{
                     ticks: {
-                        autoSkip: false
+                        autoSkip: false,
                     },
                     gridLines: {
-                        color: 'transparent',
                         zeroLineColor: 'black',
+                        borderDash: [5, 4]
                     }
                 }],
                 yAxes: [{
-                    ticks: {
-
-                    },
                     gridLines: {
                         zeroLineColor: 'black',
                         zeroLineWidth: 2,
@@ -323,6 +320,17 @@ simulate
                 }]
             }
         };
+
+        var gridLinesColor = new Array(period_list.length);
+        for (var i = 1; i <= period_list.length; i++) {
+            if (i == 4) {
+                gridLinesColor[gridLinesColor.length - i] = 'red';
+            }
+            else
+                gridLinesColor[gridLinesColor.length - i] = 'transparent';
+        }
+
+        simul_opt.scales.xAxes[0].gridLines.color = gridLinesColor;
     }
 
     function draw_chart() {
