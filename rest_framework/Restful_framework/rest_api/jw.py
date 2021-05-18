@@ -24,11 +24,11 @@ def dataLoader():
                             cursorclass=pymysql.cursors.DictCursor)
 
     # Sales, variable cost, fixed cost , material cost(매출액, 변동비, 고정비, 재료비)
-    y1 = '''SELECT cc_costbill.periodym_cd  AS version_id,
+    y1 = '''SELECT cc_costbill.periodym_cd  AS periodym_cd,
         cc_costbill.proamt_unit*cc_costbill.proq AS y
         ,cc_costbill.ic_dlvc+ cc_costbill.ic_ohdvc +cc_costbill.ic_idlc+cc_costbill.ic_idohc AS x1,
         cc_costbill.ic_dlfc + cc_costbill.ic_ohdfe +cc_costbill.ic_ohdfd AS x2,
-        cc_costbill.uc_srw AS x3
+        cc_costbill.uc_srw AS x3, cc_costbill.currency_usd AS x4, cc_costbill.interest_rate AS x5 
 
         FROM cc_costbill;'''
 
@@ -38,7 +38,13 @@ def dataLoader():
 
     # make DB table into pandas dataframe
     df = pd.DataFrame(result)
-    df_new = df.groupby(['version_id'], as_index=False)['x1', 'x2', 'x3', 'y'].agg('sum')
+    df_new = df.groupby(['periodcd_cd'], as_index=False)['x1', 'x2', 'x3','x4','x5', 'y'].agg('sum')
+    date = df_new['periodcd_cd'].astype(str)
+    kdate = [datetime.strptime(d, '%Y%m') for d in date]
+    df_new['periodcd_cd'] = kdate
+
+    df_new = df_new.set_index(['periodcd_cd'])
+
     return df_new
 
 ##############################차후 모듈화 해야될 것..To create the dataset for later use#####
@@ -61,16 +67,16 @@ def fitModel(numEpoch,batchSize,X,y,valX,valy,callBack):
     inp = Input(shape=(X.shape[1], X.shape[2]))
     n_outputs = y.shape[1]
     x = inp
-    x = LSTM(200, return_sequences=True,input_shape=(X.shape[1], X.shape[2]),dropout=0.4, recurrent_dropout = 0.4)(x)
-    x = LSTM(100, return_sequences=False)(x)
+    x = LSTM(130, input_shape=(X.shape[1], X.shape[2]),dropout=0.5, recurrent_dropout = 0.5)(x)
+
     # Local reparameterization LSTM again
-    mean = Dropout(rate=0.4)(x,training=True)
+    mean = Dropout(rate=0.5)(x,training=True)
     mean = Dense(n_outputs)(mean)
 
     model = Model(inp,mean)
 
     model.compile(optimizer='adam', loss='mse')
-    hist = model.fit(X,y,epochs = numEpoch, batch_size=8,  validation_data=(valX, valy), callbacks=callBack)
+    hist = model.fit(X,y,epochs = numEpoch, batch_size=batchSize,  validation_data=(valX, valy), callbacks=callBack)
     loss = hist.history['loss'][-1]
 
     return model,loss
@@ -80,21 +86,22 @@ def fitModel(numEpoch,batchSize,X,y,valX,valy,callBack):
 def modelTrain():   #모델 훈련 및 저장 함수
     df_new = dataLoader()
 
-    date = df_new['version_id'].astype(str)
-    kdate = [datetime.strptime(d, '%Y%m') for d in date]
-    df_new['version_id'] = kdate
-
-    df_new = df_new.set_index(['version_id'])
-
     # # LSTM is sensitive to scale, thus a scaler is necessary.
     scaler = RobustScaler()
 
     trans_dfnew = df_new
     ycol = ["y"]  # 종속변수
-    xcol = ['x1', 'x2', 'x3', 'y']  # 전체 열
+    xcol = ['x1', 'x2', 'x3', 'y']  # 내부 요인
+    xcol_ex1 = ['x4']
+    xcol_ex2 = ['x5']
     xxcol = ['x1', 'x2', 'x3']  # 독립변수
     y_prices_unscaled = df_new["y"]
     trans_dfnew[xxcol] = scaler.fit_transform(trans_dfnew[xxcol])  # x 정규화 시킨거 변경해줌
+    ex1_scaler = RobustScaler()
+    trans_dfnew[xcol_ex1] = ex1_scaler.fit_transform(trans_dfnew[xcol_ex1])  # ex1 정규화 시킨거 변경해줌
+    ex2_scaler = RobustScaler()
+    trans_dfnew[xcol_ex2] = ex2_scaler.fit_transform(trans_dfnew[xcol_ex2])  # ex2 정규화 시킨거 변경해줌
+
     y_scaler = RobustScaler()
 
     trans_dfnew[ycol] = y_scaler.fit_transform(trans_dfnew[ycol])  #
@@ -116,15 +123,14 @@ def modelTrain():   #모델 훈련 및 저장 함수
     testX = creat_dataset_x(test_x, look_back)
     testY = creat_dataset_y(test_y, look_back)
 
-    # Set a valida set to avoid overfitting
-    validX = trainX[201:]
-    validY = trainY[201:]
-    trainX = trainX[:200]
-    trainY = trainY[:200]
+    # # Set a valida set to avoid overfitting
+    validX = trainX[172:]
+    validY = trainY[172:]
+    trainX = trainX[:171]
+    trainY = trainY[:171]
 
     # Early stop callback function.
     early_stopping_cb = keras.callbacks.EarlyStopping(patience=15, restore_best_weights=True)
-
     #Real training
     theModel, ELBO = fitModel(300, 1, trainX, trainY, validX, validY, [early_stopping_cb])
 
@@ -134,25 +140,25 @@ def modelTrain():   #모델 훈련 및 저장 함수
 def mainChartPredict():
     df_new = dataLoader()
 
-    date = df_new['version_id'].astype(str)
-    kdate = [datetime.strptime(d, '%Y%m') for d in date]
-    df_new['version_id'] = kdate
-
-    df_new = df_new.set_index(['version_id'])
-
     # # LSTM is sensitive to scale, thus a scaler is necessary.
     scaler = RobustScaler()
 
     trans_dfnew = df_new
     ycol = ["y"]  # 종속변수
-    xcol = ['x1', 'x2', 'x3', 'y']  # 전체 열
+    xcol = ['x1', 'x2', 'x3', 'y']  # 내부 요인
+    xcol_ex1 = ['x4']
+    xcol_ex2 = ['x5']
     xxcol = ['x1', 'x2', 'x3']  # 독립변수
     y_prices_unscaled = df_new["y"]
     trans_dfnew[xxcol] = scaler.fit_transform(trans_dfnew[xxcol])  # x 정규화 시킨거 변경해줌
+    ex1_scaler = RobustScaler()
+    trans_dfnew[xcol_ex1] = ex1_scaler.fit_transform(trans_dfnew[xcol_ex1])  # ex1 정규화 시킨거 변경해줌
+    ex2_scaler = RobustScaler()
+    trans_dfnew[xcol_ex2] = ex2_scaler.fit_transform(trans_dfnew[xcol_ex2])  # ex2 정규화 시킨거 변경해줌
+
     y_scaler = RobustScaler()
 
     trans_dfnew[ycol] = y_scaler.fit_transform(trans_dfnew[ycol])  #
-
     dataset = trans_dfnew.values
     dataset = dataset.astype('float32')
 
@@ -163,17 +169,17 @@ def mainChartPredict():
     train_x, train_y = train[:, :-1], train[:, -1]
     test_x, test_y = test[:, :-1], test[:, -1]
 
-    recent_threeMonth =test_x[-3:].reshape(1,3,3)
+    recent_threeMonth =test_x[-3:].reshape(1,3,5)
 
-    theModel = keras.models.load_model('static/model/khmodel.h5')
+    theModel = keras.models.load_model('static/model/khmodel_93.h5')
     allpredict = [theModel.predict(recent_threeMonth) for _ in tqdm(range(100))]
     # print(k)
 
     allpredict = np.array(allpredict)
 
-    predvalue = np.mean(allpredict, axis=0).flatten()  # predictive mean
-    # print(m)
-    variance = np.var(allpredict, axis=0).flatten()  # epistemic uncertainty
+    predvalue = np.mean(allpredict, axis=0)[:,0].flatten()  # predictive mean
+    # 이니까 2,3이 중복주의
+    variance = np.var(allpredict, axis=0)[:,0].flatten()  # epistemic uncertainty
     # print(v)
 
     variance = variance.squeeze()
@@ -181,8 +187,8 @@ def mainChartPredict():
     # shape맞춰주고
 
     # invert predictions
-    ep_up = predvalue + 2 * variance ** 0.5
-    ep_down = predvalue - 2 * variance ** 0.5
+    ep_up = predvalue + (variance ** 0.5) # removed 2 scaling(ci multiplier)
+    ep_down = predvalue - (variance ** 0.5)
 
     # invertransform형태로 변환(3,1)
     predvalue = predvalue.reshape(-1, 1)
@@ -240,23 +246,23 @@ def simulatorLoader(a1,a2,a3): # 모델 읽고 1월값 받은 후 -> 예측 3개
 
     df_new = dataLoader()
 
-    date = df_new['version_id'].astype(str)
-    kdate = [datetime.strptime(d, '%Y%m') for d in date]
-    df_new['version_id'] = kdate
-
-    df_new = df_new.set_index(['version_id'])
-
-
     #df_new[0]*(1+a1*1/100)
     # # LSTM is sensitive to scale, thus a scaler is necessary.
     scaler = RobustScaler()
 
     trans_dfnew = df_new
     ycol = ["y"]  # 종속변수
-    xcol = ['x1', 'x2', 'x3', 'y']  # 전체 열
+    xcol = ['x1', 'x2', 'x3', 'y']  # 내부 요인
+    xcol_ex1 = ['x4']
+    xcol_ex2 = ['x5']
     xxcol = ['x1', 'x2', 'x3']  # 독립변수
     y_prices_unscaled = df_new["y"]
     trans_dfnew[xxcol] = scaler.fit_transform(trans_dfnew[xxcol])  # x 정규화 시킨거 변경해줌
+    ex1_scaler = RobustScaler()
+    trans_dfnew[xcol_ex1] = ex1_scaler.fit_transform(trans_dfnew[xcol_ex1])  # ex1 정규화 시킨거 변경해줌
+    ex2_scaler = RobustScaler()
+    trans_dfnew[xcol_ex2] = ex2_scaler.fit_transform(trans_dfnew[xcol_ex2])  # ex2 정규화 시킨거 변경해줌
+
     y_scaler = RobustScaler()
 
     trans_dfnew[ycol] = y_scaler.fit_transform(trans_dfnew[ycol])  #
@@ -271,29 +277,32 @@ def simulatorLoader(a1,a2,a3): # 모델 읽고 1월값 받은 후 -> 예측 3개
     train_x, train_y = train[:, :-1], train[:, -1]
     test_x, test_y = test[:, :-1], test[:, -1]
 
-    ###요거가 인풋받을거!!!!
+    ###Input part!!!!
+    a4, a5 = 0  #환율, 금리 는 그대로 유지된다는 가정.
     arrRV = np.array(trans_dfnew[-1:])  # 최근 실제 값 데이터 불러오기
     key1 = (1 + (0.01 * a1)) * arrRV[0][0]
     key2 = (1 + (0.01 * a2)) * arrRV[0][1]
     key3 = (1 + (0.01 * a3)) * arrRV[0][2]
-    threeKey = [key1, key2, key3]
+    key4 = (1 + (0.01 * a4)) * arrRV[0][3]
+    key5 = (1 + (0.01 * a5)) * arrRV[0][4]
+    FiveKey = [key1, key2, key3, key4, key5]
     #print(test_x[-1][0])
     #test_x[-1][0], test_x[-1][1] , test_x[-1][3]
-    userInput = np.array(threeKey).astype('float32')
+    userInput = np.array(FiveKey).astype('float32')
 
     # 3개월 예측 코드
     a = np.append(test_x[-2:], userInput)
-    a = a.reshape(3, 3)
+    a = a.reshape(3, 5)
     # 앞에서 a에 input모양 으로 변환완료함
-    a = a.reshape(1, 3, 3)
+    a = a.reshape(1, 3, 5)
 
-    theModel = keras.models.load_model('static/model/khmodel.h5')
+    theModel = keras.models.load_model('static/model/khmodel_93.h5')
     k = [theModel.predict(a) for _ in tqdm(range(100))]
     #print(k)
 
     k = np.array(k)
 
-    m = np.mean(k, axis=0).flatten()  # predictive mean
+    m = np.mean(k, axis=0).flatten()  # predictive mean 1,2,3
     #print(m)
     v = np.var(k, axis=0).flatten()  # epistemic uncertainty
     #print(v)
@@ -303,8 +312,8 @@ def simulatorLoader(a1,a2,a3): # 모델 읽고 1월값 받은 후 -> 예측 3개
     # shape맞춰주고
 
     # invert predictions
-    ep_up = m + 2 * v ** 0.5
-    ep_down = m - 2 * v ** 0.5
+    ep_up = m + (v ** 0.5)
+    ep_down = m - (v ** 0.5)
 
     # invertransform형태로 변환(3,1)
     m = m.reshape(-1, 1)
