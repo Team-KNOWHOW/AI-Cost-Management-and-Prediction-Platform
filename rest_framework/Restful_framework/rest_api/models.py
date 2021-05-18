@@ -20,6 +20,7 @@ class BUser(models.Model):  # 사용자관리
     class Meta:
         managed = False
         db_table = 'b_user'
+        app_label = 'default'
 
 
 class CbCodeHdr(models.Model):  # 코드 헤더
@@ -36,6 +37,7 @@ class CbCodeHdr(models.Model):  # 코드 헤더
     class Meta:
         managed = False
         db_table = 'cb_code_hdr'
+        app_label = 'default'
 
 
 class CbCodeDtl(models.Model):  # 코드 detail
@@ -52,6 +54,7 @@ class CbCodeDtl(models.Model):  # 코드 detail
     class Meta:
         managed = False
         db_table = 'cb_code_dtl'
+        app_label = 'default'
 
 
 class BCo(models.Model):  # 법인정보
@@ -75,6 +78,7 @@ class BCo(models.Model):  # 법인정보
     class Meta:
         managed = False
         db_table = 'b_co'
+        app_label = 'default'
 
 
 class BBizarea(models.Model):  # 사업장
@@ -95,6 +99,7 @@ class BBizarea(models.Model):  # 사업장
     class Meta:
         managed = False
         db_table = 'b_bizarea'
+        app_label = 'default'
 
 
 class BBizunit(models.Model):  # 사업부
@@ -111,6 +116,7 @@ class BBizunit(models.Model):  # 사업부
     class Meta:
         managed = False
         db_table = 'b_bizunit'
+        app_label = 'default'
 
 
 class BBizpartner(models.Model):  # 거래처
@@ -132,6 +138,7 @@ class BBizpartner(models.Model):  # 거래처
     class Meta:
         managed = False
         db_table = 'b_bizpartner'
+        app_label = 'default'
 
 
 class BFactory(models.Model):  # 공장
@@ -148,6 +155,7 @@ class BFactory(models.Model):  # 공장
     class Meta:
         managed = False
         db_table = 'b_factory'
+        app_label = 'default'
 
 
 class BItemaccnt(models.Model):  # 품목계정
@@ -163,6 +171,7 @@ class BItemaccnt(models.Model):  # 품목계정
     class Meta:
         managed = False
         db_table = 'b_itemaccnt'
+        app_label = 'default'
 
 
 class BItemgrp(models.Model):  # 품목그룹
@@ -178,6 +187,7 @@ class BItemgrp(models.Model):  # 품목그룹
     class Meta:
         managed = False
         db_table = 'b_itemgrp'
+        app_label = 'default'
 
 
 class BItem(models.Model):  # 품목마스터
@@ -200,6 +210,7 @@ class BItem(models.Model):  # 품목마스터
     class Meta:
         managed = False
         db_table = 'b_item'
+        app_label = 'default'
 
 
 class CbCostCenter(models.Model):  # 코스트센터
@@ -220,6 +231,7 @@ class CbCostCenter(models.Model):  # 코스트센터
     class Meta:
         managed = False
         db_table = 'cb_cost_center'
+        app_label = 'default'
 
 
 class BWorkcenter(models.Model):  # 작업장
@@ -236,6 +248,7 @@ class BWorkcenter(models.Model):  # 작업장
     class Meta:
         managed = False
         db_table = 'b_workcenter'
+        app_label = 'default'
 
 
 class BCosteleaccnt(models.Model):  # 원가요소계정
@@ -257,6 +270,7 @@ class BCosteleaccnt(models.Model):  # 원가요소계정
     class Meta:
         managed = False
         db_table = 'b_costeleaccnt'
+        app_label = 'default'
 
 
 class BomDtl(models.Model):  # BOM 디테일
@@ -281,6 +295,7 @@ class BomDtl(models.Model):  # BOM 디테일
     class Meta:
         managed = False
         db_table = 'bom_dtl'
+        app_label = 'default'
 
 
 class BBom(models.Model):  # BOM 메인
@@ -309,6 +324,7 @@ class BBom(models.Model):  # BOM 메인
     class Meta:
         managed = False
         db_table = 'b_bom'
+        app_label = 'default'
 
     def __str__(self):
         return "BOM id : " + str(self.id) + " Type : " + self.bom_type
@@ -323,6 +339,7 @@ class BVersion(models.Model):
     class Meta:
         managed = False
         db_table = 'b_version'
+        app_label = 'default'
 
 
 class CcManucostIf(models.Model):  # 제조비용
@@ -338,6 +355,7 @@ class CcManucostIf(models.Model):  # 제조비용
     class Meta:
         managed = False
         db_table = 'cc_manucost_if'
+        app_label = 'default'
 
 
 class CcMaterialcostIf(models.Model):  # 제료비용
@@ -355,6 +373,7 @@ class CcMaterialcostIf(models.Model):  # 제료비용
     class Meta:
         managed = False
         db_table = 'cc_materialcost_if'
+        app_label = 'default'
 
 
 class CcItempermanucostIf(models.Model):  # 품목별제조비용
@@ -369,6 +388,7 @@ class CcItempermanucostIf(models.Model):  # 품목별제조비용
     class Meta:
         managed = False
         db_table = 'cc_itempermanucost_if'
+        app_label = 'default'
 
 
 class CcProductcostpaymentIf(models.Model):  # 제품원가수불
@@ -394,6 +414,7 @@ class CcProductcostpaymentIf(models.Model):  # 제품원가수불
     class Meta:
         managed = False
         db_table = 'cc_productcostpayment_if'
+        app_label = 'default'
 
 
 class CcCostbill1(models.Model):  # 분석용
@@ -414,6 +435,7 @@ class CcCostbill1(models.Model):  # 분석용
     class Meta:
         managed = False
         db_table = 'cc_costbill1'
+        app_label = 'default'
 
 
 class CcCostBill(models.Model):  # 원가 영수증
@@ -446,6 +468,7 @@ class CcCostBill(models.Model):  # 원가 영수증
     class Meta:
         managed = False
         db_table = 'cc_costbill'
+        app_label = 'default'
 
 
 class DmPeriod(models.Model):  # 기간테이블
@@ -456,6 +479,7 @@ class DmPeriod(models.Model):  # 기간테이블
     class Meta:
         managed = False
         db_table = 'dm_period'
+        app_label = 'default'
 
 
 class DmManucost(models.Model):  # 제조비용마트
@@ -467,6 +491,7 @@ class DmManucost(models.Model):  # 제조비용마트
     class Meta:
         managed = False
         db_table = 'dm_manucost'
+        app_label = 'default'
 
 
 class CaPrediction(models.Model):  # 분석 결과 DB
@@ -494,4 +519,5 @@ class CaPrediction(models.Model):  # 분석 결과 DB
     class Meta:
         managed = False
         db_table = 'ca_prediction'
+        app_label = 'default'
 
