@@ -45,6 +45,7 @@ def dataLoader():
     df_new['periodcd_cd'] = kdate
 
     df_new = df_new.set_index(['periodcd_cd'])
+    curs.close()
 
     return df_new
 
