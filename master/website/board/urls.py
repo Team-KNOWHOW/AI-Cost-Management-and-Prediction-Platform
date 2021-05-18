@@ -29,7 +29,6 @@ urlpatterns = [
     path('chart2', views.chart2, name='chart2'),
     path('chart3', views.chart3, name='chart3'),
     path('simulate', views.simulate, name='simulate'),
-    path('insertSimulate', views.insertSimulate, name='insertSimulate'),
 
 
     # 사용자 관리
@@ -50,24 +49,4 @@ urlpatterns = [
     path('b_bom/bom_update', views.bom_update, name="bom_update"),
 
 
-    # 제조비용 기능 항목
-    #path('cc_manucost_if/manucosttemplate_download', views.manucosttemplate_download, name='manucosttemplate_download'),
-    #path('cc_manucost_if/manucostdata_upload', views.manucostdata_upload, name='manucostdata_upload'),
-
-    # 재료비용 기능항목
-    path('cc_materialcost_if/materialcosttemplate_download', views.materialcosttemplate_download,
-         name='materialcosttemplate_download'),
-    path('cc_materialcost_if/materialcostdata_upload', views.materialcostdata_upload, name='materialcostdata_upload'),
-
-    # 품목별제조비용 기능항목
-    path('cc_itempermanucost_if/itempermanucosttemplate_download', views.itempermanucosttemplate_download,
-         name='itempermanucosttemplate_download'),
-    path('cc_itempermanucost_if/itempermanucostdata_upload', views.itempermanucostdata_upload,
-         name='itempermanucost_upload'),
-
-    # 제품원가수불 기능항목
-    path('cc_productcostpayment_if/productcostpaymenttemplate_download', views.productcostpaymenttemplate_download,
-         name='productcostpaymenttemplate_download'),
-    path('cc_productcostpayment_if/productcostpaymentdata_upload', views.productcostpaymentdata_upload,
-         name='productcostpayment_upload'),
 ]
