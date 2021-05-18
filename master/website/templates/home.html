@@ -233,12 +233,12 @@ home
     </section>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 <script>
     var ctx = document.getElementById('mychart').getContext('2d');
 
-    var this_year = new Date().getFullYear();
-    var this_month = new Date().getMonth() + 1;
+    var this_year = 2021;
+    var this_month = 1;
     var year_index = 0;
     var is_predict_data_given = false;
 
@@ -250,7 +250,6 @@ home
     var chart_data;
     var chart_opt;
     var chart;
-
 
     var csrftoken = getCookie('csrftoken');
 
@@ -265,21 +264,13 @@ home
                     for (var i = 0; i < json_data.length; i++) {
                         temp_period[i] = json_data[i]['periodym_cd'];
                     }
+
                     var item_set = new Set(temp_period);
                     temp_period = [...item_set];
                     temp_period.sort();
 
                     for (var i = 0; i < temp_period.length; i++) {
                         period_list[i] = Math.floor(temp_period[i] / 100) + "." + temp_period[i] % 100;
-                    }
-
-                    for (var i = 1; i <= 3; i++) {
-                        period_list.push(this_year + "." + (this_month++));
-
-                        if (this_month == 13) {
-                            this_year++;
-                            this_month = 1;
-                        }
                     }
 
                     set_year_selectbox();
@@ -301,6 +292,12 @@ home
             if (xhr_prediction.status == 200) {
                 var data = xhr_prediction.responseText;
                 var json_data = JSON.parse(data);
+
+                is_predict_data_given = true;
+
+                for(var i=1; i<=3; i++) {
+                    period_list.push(json_data['periodym' + i + '_cd'])
+                }
 
                 for (var i = 1; i <= 3; i++) {
                     cost_list.push(json_data['prediction' + i + '_cost']);
@@ -361,8 +358,8 @@ home
         xhr_costbill.send(null);
     }
 
-    function set_whole_data(data) {
-        for (var i = 0; i < period_list.length - 3; i++) {
+    function set_whole_data(data){
+        for (var i = 0; i < period_list.length; i++) {
             cost_list[i] = 0;
         }
 
@@ -386,10 +383,12 @@ home
         chart_data = {
             labels: period_list,
             datasets: [{
-                label: "원가값",
-                fill: false,
-                borderColor: 'black',
-                borderWidth: 1,
+                label: "원가",
+                fill: 'origin',
+                backgroundColor: 'rgba(221, 255, 255, 0.3)',
+                borderColor: '#62879A',
+                lineTension: 0,
+                borderWidth: 2,
                 pointRadius: 0,
                 data: cost_list
             }, {
@@ -400,7 +399,7 @@ home
                 data: predict_max
             }, {
                 label: "불확실도 최소값",
-                backgroundColor: 'rgba(55, 173, 221, 0.3)',
+                backgroundColor: '#62879A',
                 borderColor: 'transparent',
                 pointRadius: 0,
                 fill: '-1',
@@ -412,11 +411,6 @@ home
             legend: {
                 display: false
             },
-            elements: {
-                line: {
-                    tension: 0.1
-                }
-            },
             plugins: {
                 filler: {
                     propagate: false
@@ -427,14 +421,13 @@ home
                     ticks: {
                         autoSkip: false,
                         callback: function (value, index, values) {
-                            if(is_predict_data_given) {
-                                if (index == 0 || index >= values.length - 4)
+                            if (is_predict_data_given) {
+                                if (index % 12 == 0 || index >= values.length - 4)
                                     return value;
                                 else
                                     return "";
-                            }
-                            else {
-                                if (index%12 == 0 || index == values.length - 4)
+                            } else {
+                                if (index % 12 == 0 || index == values.length - 1)
                                     return value;
                                 else
                                     return "";
@@ -442,24 +435,58 @@ home
                         },
                     },
                     gridLines: {
-                        color: 'transparent',
                         zeroLineColor: 'black',
+                        zeroLineWidth: 2
                     }
                 }],
                 yAxes: [{
-                    ticks: {
-                        max: 410000000,
-                        min: 320000000
-                    },
                     gridLines: {
                         zeroLineColor: 'black',
-                        zeroLineWidth: 2,
-                        color: 'transparent'
+                        zeroLineWidth: 2
                     }
                 }]
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
             }
         };
+
+        var gridLinesColor = [];
+        for (var i = 0; i < cost_list.length; i++) {
+            if (i % 12 == 0)
+                gridLinesColor.push('#E0E0E0');
+            else
+                gridLinesColor.push('transparent');
+        }
+
+        chart_opt.scales.xAxes[0].gridLines.color = gridLinesColor;
     }
+
+    Chart.defaults.LineWithLine = Chart.defaults.line;
+    Chart.controllers.LineWithLine = Chart.controllers.line.extend({
+        draw: function (ease) {
+            Chart.controllers.line.prototype.draw.call(this, ease);
+            if (this.chart.tooltip._active && this.chart.tooltip._active.length) {
+                var activePoint = this.chart.tooltip._active[0],
+                    ctx = this.chart.ctx,
+                    x = activePoint.tooltipPosition().x,
+                    y = activePoint.tooltipPosition().y,
+                    topY = activePoint.tooltipPosition().y - 20,
+                    bottomY = this.chart.scales['y-axis-0'].bottom;
+
+                // draw line
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x - 5, topY);
+                ctx.lineTo(x, bottomY);
+                ctx.lineWidth = 10;
+                ctx.strokeStyle = '#ff0000';
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    });
 
     function draw_chart() {
         chart = new Chart(ctx, {
@@ -489,7 +516,6 @@ home
 
         var btn_get_predict = document.getElementById('btn_get_predict');
         btn_get_predict.setAttribute('disabled', true);
-        is_predict_data_given = true;
     }
 
     function change_data_year() {
@@ -524,7 +550,6 @@ home
     }
 
     function train(){
-
         var payload = {
             "flag": 'train',
         };
@@ -547,10 +572,9 @@ home
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(JSON.stringify(payload));
-
     }
-    function predict() {
 
+    function predict() {
         var payload = {
             "flag": 'predict',
         };
@@ -560,7 +584,7 @@ home
             if (xhr.readyState == 4) {
                 if (xhr.status == 201)
                     alert("예측 완료");
-                    get_predict() //일단 마지막에 실행되는 것으로 보류.
+                    get_predict(); //일단 마지막에 실행되는 것으로 보류.
             } else {
                 if (xhr.status == 400) {
                   alert("400 Bad Request");
@@ -573,8 +597,8 @@ home
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(JSON.stringify(payload));
-
     }
 </script>
 
 {% endblock %}
+
