@@ -112,11 +112,10 @@ home
                 <button class="btn btn-primary btn-lg" onclick="train()">학습</button>
                 <br>
                 {% if model %}
-                    <button class="btn btn-secondary btn-lg" id="btn_get_predict" onclick="predict()">예측</button>
+                    <button class="btn btn-default btn-lg" id="btn_get_predict" onclick="predict()">예측</button>
                 {% else %}
-                    <button class="btn btn-default btn-lg" disabled>예측</button>
+                    <button class="btn btn-default btn-lg" disabled>...</button>
                 {% endif %}
-
             </div>
         </div>
         <div class="row">

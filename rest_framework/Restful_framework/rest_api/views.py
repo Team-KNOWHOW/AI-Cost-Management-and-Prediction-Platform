@@ -1,4 +1,5 @@
 import openpyxl
+import pyodbc
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -1042,6 +1043,7 @@ def costbill_list(request):
     if request.method == 'GET':
         query_set = CcCostBill.objects.raw("SELECT * FROM cc_costbill")
         serializer = CcCostBillSerializer(query_set, many=True)
+        print(pyodbc.drivers())
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'POST':
