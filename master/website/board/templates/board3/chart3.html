@@ -26,26 +26,17 @@
             <div class="col-lg-12">
                 <section class="panel">
                     <header class="panel-heading">
-                        <h3>Chart 3</h3>
+                        <h3>제조원가예측</h3>
                     </header>
                     <div class="panel-body">
                         <div class="tab-pane" id="chartjs">
                             <div class="row">
                                 <!-- Line -->
-                                <div class="col-lg-6">
-                                    <section class="panel">
-                                        <header class="panel-heading">
-                                            제조원가 예측
-                                        </header>
-                                        <div class="panel-body text-center" width="100%">
-                                            <label>조회 시작 시점</label>
-                                            <select id="year_selectbox" onchange="change_data_year()"></select>
-                                            <button id="btn_get_predict" onclick="get_predict()">예측 받기</button>
-                                            <canvas id="mychart" height="300" width="1500"></canvas>
-                                            <canvas id="newchart" ></canvas>
-                                        </div>
-                                    </section>
-                                </div>
+                                <label>조회 시작 시점</label>
+                                <select id="year_selectbox" onchange="change_data_year()"></select>
+                                <button id="btn_get_predict" onclick="get_predict()">예측 받기</button>
+                                <canvas id="mychart" height="300" width="1500"></canvas>
+                                <canvas id="newchart" ></canvas>
                             </div>
                         </div>
                     </div>

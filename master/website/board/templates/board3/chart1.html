@@ -63,68 +63,80 @@ ul.tabs li.current{
                     <div class="panel-body">
                         <div class="tab-pane" id="chartjs">
                             <div class="row">
+
+                                <div class="col-lg-2">
+                                    <ul class="tabs">
+                                        <li class="tab-link current" data-tab="tab-1">당기 투입</li>
+                                        <li class="tab-link" data-tab="tab-2">당기 사용</li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-8">
+
+                                </div>
+                                <div class="col-lg-2">
+                                    <select size="3" id="item_selectbox" onchange="select_item()"></select>
+                                </div>
+                            </div>
+
+
+                            <!-- 탭 메뉴 상단 시작 -->
+                            <div class="row">
                                 <!-- Line -->
-                                <div class="col-lg-6">
-                                            <div class="container">
-                                                <select size="3" id="item_selectbox" onchange="select_item()"></select>
-                                            <!-- 탭 메뉴 상단 시작 -->
-                                                <ul class="tabs">
-                                                    <li class="tab-link current" data-tab="tab-1">당기 투입</li>
-                                                    <li class="tab-link" data-tab="tab-2">당기 사용</li>
-                                                </ul>
-
-                                                <div id="tab-1" class="tab-content current">
-                                                    <canvas id="chart_injection" height="300" width="1000"></canvas>
-                                                    <div class="table-responsive">
-                                                        <table class="table" width="100%">
-                                                            <tr id="inj_period">
-                                                                <th></th>
-                                                            </tr>
-                                                            <tr id="inj_variable">
-                                                                <th>변동비</th>
-                                                            </tr>
-                                                            <tr id="inj_fixed">
-                                                                <th>고정비</th>
-                                                            </tr>
-                                                            <tr id="inj_sales">
-                                                                <th>매출액</th>
-                                                            </tr>
-                                                        </table>
-                                                    </div>
-                                                </div>
-
-                                                <div id="tab-2" class="tab-content">
-                                                    <canvas id="chart_usage" height="300" width="1000"></canvas>
-                                                    <table class="table" width="100%">
-                                                        <tr id="usa_period">
-                                                            <th></th>
-                                                        </tr>
-                                                        <tr id="usa_mater">
-                                                            <th>재료비</th>
-                                                        </tr>
-                                                        <tr id="usa_labor">
-                                                            <th>노무비</th>
-                                                        </tr>
-                                                        <tr id="usa_manu">
-                                                            <th>경비</th>
-                                                        </tr>
-                                                        <tr id="usa_sales">
-                                                            <th>매출액</th>
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            <!-- 탭 메뉴 내용 끝 -->
+                                <div class="col-lg-12">
+                                    <div class="container">
+                                        <div id="tab-1" class="tab-content current">
+                                            <canvas id="chart_injection" height="300" width="1100"></canvas>
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <tr id="inj_period">
+                                                        <th></th>
+                                                    </tr>
+                                                    <tr id="inj_variable">
+                                                        <th>변동비</th>
+                                                    </tr>
+                                                    <tr id="inj_fixed">
+                                                        <th>고정비</th>
+                                                    </tr>
+                                                    <tr id="inj_sales">
+                                                        <th>매출액</th>
+                                                    </tr>
+                                                </table>
                                             </div>
+                                        </div>
+
+                                        <div id="tab-2" class="tab-content">
+                                            <canvas id="chart_usage" height="300" width="1100"></canvas>
+                                            <table class="table">
+                                                <tr id="usa_period">
+                                                    <th></th>
+                                                </tr>
+                                                <tr id="usa_mater">
+                                                    <th>재료비</th>
+                                                </tr>
+                                                <tr id="usa_labor">
+                                                    <th>노무비</th>
+                                                </tr>
+                                                <tr id="usa_manu">
+                                                    <th>경비</th>
+                                                </tr>
+                                                <tr id="usa_sales">
+                                                    <th>매출액</th>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <!-- 탭 메뉴 내용 끝 -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
             </div>
-            <!-- chart morris start -->
-        </div>
     </section>
-    <!--main content end-->
+    </div>
+    <!-- chart morris start -->
+    </div>
+</section>
+<!--main content end-->
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
