@@ -188,11 +188,10 @@ def mainChartPredict():
     # print(k)
 
     allpredict = np.array(allpredict)
-
-    predvalue = np.mean(allpredict, axis=0)[:, 0].flatten()  # predictive mean
+    predvalue = np.mean(allpredict, axis=0).flatten()  # predictive mean
     # 이니까 2,3이 중복주의
-    variance = np.var(allpredict, axis=0)[:, 0].flatten()  # epistemic uncertainty
-    # print(v)
+    variance = np.var(allpredict, axis=0).flatten()  # epistemic uncertainty
+    print("predvalue:", predvalue)
 
     variance = variance.squeeze()
     predvalue = predvalue.reshape(3, )
@@ -221,7 +220,7 @@ def mainChartPredict():
         periodcd = (periodcd // 100 + 1) * 100 + 1
     else:
         periodcd += 1
-    period_list = [periodcd + 1, periodcd + 2, periodcd + 3]
+    period_list = [periodcd , periodcd + 1, periodcd + 2]
     prediction1_cost = realPredict[0]
     prediction2_cost = realPredict[1]
     prediction3_cost = realPredict[2]
@@ -289,7 +288,8 @@ def simulatorLoader(a1, a2, a3):  # 모델 읽고 1월값 받은 후 -> 예측 3
     test_x, test_y = test[:, :-1], test[:, -1]
 
     ###Input part!!!!
-    a4, a5 = 0  # 환율, 금리 는 그대로 유지된다는 가정.
+    a4 = 0
+    a5 = 0  # 환율, 금리 는 그대로 유지된다는 가정.
     arrRV = np.array(trans_dfnew[-1:])  # 최근 실제 값 데이터 불러오기
     key1 = (1 + (0.01 * a1)) * arrRV[0][0]
     key2 = (1 + (0.01 * a2)) * arrRV[0][1]
@@ -403,7 +403,6 @@ def explainer():
     shap.plots.bar(shap_values, show=False)
     plt.savefig('static/img/img_number4.png')
     plt.close()
-
 
 
 
