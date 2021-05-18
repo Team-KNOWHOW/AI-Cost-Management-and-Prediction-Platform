@@ -1,338 +1,131 @@
-{% extends "base.html" %}
-{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="robots" content="INDEX,FOLLOW"/>
 
-{% block scripts %}
-{{ block.super }}
-<script>
+    <title>Site Title</title>
+    <meta name="description" content="Site Description"/>
 
-</script>
-{% endblock %}
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
 
-{% block body %}
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 
-{% include "navbar.html" %}
-{% include "sidebar.html" %}
+    <!-- Framework + Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css">
+    <link rel="stylesheet" href="./assets/css/page.css">
+  </head>
+  <body class="page-home">
+    <div class="container">
 
-<!--main content start-->
-<section id="main-content">
-    <section class="wrapper">
-        <div class="row">
-            <div class="col-lg-12">
-                <h3 class="page-header"><i class="icon_piechart"></i> Chart</h3>
-            </div>
+
+      <section class="bink-investgraph">
+        <div class="bink-investgraph__title">
+          <a style="color: #000;text-decoration:none;" href="https://webdevpuneet.com"><img src="./assets/img/bink-img4.png"> ChartJS – Vertical line on points and custom tooltip</a>
         </div>
-        <div class="row">
-            <!-- chart morris start -->
-            <div class="col-lg-12">
-                <section class="panel">
-                    <header class="panel-heading">
-                        <h3>제조원가예측</h3>
-                    </header>
-                    <div class="panel-body">
-                        <div class="tab-pane" id="chartjs">
-                            <div class="row">
-                                <!-- Line -->
-                                <label>조회 시작 시점</label>
-                                <select id="year_selectbox" onchange="change_data_year()"></select>
-                                <button id="btn_get_predict" onclick="get_predict()">예측 받기</button>
-                                <canvas id="mychart" height="300" width="1500"></canvas>
-                                <canvas id="newchart" ></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            <!-- chart morris start -->
-        </div>
-    </section>
-    <!--main content end-->
-</section>
+        <canvas id="ctx"></canvas>
+        <script>
+            Chart.defaults.LineWithLine = Chart.defaults.line;
+            Chart.controllers.LineWithLine = Chart.controllers.line.extend({
+             draw: function(ease) {
+               // 언제 출력?
+                Chart.controllers.line.prototype.draw.call(this, ease);
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-<script>
-    var this_year = new Date().getFullYear();
-    var this_month = new Date().getMonth() + 1;
-    var year_index = 0;
-    var is_predict_data_given = false;
+                if (this.chart.tooltip._active && this.chart.tooltip._active.length) {
+                   var activePoint = this.chart.tooltip._active[0],
+                       ctx = this.chart.ctx,
+                       x = activePoint.tooltipPosition().x,
+                       y = activePoint.tooltipPosition().y,
+                       topY = activePoint.tooltipPosition().y - 20,
+                       bottomY = this.chart.scales['y-axis-0'].bottom;
 
-    var period_list = [];
-    var cost_list = [];
-
-    var chart_data;
-    var chart_opt;
-    var chart;
-
-    var cost_data1 = [];
-    var cost_data2 = [];
-
-    var ctx = document.getElementById('mychart').getContext('2d');
-
-    var csrftoken = getCookie('csrftoken');
-    var xhr;
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+                   // draw line
+                   ctx.save();
+                   ctx.beginPath();
+                   ctx.moveTo(x-5 , topY);
+                   ctx.lineTo(x, bottomY);
+                   ctx.lineWidth = 10;
+                   ctx.strokeStyle = '#00ff00';
+                   ctx.stroke();
+                   ctx.restore();
                 }
-            }
-        }
-        return cookieValue;
-    }
+             }
+            });
 
-    window.onload = function() {
-        xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    var data = xhr.responseText;
-                    var json_data = JSON.parse(data);
-                    var temp_period = [];
-
-                    for (var i = 0; i < json_data.length; i++) {
-                        temp_period[i] = json_data[i]['periodym_cd'];
-                    }
-                    var item_set = new Set(temp_period);
-                    temp_period = [...item_set];
-                    temp_period.sort();
-
-
-                    for (var i = 0; i < temp_period.length; i++) {
-                        period_list[i] = Math.floor(temp_period[i] / 100) + "." + temp_period[i] % 100;
-                    }
-
-                    for (var i = 1; i <= 3; i++) {
-                        period_list.push(this_year + "." + (this_month++));
-
-                        if (this_month == 13) {
-                            this_year++;
-                            this_month = 1;
-                        }
-                    }
-
-                    set_year_selectbox();
-                    set_whole_data(json_data);
-                    initialize_chart_data();
-                    draw_chart();
-                }
-            } else {
-                if (xhr.status == 400) {
-                    var data = xhr.responseText;
-                    var obj = JSON.parse(data);
-                }
-            }
-        };
-
-        /*
-        var payload = {
-            "prediction1_cost":,
-            "prediction2_cost":,
-            "prediction3_cost":,
-            "periodym1_cd":,
-            "periodym2_cd":,
-            "periodym3_cd":,
-            "variableperc_cost":,
-            "fixedperc_cost":,
-            "materialperc_cost":
-        }
-        */
-
-        var strurl = "http://127.0.0.1:8080/rest_api/ca-prediction";
-        xhr.open("GET", strurl, true);
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(null);
-    }
-
-    function set_whole_data(data) {
-        for (var i = 0; i < period_list.length - 3; i++) {
-            cost_list[i] = 0;
-        }
-
-        for (var i = 0; i < data.length; i++) {
-            var idx = period_list.indexOf(Math.floor(data[i]['periodym_cd'] / 100) + "." + data[i]['periodym_cd'] % 100);
-            var mater_cost = data[i]['uc_srw'];
-            var labor_cost = data[i]['uc_dlc'] + data[i]['uc_idlc'];
-            var manu_cost = data[i]['uc_dohc'] + data[i]['uc_idohc'];
-
-            cost_list[idx] += (mater_cost + labor_cost + manu_cost);
-            cost_data1[idx] = NaN;
-            cost_data2[idx] = NaN;
-        }
-    }
-
-    function initialize_chart_data() {
-        chart_data = {
-            labels: period_list,
-            datasets: [{
-                label: "원가값",
-                fill: false,
-                borderColor: 'black',
-                borderWidth: 1,
-                pointRadius: 0,
-                data: cost_list
-            }, {
-                label: "불확실도 최대값",
-                fill: false,
-                borderColor: 'transparent',
-                pointRadius: 0,
-                data: cost_data1
-            }, {
-                label: "불확실도 최소값",
-                backgroundColor: 'rgba(55, 173, 221, 0.3)',
-                borderColor: 'transparent',
-                pointRadius: 0,
-                fill: '-1',
-                data: cost_data2
-            }]
-        };
-
-        chart_opt = {
-            responsive: false,
-            legend: {
-                display: false
-            },
-            elements: {
-                line: {
-                    tension: 0.1
-                }
-            },
-            plugins: {
-                filler: {
-                    propagate: false
-                }
-            },
-            scales: {
-                xAxes: [{
-                    ticks: {
-                        autoSkip: false,
-                        callback: function (value, index, values) {
-                            if(is_predict_data_given) {
-                                if (index == 0 || index >= values.length - 4)
-                                    return value;
-                                else
-                                    return "";
-                            }
-                            else {
-                                if (index == 0 || index == values.length - 4)
-                                    return value;
-                                else
-                                    return "";
-                            }
-                        },
-                    },
-                    gridLines: {
-                        zeroLineColor: 'black',
-                    }
-                }],
-                yAxes: [{
-                    ticks: {
-                        max: 450000000,
-                        min: 350000000
-                    },
-                    gridLines: {
-                        zeroLineColor: 'black',
-                        zeroLineWidth: 2,
-                        color: 'transparent'
-                    }
+            var chart = new Chart(ctx, {
+             type: 'LineWithLine',
+             data: {
+                 labels: ['20-JUN-1990', '21-JUN-1990', '25-JUN-1990', '26-JUN-1990', '21-JUL-1990', '22-AUG-1990', '25-SEP-1990', '20-OCT-1990', '21-NOV-1990', '21-DEC-1990', '1-JAN-1991'],
+                 datasets: [{
+                   data: [80, 70, 90, 70, 90, 40, 30, 70, 80, 90, 70],
+                   label: '%',
+                   backgroundColor:'rgba(21, 92, 84, 0.75)',
+                   borderColor:'rgba(255, 0, 0, 1)',
+                   borderWidth: 2,
                 }]
-            }
-        };
-    }
+             },
 
-    function draw_chart() {
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: chart_data,
-            options: chart_opt
-        });
-    }
+             options: {
+               tooltips: {
+                 // Disable the on-canvas tooltip
+                 enabled: false,
+                 mode: 'index',
+                 intersect: false,
+                 custom: function (tooltipModel) {
+                 }
+               },
+                elements: {
+                    line: {
+                        tension: 0
+                    },
+                    point:{
+                        radius: 0
+                    }
+                },
+                legend: {
+                  display: false
+                },
+                scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero: true,
+                              fontSize: 16,
+                              fontColor: 'rgba(0,0,0,1)',
+                          },
+                          gridLines: {
+                            color: 'rgba(64,64,64,0.95)',
+                            lineWidth: 2
+                          },
+                          scaleFontSize: 40
+                      }],
+                    xAxes: [{
+                        ticks: {
+                          fontSize: 16,
+                          fontColor: 'rgba(0,0,0,1)',
+                        },
+                        gridLines: {
+                          color: 'rgba(64,64,64,0.95)',
+                          lineWidth: 2
+                        },
+                        type: 'time',
+                        distribution: 'linear',
+                        time: {
+                            displayFormats: {
+                                quarter: 'MMM YYYY'
+                            }
+                        }
+                    }]
+                },
+             }
+          });
+        </script>
 
-    function set_year_selectbox() {
-        var year_selectbox = document.getElementById('year_selectbox');
-        var starting_year = Math.floor(period_list[0]);
-
-        for(var i=starting_year; i<=this_year; i++) {
-            var option = document.createElement('option');
-            option.innerText = i + "";
-            year_selectbox.appendChild(option);
-        }
-    }
-
-    function get_predict() {
-        var btn_get_predict = document.getElementById('btn_get_predict');
-        btn_get_predict.innerText = '예측 완료';
-        btn_get_predict.setAttribute('disabled', true);
-        is_predict_data_given = true;
-
-
-        cost_data1[cost_data1.length - 1] = Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] + 5000000);
-        cost_data2[cost_data2.length - 1] = Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] - 15000000);
-
-        for (var i = 0; i < 3; i++) {
-            cost_list.push(Math.floor(Math.random() * 20000000) + 390000000);
-            cost_data1.push(Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] + 5000000));
-            cost_data2.push(Math.floor(Math.random() * 10000000 + cost_list[cost_list.length - 1] - 15000000));
-        }
-
-        var displayed_period = [];
-        var displayed_cost = [];
-        var temp_min = [];
-        var temp_max = [];
-
-        for (var i = year_index; i < period_list.length; i++) {
-            displayed_period.push(period_list[i]);
-        }
-
-        for (var i = year_index; i < cost_list.length; i++) {
-            displayed_cost.push(cost_list[i]);
-            temp_min.push(cost_data1[i]);
-            temp_max.push(cost_data2[i]);
-        }
-
-        chart_data.labels = displayed_period;
-        chart_data.datasets[0].data = displayed_cost;
-        chart_data.datasets[1].data = temp_max;
-        chart_data.datasets[2].data = temp_min;
-
-        chart.update();
-    }
-
-    function change_data_year() {
-        var year_selectbox = document.getElementById('year_selectbox');
-        var selected_year = year_selectbox.options[year_selectbox.selectedIndex].value;
-        year_index = 0;
-
-        while(selected_year >  Math.floor(period_list[year_index])) {
-            year_index++;
-        }
-
-        var displayed_period = [];
-        var displayed_cost = [];
-        var temp_min = [];
-        var temp_max = [];
-
-        for (var i=year_index; i<period_list.length; i++) {
-            displayed_period.push(period_list[i]);
-        }
-
-        for (var i=year_index; i<cost_list.length; i++) {
-            displayed_cost.push(cost_list[i]);
-            temp_min.push(cost_data1[i]);
-            temp_max.push(cost_data2[i]);
-        }
-
-        chart_data.labels = displayed_period;
-        chart_data.datasets[0].data = displayed_cost;
-        chart_data.datasets[1].data = temp_max;
-        chart_data.datasets[2].data = temp_min;
-        chart.update();
-    }
-</script>
-
-{% endblock %}
+      </section>
+    </div>
+  </body>
+</html>

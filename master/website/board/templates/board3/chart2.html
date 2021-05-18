@@ -104,8 +104,8 @@
     var ctx_year = document.getElementById('year_chart').getContext('2d');
     var ctx_month = document.getElementById('month_chart').getContext('2d');
 
-    var this_year = 2020;
-    var this_month = new Date().getMonth() + 1;
+    var this_year = 2021;
+    var this_month = 1;
 
     var item_list=[];
     var last_year_data = [];
@@ -130,7 +130,62 @@
     var month_chart;
 
     var csrftoken = getCookie('csrftoken');
-    var xhr;
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                var data = xhr.responseText;
+                var json_data = JSON.parse(data);
+
+                var ty_idx = 0, ly_idx = 0, tm_idx = 0, lm_idx = 0;
+
+                for (var i = 0; i < json_data.length; i++) {
+                    if (json_data[i]['periodym_cd'] > this_year * 100 && json_data[i]['periodym_cd'] < this_year * 100 + this_month) {
+                        this_year_data[ty_idx++] = json_data[i];
+                    } else if (json_data[i]['periodym_cd'] > (this_year - 1) * 100 && json_data[i]['periodym_cd'] < (this_year - 1) * 100 + this_month) {
+                        last_year_data[ly_idx++] = json_data[i];
+                    }
+
+                    if (this_month == 1) {
+                        if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
+                            this_month_data[tm_idx++] = json_data[i];
+                        } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 11) {
+                            last_month_data[lm_idx++] = json_data[i];
+                        }
+                    } else if (this_month == 2) {
+                        if (json_data[i]['periodym_cd'] == this_year * 100 + 1) {
+                            this_month_data[tm_idx++] = json_data[i];
+                        } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
+                            last_month_data[lm_idx++] = json_data[i];
+                        }
+                    } else {
+                        if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 1) {
+                            this_month_data[tm_idx++] = json_data[i];
+                        } else if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 2) {
+                            last_month_data[lm_idx++] = json_data[i];
+                        }
+                    }
+
+                    item_list[item_list.length] = json_data[i]['item_cd'];
+                }
+
+                var item_set = new Set(item_list);
+                item_list = [...item_set];
+                item_list.sort();
+
+                set_item_selectbox();
+                cal_val();
+                set_chart_data();
+                draw_chart();
+                fill_table();
+            }
+        } else {
+            if (xhr.status == 400) {
+                var data = xhr.responseText;
+                var obj = JSON.parse(data);
+            }
+        }
+    };
 
     function getCookie(name) {
         let cookieValue = null;
@@ -149,69 +204,12 @@
     }
 
     window.onload = function() {
-         xhr = new XMLHttpRequest();
-         xhr.onreadystatechange = function () {
-             if (xhr.readyState == 4) {
-                 if (xhr.status == 200) {
-                     var data = xhr.responseText;
-                     var json_data = JSON.parse(data);
-
-                     var ty_idx = 0, ly_idx = 0, tm_idx = 0, lm_idx = 0;
-
-                     for (var i = 0; i < json_data.length; i++) {
-                         if (json_data[i]['periodym_cd'] > this_year * 100 && json_data[i]['periodym_cd'] < this_year * 100 + this_month) {
-                             this_year_data[ty_idx++] = json_data[i];
-                         } else if (json_data[i]['periodym_cd'] > (this_year - 1) * 100 && json_data[i]['periodym_cd'] < (this_year - 1) * 100 + this_month) {
-                             last_year_data[ly_idx++] = json_data[i];
-                         }
-
-                         if (this_month == 1) {
-                             if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
-                                 this_month_data[tm_idx++] = json_data[i];
-                             } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 11) {
-                                 last_month_data[lm_idx++] = json_data[i];
-                             }
-                         } else if (this_month == 2) {
-                             if (json_data[i]['periodym_cd'] == this_year * 100 + 1) {
-                                 this_month_data[tm_idx++] = json_data[i];
-                             } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
-                                 last_month_data[lm_idx++] = json_data[i];
-                             }
-                         } else {
-                             if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 1) {
-                                 this_month_data[tm_idx++] = json_data[i];
-                             } else if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 2) {
-                                 last_month_data[lm_idx++] = json_data[i];
-                             }
-                         }
-
-                         item_list[item_list.length] = json_data[i]['item_cd'];
-                     }
-
-                     var item_set = new Set(item_list);
-                     item_list = [...item_set];
-                     item_list.sort();
-
-                     set_item_selectbox();
-                     cal_val();
-                     set_chart_data();
-                     draw_chart();
-                     fill_table();
-                 }
-             } else {
-                 if (xhr.status == 400) {
-                     var data = xhr.responseText;
-                     var obj = JSON.parse(data);
-                 }
-             }
-         };
-
-         var strurl = "http://127.0.0.1:8080/rest_api/costbill";
-         xhr.open("GET", strurl, true);
-         xhr.setRequestHeader("X-CSRFToken", csrftoken);
-         xhr.setRequestHeader("Content-Type", "application/json");
-         xhr.send(null);
-     }
+        var strurl = "http://127.0.0.1:8080/rest_api/costbill";
+        xhr.open("GET", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(null);
+    }
 
     function cal_val() {
         this_year_cost = 0;
@@ -432,11 +430,30 @@
     }
 
     function draw_chart() {
-        year_chart = new Chart(ctx_year, {
-            type: 'bar',
-            data: year_chart_data,
-            options: year_chart_opt
-        });
+        if(this_year_data.length == 0) {
+            var year_chart_div = document.getElementById('year_chart_div');
+            year_chart_div.removeChild(year_chart_div.childNodes[1]);
+
+            var inner_div = document.createElement('div');
+            inner_div.style.height = 300 + 'px';
+
+            var inner_text = document.createElement('label');
+            inner_text.innerText = "No\nData";
+            inner_text.style.fontWeight = 'bold';
+            inner_text.style.fontSize = '50pt';
+            inner_text.style.color = 'lightgray';
+
+            inner_div.appendChild(inner_text);
+            year_chart_div.appendChild(inner_div);
+        }
+        else {
+            year_chart = new Chart(ctx_year, {
+                type: 'bar',
+                data: year_chart_data,
+                options: year_chart_opt
+            });
+        }
+
         month_chart = new Chart(ctx_month, {
             type: 'bar',
             data: month_chart_data,
