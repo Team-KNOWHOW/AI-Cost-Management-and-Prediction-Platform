@@ -74,3 +74,9 @@ Werkzeug==2.0.0
 wincertstore==0.2
 wrapt==1.12.1
 zipp==3.4.1
+
+scikit-learn==0.23.2
+shap==0.36
+explainerdashboard==0.2.20.1
+xgboost==0.90
+matplotlib
