@@ -41,9 +41,9 @@ def home(request):  # 홈 화면.
 
         return redirect('/')
 
-    file_name = 'khmodel.h5'
+    file_name = 'khmodel_93.h5'
     if os.path.isfile('../../rest_framework/Restful_framework/static/model/' + file_name):
-        file_name = 'khmodel.h5'
+        file_name = 'khmodel_93.h5'
         context["model"] = file_name
 
     context["id"] = member_no
