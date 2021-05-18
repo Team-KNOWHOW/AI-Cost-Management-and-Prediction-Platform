@@ -16,6 +16,9 @@ from datetime import datetime
 from sklearn.preprocessing import RobustScaler
 import pymysql
 from .models import *
+import matplotlib.pyplot as plt
+import xgboost
+import shap
 
 
 def dataLoader():
@@ -39,12 +42,12 @@ def dataLoader():
     # make DB table into pandas dataframe
     df = pd.DataFrame(result)
 
-    df_new = df.groupby(['periodcd_cd'], as_index=False)['x1', 'x2', 'x3', 'x4', 'x5', 'y'].agg('sum')
-    date = df_new['periodcd_cd'].astype(str)
+    df_new = df.groupby(['periodym_cd'], as_index=False)['x1', 'x2', 'x3', 'x4', 'x5', 'y'].agg('sum')
+    date = df_new['periodym_cd'].astype(str)
     kdate = [datetime.strptime(d, '%Y%m') for d in date]
-    df_new['periodcd_cd'] = kdate
+    df_new['periodym_cd'] = kdate
 
-    df_new = df_new.set_index(['periodcd_cd'])
+    df_new = df_new.set_index(['periodym_cd'])
     curs.close()
 
     return df_new
@@ -344,3 +347,64 @@ def simulatorLoader(a1, a2, a3):  # 모델 읽고 1월값 받은 후 -> 예측 3
     period_list = [periodcd + 1, periodcd + 2, periodcd + 3]
 
     return period_list, testPredict, epUp, epDown
+
+def explainer():
+    df_new = dataLoader()
+
+    gradY_df = [0]
+    count = 0
+    i = 0
+    while (1):
+        if count == 250:
+            break
+        temp = df_new['y'][i]
+        t2 = df_new['y'][i + 1]
+        if df_new['y'][i + 1] > temp:
+            gradY_df.append(1)
+        else:
+            gradY_df.append(0)
+        i = i + 1
+        count += 1
+    gradY_df.append(0)
+    df_new.insert(6, 'gradY_df', gradY_df)
+    shap_df = df_new[['x1', 'x2', 'x3', 'x4', 'x5', 'gradY_df']]
+
+    n_train_time = int(len(shap_df) * 0.90)
+    train = shap_df[:n_train_time]
+    test = shap_df[n_train_time:]
+    train_x, train_y = train[['x1', 'x2', 'x3', 'x4', 'x5']], train[['gradY_df']]
+    test_x, test_y = test[['x1', 'x2', 'x3', 'x4', 'x5']], test[['gradY_df']]
+
+    yrr = shap_df[['gradY_df']].values.reshape(252, )
+
+    # train an XGBoost model
+    X = shap_df[['x1', 'x2', 'x3', 'x4', 'x5']]
+    y = yrr
+    model = xgboost.XGBRegressor().fit(X, y)
+
+    # explain the model's predictions using SHAP
+    # (same syntax works for LightGBM, CatBoost, scikit-learn, transformers, Spark, etc.)
+    explainer = shap.Explainer(model)
+    shap_values = explainer(X)
+
+    # visualize the first prediction's explanation
+    shap.plots.waterfall(shap_values[0], show=False)
+    plt.savefig("static/img/img_number1.png")
+    plt.close()
+
+    shap.summary_plot(shap_values, X, show=False)
+    plt.savefig("static/img/img_number2.png")
+    plt.close()
+
+    shap.summary_plot(shap_values, X, plot_type="bar", show=False)
+    plt.savefig('static/img/img_number3.png')
+    plt.close()
+
+    shap.plots.bar(shap_values, show=False)
+    plt.savefig('static/img/img_number4.png')
+    plt.close()
+
+
+
+
+
