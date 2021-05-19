@@ -4,12 +4,7 @@
     <div id="sidebar" class="nav-collapse ">
         <!-- sidebar menu start-->
         <ul class="sidebar-menu">
-            <li class="sub-menu">
-                <a class="" href="/board">
-                    <i class="icon_house_alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
+
             <li class="sub-menu">
                 <a href="javascript:;" class="">
                     <i class="icon_table"></i>
@@ -62,11 +57,17 @@
                 </a>
                 <ul class="sub">
                     <li><a class=""  href="{% url 'board:cc_costbill1_if' %}">원가 계산서</a></li>
-                    <li><a class=""  href="{% url 'board:chart1' %}">당기투입/사용</a></li>
-                    <li><a class=""  href="{% url 'board:chart2' %}">전년/월대비</a></li>
+                    <li><a class=""  href="{% url 'board:chart_if' %}">원가 차트</a></li>
+                    <li><a class=""  href="{% url 'board:chart1' %}">차트1</a></li>
+                    <li><a class=""  href="{% url 'board:chart2' %}">차트2</a></li>
                 </ul>
             </li>
-
+            <li class="active">
+                <a class="">
+                    <i class="icon_house_alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
         </ul>
         <!-- sidebar menu end-->
     </div>
