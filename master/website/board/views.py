@@ -1069,17 +1069,17 @@ def cc_materialcost_if(request):
     context["user_id"] = member_id
 
 
-    strSql = "SELECT  a.*, b.*, c.*, d.*, e.*, f.*, h.*, i.*, j.*" \
-             "FROM (SELECT * FROM cc_materialcost_if) a " \
-             "LEFT JOIN (SELECT factory_cd f_cd, factory_nm FROM b_factory) b ON a.factory_cd = b.f_cd " \
-             "LEFT JOIN b_co c ON a.co_cd = c.co_cd " \
-             "LEFT JOIN b_workcenter d ON a.workcenter_cd = d.workcenter_cd " \
-             "LEFT JOIN b_costeleaccnt e ON a.costeleaccnt_cd = e.accnt_cd " \
-             "LEFT JOIN (SELECT b1.item_cd moitem, b2.item_cd jaitem FROM b_bom b1, b_bom b2 " \
-             "WHERE b1.item_id = b2.parent_id) f ON f.moitem = a.bom_cd " \
-             "LEFT JOIN (SELECT item_nm janame, item_cd FROM b_item) j on f.jaitem = j.item_cd " \
-             "LEFT JOIN b_version h ON a.version_cd = h.version_cd " \
-             "LEFT JOIN b_item i ON a.bom_cd = i.item_cd"
+    strSql = '''
+        SELECT  a.*, b.*, c.*,d.*, e.*,f.*,h.*, i.*
+        FROM (SELECT b1.item_cd moitem, b2.item_cd jaitem FROM b_bom b1, b_bom b2 
+        WHERE b1.item_id = b2.parent_id) f,  (SELECT * FROM cc_materialcost_if) a
+        LEFT JOIN (SELECT factory_cd f_cd, factory_nm FROM b_factory) b ON a.factory_cd = b.f_cd
+        LEFT JOIN b_co c ON a.co_cd = c.co_cd
+        LEFT JOIN b_workcenter d ON a.workcenter_cd = d.workcenter_cd 
+        LEFT JOIN b_costeleaccnt e ON a.costeleaccnt_cd = e.accnt_cd             
+        LEFT JOIN b_version h ON a.version_cd = h.version_cd  
+        LEFT JOIN b_item i ON a.bom_cd = i.item_cd;
+        '''
 
     rsMaterialcost = CcMaterialcostIf.objects.raw(strSql)
     context["rsMaterialcost"] = rsMaterialcost
