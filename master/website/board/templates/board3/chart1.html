@@ -75,6 +75,7 @@ ul.tabs li.current{
                                 </div>
                                 <div class="col-lg-2">
                                     <div>
+                                        <label>품목 리스트</label>
                                         <select size="3" id="item_selectbox" onchange="select_item()"></select>
                                     </div>
                                 </div>
@@ -103,6 +104,7 @@ ul.tabs li.current{
                                                         <th>매출액</th>
                                                     </tr>
                                                 </table>
+                                                <label>단위: 십만(원)</label>
                                             </div>
                                         </div>
 
@@ -399,7 +401,7 @@ ul.tabs li.current{
                     },
                     scaleLabel: {
                         display: true,
-                        labelString: '매출액(원)'
+                        labelString: '매출액(십만원)'
                     }
                 }, {
                     id: 'cost_bar',
@@ -414,7 +416,7 @@ ul.tabs li.current{
                     },
                     scaleLabel: {
                         display: true,
-                        labelString: '당기 투입(원)'
+                        labelString: '당기 투입(십만원)'
                     }
                 }],
                 xAxes: [{
