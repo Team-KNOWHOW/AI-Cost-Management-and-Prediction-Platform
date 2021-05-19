@@ -29,3 +29,8 @@ class MultiDBRouter(object):
             return True
 
         return None
+
+    def get_model_list(self):
+        return self.model_list
+
+

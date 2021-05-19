@@ -84,6 +84,50 @@
           xhr.send(formData);
       }
 
+      function verifyDB()
+      {
+          var strurl = "http://127.0.0.1:8080/rest_api/db-name"
+
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState == 4) {
+                  if(xhr.status==200)
+                      alert("현재 연결된 DB : " + xhr.response);
+              }
+              else {
+                  if(xhr.status==400) {
+                      alert("400 Bad Request");
+                  }
+              }
+          };
+          xhr.open("GET", strurl);
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          xhr.send(null);
+      }
+
+      function uploadDB()
+      {
+
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState == 4) {
+                  if(xhr.status==201)
+                      alert("DB 업로드가 완료되었습니다.");
+                      location.reload();
+              }
+              else {
+                  if(xhr.status==400) {
+                      alert("400 Bad Request");
+                  }
+              }
+          };
+
+          var strurl = "http://127.0.0.1:8080/rest_api/cc-manu-cost-if-db";
+          xhr.open("POST", strurl, true);
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          xhr.send(null);
+      }
+
 
 </script>
 {% endblock %}
@@ -101,6 +145,19 @@
                 <h3 class="page-header"><i class="fa fa-table"></i>제조비용 I/F</h3>
             </div>
         </div>
+        <div align="right" style="margin-right:2px">
+            <table>
+                    <tr>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="verifyDB()">현재 연결된 DB 확인</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="uploadDB()">연결된 DB를 통한 데이터 업로드</button>
+                        </td>
+                    </tr>
+                </table>
+        </div>
+        <br>
         <div align="right" style="margin-right:2px">
             <a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="downloadTemplate()" title="Bootstrap 3 themes generator">Template 다운로드</a>
         </div>

@@ -70,8 +70,17 @@ urlpatterns = [
     path('cc-item-per-manu-cost-if', views.cc_itempermanucost_if, name='cc_itempermanucost_template'),
     path('cc-product-cost-payment-if', views.cc_productcostpayment_if, name='cc_productcostpayment_if_template'),
 
+    # 2단계 API DB 연결 upload
+    path('db-name', views.db_name, name='coneected_db_name'),
+
+    path('cc-manu-cost-if-db', views.cc_manucost_if_db, name='cc_manucost_if_db_upload'),
+    #path('cc-material-cost-if-db', views.cc_materialcost_if_db, name='cc_materialcost_if_db_upload'),
+    #path('cc-item-per-manu-cost-if-db', views.cc_itempermanucost_if_db, name='cc_itempermanucost_db_upload'),
+    #path('cc-product-cost-payment-if-db', views.cc_productcostpayment_if_db, name='cc_productcostpayment_if_db_upload'),
+
     # 3단계 분석 결과 data API
-    path('ca-prediction', views.ca_prediction, name='ca_prediction_result'),
+    path('ca-prediction_main', views.ca_prediction_main, name='ca_prediction_main_result'),
+    path('ca-prediction_simulation', views.ca_prediction_simul, name='ca_prediction_simul_result'),
 
     # 3단계 분석 기능 API
     path('trained-data', views.train_data, name='train_data'),

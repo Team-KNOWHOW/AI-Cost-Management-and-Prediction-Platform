@@ -39,7 +39,8 @@ class BBizpartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = BBizpartner
         fields = (
-        'co_id', 'bizpartner_cd', 'bizpartner_type', 'biz_nm', 'bizpartner_nm', 'unitcur', 'unitcn', 'bizpartner_stat')
+            'co_id', 'bizpartner_cd', 'bizpartner_type', 'biz_nm', 'bizpartner_nm', 'unitcur', 'unitcn',
+            'bizpartner_stat')
 
 
 class BItemaccntSerializer(serializers.ModelSerializer):
@@ -95,6 +96,12 @@ class CcCostBillSerializer(serializers.ModelSerializer):
 
 
 # 2단계 Excel Upload, Download API
+class CcManucostIfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CcManucostIf
+        #fields = ('co', 'costeleaccnt', 'periodym_cd', 'cstctr', 'manucost_price', 'mngmt_1', 'version')
+        fields = ('id', 'co', 'cstctr', 'version', 'costeleaccnt', 'periodym_cd', 'manucost_price', 'mngmt_1')
+
 
 # 3단계 분석 결과 data API
 
@@ -102,7 +109,7 @@ class CaPredictionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CaPrediction
         fields = ('prediction1_cost', 'prediction2_cost', 'prediction3_cost', 'prediction4_cost',
-                  'periodym1_cd', 'periodym2_cd', 'periodym3_cd', 'periodym4_cd','variableperc_cost',
+                  'periodym1_cd', 'periodym2_cd', 'periodym3_cd', 'periodym4_cd', 'variableperc_cost',
                   'fixedperc_cost', 'materialperc_cost', 'prediction1_max', 'prediction2_max',
                   'prediction3_max', 'prediction4_max', 'prediction1_min', 'prediction2_min',
                   'prediction3_min', 'prediction4_min')
