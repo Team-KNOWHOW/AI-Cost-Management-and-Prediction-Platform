@@ -12,6 +12,8 @@ from openpyxl import Workbook
 import pymysql
 from django.conf import settings
 from .jw import *
+from .routers import *
+from .Net_plus_models import *
 
 MYDB = getattr(settings, "DATABASES", None)
 MYDB_NAME = MYDB["default"]["NAME"]
@@ -1037,13 +1039,70 @@ def cc_productcostpayment_if(request):
     return HttpResponse(status=201)
 
 
+# 2단계 API DB 업로드 기능
+@api_view(['GET'])
+@csrf_exempt
+def db_name(request):
+    if request.method == 'GET':
+        mdb = MultiDBRouter()
+        m_list = mdb.get_model_list()
+
+    return HttpResponse(m_list[1], content_type='text/plain')
+
+
+@api_view(['POST'])
+@csrf_exempt
+def cc_manucost_if_db(request):
+    if request.method == 'POST':
+        query_set = Cop100.objects.all()
+        for i in range(len(query_set)):
+            if query_set.values()[i]['co_cd'] is None:
+                query_set.values()[i]['co_cd'] = "default"
+
+            if query_set.values()[i]['cc_cd'] is None:
+                query_set.values()[i]['cc_cd'] = "default"
+
+            if query_set.values()[i]['ver_cd'] is None:
+                query_set.values()[i]['ver_cd'] = "default"
+
+            if query_set.values()[i]['acc_cd'] is None:
+                query_set.values()[i]['acc_cd'] = "default"
+
+            if query_set.values()[i]['yyyymm'] is None:
+                query_set.values()[i]['yyyymm'] = "default"
+
+            if query_set.values()[i]['amt'] is None:
+                query_set.values()[i]['amt'] = "default"
+
+            if query_set.values()[i]['mng'] is None:
+                query_set.values()[i]['mng'] = "default"
+
+            values = "'" + str(query_set.values()[i]['co_cd']) + "'," + \
+                     "'" + str(query_set.values()[i]['cc_cd']) + "'," + \
+                     "'" + str(query_set.values()[i]['ver_cd']) + "'," + \
+                     "'" + str(query_set.values()[i]['acc_cd']) + "'," + \
+                     "'" + str(query_set.values()[i]['yyyymm']) + "'," + \
+                     "'" + str(query_set.values()[i]['amt']) + "'," + \
+                     "'" + str(query_set.values()[i]['mng']) + "'"
+
+            print(values)
+
+            strSql = "INSERT INTO cc_manucost_if (co_cd, cstctr_cd, version_cd, costeleaccnt_cd, periodym_cd, manucost_price, mngmt_1) VALUES (" + values + ")"
+
+            cursor = dbCon.cursor()
+            cursor.execute(strSql)
+            cursor.close()
+            dbCon.commit()
+
+    return HttpResponse(status=201)
+
+
 @api_view(['GET', 'POST'])
 @csrf_exempt
 def costbill_list(request):
     if request.method == 'GET':
         query_set = CcCostBill.objects.raw("SELECT * FROM cc_costbill")
         serializer = CcCostBillSerializer(query_set, many=True)
-        print(pyodbc.drivers())
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'POST':
@@ -1079,9 +1138,18 @@ def costbill_detail(request, pk):
 
 
 #####################ca_prediction##########################
+@api_view(['GET'])
+@csrf_exempt
+def ca_prediction_main(request):
+    if request.method == 'GET':  # 가장 최초에 생성된 row 겍체를 반환.
+        obj = CaPrediction.objects.first()
+        serializer = CaPredictionSerializer(obj)
+        return JsonResponse(serializer.data, safe=False)
+
+
 @api_view(['GET', 'POST'])
 @csrf_exempt
-def ca_prediction(request):
+def ca_prediction_simul(request):
     if request.method == 'GET':  # 가장 최근에 생성된 row 겍체를 반환.
         obj = CaPrediction.objects.last()
         serializer = CaPredictionSerializer(obj)
@@ -1101,35 +1169,36 @@ def ca_prediction(request):
 
         if serializer.is_valid():
             serializer.save()
-            fData = CaPrediction.objects.filter(prediction4_cost=0, periodym4_cd=0, variableperc_cost=0, fixedperc_cost=0,
-                                                 materialperc_cost=0, prediction4_max=0).first()
+            fData = CaPrediction.objects.filter(prediction4_cost=0, periodym4_cd=0, variableperc_cost=0,
+                                                fixedperc_cost=0,
+                                                materialperc_cost=0, prediction4_max=0).first()
 
             rsData = CaPrediction.objects.last()
-            rsData.prediction1_cost= fData.prediction1_cost
-            rsData.periodym1_cd=fData.periodym1_cd
+            rsData.prediction1_cost = fData.prediction1_cost
+            rsData.periodym1_cd = fData.periodym1_cd
             rsData.prediction1_max = fData.prediction1_max
             rsData.prediction1_min = fData.prediction1_min
             rsData.save()
 
-            a1=rsData.variableperc_cost
-            a2=rsData.fixedperc_cost
-            a3=rsData.materialperc_cost
+            a1 = rsData.variableperc_cost
+            a2 = rsData.fixedperc_cost
+            a3 = rsData.materialperc_cost
 
             print("모델 동작 시키는 view 함수실행.")
-            x1,x2,x3,x4=simulatorLoader(a1,a2,a3)
-            print(x1,x2,x3,x4)
-            rsData.periodym2_cd=x1[0]
-            rsData.prediction2_cost= x2[0]
+            x1, x2, x3, x4 = simulatorLoader(a1, a2, a3)
+            print(x1, x2, x3, x4)
+            rsData.periodym2_cd = x1[0]
+            rsData.prediction2_cost = x2[0]
             rsData.prediction2_max = x3[0]
             rsData.prediction2_min = x4[0]
 
-            rsData.periodym3_cd=x1[1]
-            rsData.prediction3_cost= x2[1]
+            rsData.periodym3_cd = x1[1]
+            rsData.prediction3_cost = x2[1]
             rsData.prediction3_max = x3[1]
             rsData.prediction3_min = x4[1]
 
-            rsData.periodym4_cd=x1[2]
-            rsData.prediction4_cost= x2[2]
+            rsData.periodym4_cd = x1[2]
+            rsData.prediction4_cost = x2[2]
             rsData.prediction4_max = x3[2]
             rsData.prediction4_min = x4[2]
             rsData.save()

@@ -358,7 +358,7 @@ class CcManucostIf(models.Model):  # 제조비용
         app_label = 'default'
 
 
-class CcMaterialcostIf(models.Model):  # 제료비용
+class CcMaterialcostIf(models.Model):  # 재료비용
     id = models.AutoField(db_column='id', primary_key=True)
     factory = models.ForeignKey(BFactory, on_delete=models.CASCADE)
     co = models.ForeignKey(BCo, on_delete=models.CASCADE)
