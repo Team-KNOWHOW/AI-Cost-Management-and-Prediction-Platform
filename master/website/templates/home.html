@@ -9,7 +9,6 @@ home
 
 {% include "navbar.html" %}
 {% include "sidebar.html" %}
-
 <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
     <div class="modal-dialog" style="width:70%;">
         <div class="modal-content">
@@ -21,31 +20,35 @@ home
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="col-lg-6">
-                            <img src="" id="img1" width="100%">
+                            <h3><strong id="title1"></strong></h3>
+                            <img src="" id="img1" width="100%" height="200px">
+                            <h4 id='text1' align="left"></h4>
                         </div>
                         <div class="col-lg-6">
-                            <img src=""id="img2" width="100%">
+                            <h3><strong  id="title2"></strong></h3>
+                            <img src=""id="img2" width="100%" height="200px">
+                            <h4 id='text2' align="left"></h4>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="col-lg-6">
-                            <img src="" id="img3" width="100%">
+                            <h3><strong id="title3"></strong></h3>
+                            <img src="" id="img3" width="100%" height="200px">
+                            <h4 id='text3' align="left"></h4>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <img src="" id="img4" width="100%">
+                        <div class="col-lg-6">
+                            <h3><strong id="title4"></strong></h3>
+                            <img src="" id="img4" width="100%" height="200px">
+                            <h4 id='text4' align="left"></h4>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
-</div>
-</div>
-
 <!--main content start-->
 <section id="main-content">
     <section class="wrapper">
@@ -271,8 +274,12 @@ home
 
 <script>
 
-    function explanation(){
+<!--    $(document).ready(function() {-->
 
+<!--        $("#myModal").modal("show");-->
+<!--    });-->
+
+    function explanation(){
 
         var strurl = 'explainer';
 
@@ -286,12 +293,19 @@ home
               alert(obj.message);
             }
             else {
-
                 alert('성공');
+                document.getElementById("title1").innerText = obj.title1
+                document.getElementById("title2").innerText = obj.title2
+                document.getElementById("title3").innerText = obj.title3
+                document.getElementById("title4").innerText = obj.title4
                 document.getElementById("img1").src ='/' + obj.img1;
                 document.getElementById("img2").src ='/' + obj.img2;
                 document.getElementById("img3").src ='/' + obj.img3;
                 document.getElementById("img4").src ='/' + obj.img4;
+                document.getElementById("text1").innerText = obj.text1
+                document.getElementById("text2").innerText = obj.text2
+                document.getElementById("text3").innerText = obj.text3
+                document.getElementById("text4").innerText = obj.text4
                 $("#myModal").modal("show");
             }
 

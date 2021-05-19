@@ -1506,6 +1506,23 @@ def explainer(request):
     context['img3'] = 'static/predict/img3.png'
     context['img4'] = 'static/predict/img4.png'
 
+    context['title1'] = '1. SHAP waterfall'
+    context['title2'] = '2. SHAP beeswarm'
+    context['title3'] = '3. SHAP Summary Plot'
+    context['title4'] = '4. mean(|SHAP value|)'
+
+    context['text1'] = 'N번째 예측점에 대한 설명(N=1) 모델이 첫번째 예측에 대한 변수의 영향력을 양/음 값으로 상대적 수치를 나타냅니다.'
+    context['text2'] = 'x2 변수 기준 x2 변수값이 낮을수록 SHAP value 즉 예측값 기여를 하지 않습니다. ' \
+                       '반대로 x2 변수값이 높을수록 SHAP value 즉 예측값 기여를 많이 합니다. ' \
+                       'x1 변수 기준 x1변수가 높을수록 SHAP value 즉 예측값 기여를 하지 않습니다. ' \
+                       '반대로 x1 변수값이 낮을수록 SHAP value 즉 예측값 기여를 많이 합니다. ' \
+                       '좌우로 많이 퍼져 있을수록 예측값이 해당 변수 기여에 민감합니다.'
+    context['text3'] = '요약도는 특성 중요도와 특성 효과를 결합합니다. 요약도의 각 점은 특성과 인스턴스의 섀플리값입니다. ' \
+                       'Y축의 위치는 특성에 따라, X축의 위치는 섀플리값으로 결정됩니다. 색상은 낮음에서 높음까지의 특성값을 나타냅니다. ' \
+                       '겹치는 점은 Y축 방향으로 조금씩 움직이므로 특성별 섀플리값의 분포를 알 수 있습니다. ' \
+                       '특성은 중요도에 따라 정렬됩니다.'
+    context['text4'] = '예측에 대한 평균 기여 비율을 설명합니다.'
+
     context['success'] = True
 
     return JsonResponse(context, content_type='application/json')
