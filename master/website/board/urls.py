@@ -29,6 +29,7 @@ urlpatterns = [
     path('chart2', views.chart2, name='chart2'),
     path('chart3', views.chart3, name='chart3'),
     path('simulate', views.simulate, name='simulate'),
+    path('explainer', views.explainer, name='explainer'),
 
 
     # 사용자 관리
@@ -47,6 +48,4 @@ urlpatterns = [
     path('b_bom/bomitem_read', views.bomitem_read, name="bomitem_read"),
     path('b_bom/bomitem_pick', views.bomitem_pick, name="bomitem_pick"),
     path('b_bom/bom_update', views.bom_update, name="bom_update"),
-
-
 ]
