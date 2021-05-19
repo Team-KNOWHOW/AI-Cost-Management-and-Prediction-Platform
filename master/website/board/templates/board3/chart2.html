@@ -30,6 +30,7 @@
                     </header>
                     <div class="panel-body">
                         <div class="tab-pane" id="chartjs">
+                            <label>품목 리스트</label>
                             <select size="3" id="item_selectbox" onchange="select_item()"></select>
                             <div class="row">
                                 <!-- Line -->
@@ -87,6 +88,7 @@
                                             <td id="sales_row6"></td>
                                         </tr>
                                     </table>
+                                    <label>단위: 십만(원)</label>
                                 </div>
                             </div>
                         </div>
@@ -145,29 +147,38 @@
                 var ty_idx = 0, ly_idx = 0, tm_idx = 0, lm_idx = 0;
 
                 for (var i = 0; i < json_data.length; i++) {
-                    if (json_data[i]['periodym_cd'] > this_year * 100 && json_data[i]['periodym_cd'] < this_year * 100 + this_month) {
-                        this_year_data[ty_idx++] = json_data[i];
-                    } else if (json_data[i]['periodym_cd'] > (this_year - 1) * 100 && json_data[i]['periodym_cd'] < (this_year - 1) * 100 + this_month) {
-                        last_year_data[ly_idx++] = json_data[i];
-                    }
-
                     if (this_month == 1) {
+                        if (json_data[i]['periodym_cd'] > (this_year - 1) * 100 && json_data[i]['periodym_cd'] < this_year * 100) {
+                            this_year_data[ty_idx++] = json_data[i];
+                        } else if (json_data[i]['periodym_cd'] > (this_year - 2) * 100 && json_data[i]['periodym_cd'] < (this_year - 1) * 100) {
+                            last_year_data[ly_idx++] = json_data[i];
+                        }
+
                         if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
                             this_month_data[tm_idx++] = json_data[i];
                         } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 11) {
                             last_month_data[lm_idx++] = json_data[i];
                         }
-                    } else if (this_month == 2) {
-                        if (json_data[i]['periodym_cd'] == this_year * 100 + 1) {
-                            this_month_data[tm_idx++] = json_data[i];
-                        } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
-                            last_month_data[lm_idx++] = json_data[i];
+                    }
+                    else {
+                        if (json_data[i]['periodym_cd'] > this_year * 100 && json_data[i]['periodym_cd'] < this_year * 100 + this_month) {
+                            this_year_data[ty_idx++] = json_data[i];
+                        } else if (json_data[i]['periodym_cd'] > (this_year - 1) * 100 && json_data[i]['periodym_cd'] < (this_year - 1) * 100 + this_month) {
+                            last_year_data[ly_idx++] = json_data[i];
                         }
-                    } else {
-                        if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 1) {
-                            this_month_data[tm_idx++] = json_data[i];
-                        } else if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 2) {
-                            last_month_data[lm_idx++] = json_data[i];
+
+                        if (this_month == 2) {
+                            if (json_data[i]['periodym_cd'] == this_year * 100 + 1) {
+                                this_month_data[tm_idx++] = json_data[i];
+                            } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
+                                last_month_data[lm_idx++] = json_data[i];
+                            }
+                        } else {
+                            if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 1) {
+                                this_month_data[tm_idx++] = json_data[i];
+                            } else if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 2) {
+                                last_month_data[lm_idx++] = json_data[i];
+                            }
                         }
                     }
 
@@ -272,8 +283,6 @@
         year_sales_growth = ((this_year_sales-last_year_sales)/last_year_sales*100);
         month_cost_growth = ((this_month_cost - last_month_cost) / last_month_cost*100);
         month_sales_growth = ((this_month_sales-last_month_sales)/last_month_sales*100);
-
-
          */
 
         year_cost_growth = -0.79;
@@ -358,6 +367,10 @@
                         fontColor: '#000000',
                         beginAtZero: true
                     },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '성장률(%)'
+                    },
                     gridLines: {
                         drawTicks: false,
                     }
@@ -369,6 +382,10 @@
                         padding: 10,
                         fontColor: '#6F962C',
                         beginAtZero: true
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '금액(십만원)'
                     },
                     gridLines: {
                         drawTicks: false,
@@ -480,6 +497,10 @@
                         fontColor: '#000000',
                         beginAtZero: true
                     },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '성장률(%)'
+                    },
                     gridLines: {
                         drawTicks: false,
                     }
@@ -491,6 +512,10 @@
                         padding: 10,
                         fontColor: '#6F962C',
                         beginAtZero: true
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '금액(십만원)'
                     },
                     gridLines: {
                         drawTicks: false,
@@ -547,29 +572,11 @@
     }
 
     function draw_chart() {
-        if(this_year_data.length == 0) {
-            var year_chart_div = document.getElementById('year_chart_div');
-            year_chart_div.removeChild(year_chart_div.childNodes[1]);
-
-            var inner_div = document.createElement('div');
-            inner_div.style.height = 300 + 'px';
-
-            var inner_text = document.createElement('label');
-            inner_text.innerText = "No\nData";
-            inner_text.style.fontWeight = 'bold';
-            inner_text.style.fontSize = '50pt';
-            inner_text.style.color = 'lightgray';
-
-            inner_div.appendChild(inner_text);
-            year_chart_div.appendChild(inner_div);
-        }
-        else {
-            year_chart = new Chart(ctx_year, {
-                type: 'bar',
-                data: year_chart_data,
-                options: year_chart_opt
-            });
-        }
+        year_chart = new Chart(ctx_year, {
+            type: 'bar',
+            data: year_chart_data,
+            options: year_chart_opt
+        });
 
         month_chart = new Chart(ctx_month, {
             type: 'bar',
