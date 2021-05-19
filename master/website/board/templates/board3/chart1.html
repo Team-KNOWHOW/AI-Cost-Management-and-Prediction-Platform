@@ -58,10 +58,17 @@ ul.tabs li.current{
             <div class="col-lg-12">
                 <section class="panel">
                     <header class="panel-heading">
-                        <h3>Chart 1</h3>
+                        <h3>당기투입&nbsp| &nbsp 당기사용</h3>
                     </header>
                     <div class="panel-body">
                         <div class="tab-pane" id="chartjs">
+                            <div class="row">
+                                <div class="col-lg-10">
+                                </div>
+                                <div class="col-lg-2">
+                                    <label style="padding-left:10px;">품목조회</label>
+                                </div>
+                            </div>
                             <div class="row">
 
                                 <div class="col-lg-2">
@@ -75,7 +82,6 @@ ul.tabs li.current{
                                 </div>
                                 <div class="col-lg-2">
                                     <div>
-                                        <label>품목 리스트</label>
                                         <select size="3" id="item_selectbox" onchange="select_item()"></select>
                                     </div>
                                 </div>
@@ -103,8 +109,8 @@ ul.tabs li.current{
                                                     <tr id="inj_sales">
                                                         <th>매출액</th>
                                                     </tr>
+                                                    <label>단위: &nbsp 십만(원)</label>
                                                 </table>
-                                                <label>단위: 십만(원)</label>
                                             </div>
                                         </div>
 
@@ -134,13 +140,11 @@ ul.tabs li.current{
                             </div>
                         </div>
                     </div>
+                </section>
             </div>
+        </div>
     </section>
-    </div>
-    <!-- chart morris start -->
-    </div>
-</section>
-<!--main content end-->
+    <!--main content end-->
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>

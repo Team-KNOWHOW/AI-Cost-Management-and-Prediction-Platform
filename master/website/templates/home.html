@@ -14,7 +14,7 @@ home
         <div class="modal-content">
             <div class="modal-header">
                 <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                <h4 class="modal-title">의사결정</h4>
+                <h4 class="modal-title">Explanation</h4>
             </div>
             <div class="modal-body" align="center">
                 <div class="row">
@@ -68,12 +68,12 @@ home
             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h2><strong>제조원가</strong></h2>
+                        <h2><strong>당기&nbsp 투입&nbsp|&nbsp사용&nbsp 비교</strong></h2>
                     </div>
                     <div class="info-box blue-bg" onclick="location.href='{% url 'board:chart1' %}';">
                         <i class="fa fa-krw"></i>
-                        <div class="count">6.674%</div>
-                        <div class="title">Download</div>
+                        <div class="count">-6.674%</div>
+                        <div class="title">(매출액)</div>
                     </div>
                 </div>
                 <!--/.info-box-->
@@ -83,12 +83,12 @@ home
             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h2><strong>전년 | 전월 성장률</strong></h2>
+                        <h2><strong>전년 | 전월 비교</strong></h2>
                     </div>
                     <div class="info-box brown-bg" onclick="location.href='{% url 'board:chart2' %}';">
                         <i class="fa fa-bar-chart-o"></i>
-                        <div class="count">7.538</div>
-                        <div class="title">성장률</div>
+                        <div class="count">-7.538%</div>
+                        <div class="title">(성장률)</div>
                     </div>
                 </div>
                 <!--/.info-box-->
@@ -101,9 +101,9 @@ home
                         <h2><strong>Explanation</strong></h2>
                     </div>
                     <div class="info-box dark-bg" onclick="popup();">
-                        <i class="fa fa-money"></i>
+                        <i class="fa fa-search"></i>
                         <div class="count">Explanation</div>
-                        <div class="title">의사결정지원</div>
+                        <div class="title">(모델&nbsp해석)</div>
                     </div>
                 </div>
                 <!--/.info-box-->
@@ -118,7 +118,7 @@ home
                     <div class="info-box green-bg" onclick="location.href='{% url 'board:simulate' %}';">
                         <i class="fa fa-desktop"></i>
                         <div class="count">Simulate</div>
-                        <div class="title">(고정비, 변동비)</div>
+                        <div class="title">(내부요인 &nbsp~&nbsp 외부요인)</div>
                     </div>
                 </div>
                 <!--/.info-box-->
@@ -132,7 +132,7 @@ home
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h2><i class="icon_piechart"></i><strong>예측데이터</strong></h2>
+                        <h2><i class="icon_piechart"></i><strong>Data</strong></h2>
                         <div class="panel-actions">
                             <a href="#" class="btn-setting"><i class="fa fa-rotate-right"></i></a>
                             <a href="#" class="btn-minimize"><i class="fa fa-chevron-up"></i></a>
@@ -478,14 +478,14 @@ home
                 pointRadius: 0,
                 data: cost_list
             }, {
-                label: "매출액 예측 최대",
+                label: "매출액 최대",
                 fill: '-1',
                 backgroundColor: '#D8ABF1',
                 borderColor: 'transparent',
                 pointRadius: 0,
                 data: predict_max
             }, {
-                label: "매출액 예측 최소",
+                label: "매출액 최소",
                 backgroundColor: 'rgba(221, 255, 255, 0.3)',
                 borderColor: 'transparent',
                 pointRadius: 0,
@@ -601,7 +601,7 @@ home
     }
 
     function get_predict() {
-        var prediction_url = "http://127.0.0.1:8080/rest_api/ca-prediction-main";
+        var prediction_url = "http://127.0.0.1:8080/rest_api/ca-prediction_main";
         xhr_prediction.open("GET", prediction_url, true);
         xhr_prediction.setRequestHeader("X-CSRFToken", csrftoken);
         xhr_prediction.setRequestHeader("Content-Type", "application/json");
