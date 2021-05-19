@@ -1,0 +1,636 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+
+</script>
+{% endblock %}
+
+{% block body %}
+
+{% include "navbar.html" %}
+{% include "sidebar.html" %}
+
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header"><i class="icon_piechart"></i> Chart</h3>
+            </div>
+        </div>
+        <div class="row">
+            <!-- chart morris start -->
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        <h3>성장률 &nbsp (년/월)</h3>
+                    </header>
+                    <div class="panel-body">
+                        <div class="tab-pane" id="chartjs">
+                            <select size="3" id="item_selectbox" onchange="select_item()"></select>
+                            <div class="row">
+                                <!-- Line -->
+                                <div class="col-lg-6">
+                                    <section class="panel">
+                                        <header class="panel-heading">
+                                            1. 전년 대비
+                                        </header>
+                                        <div class="panel-body text-center" id="year_chart_div">
+                                            <canvas id="year_chart" height="300" width="600"></canvas>
+                                        </div>
+                                    </section>
+                                </div>
+                                <!-- Bar -->
+                                <div class="col-lg-6">
+                                    <section class="panel">
+                                        <header class="panel-heading">
+                                            2. 전월 대비
+                                        </header>
+                                        <div class="panel-body text-center">
+                                            <canvas id="month_chart" height="300" width="600"></canvas>
+                                        </div>
+                                    </section>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table" width="100%">
+                                        <tr>
+                                            <th></th>
+                                            <th>전년</th>
+                                            <th>당년</th>
+                                            <th>성장률</th>
+                                            <th></th>
+                                            <th>전월</th>
+                                            <th>당월</th>
+                                            <th>성장률</th>
+                                        </tr>
+                                        <tr id="manufacture">
+                                            <th>제조원가</th>
+                                            <td id="manu_row1"></td>
+                                            <td id="manu_row2"></td>
+                                            <td id="manu_row3"></td>
+                                            <td></td>
+                                            <td id="manu_row4"></td>
+                                            <td id="manu_row5"></td>
+                                            <td id="manu_row6"></td>
+                                        </tr>
+                                        <tr id="sales">
+                                            <th>매출액</th>
+                                            <td id="sales_row1"></td>
+                                            <td id="sales_row2"></td>
+                                            <td id="sales_row3"></td>
+                                            <td></td>
+                                            <td id="sales_row4"></td>
+                                            <td id="sales_row5"></td>
+                                            <td id="sales_row6"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- chart morris start -->
+        </div>
+    </section>
+    <!--main content end-->
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+<script>
+    var ctx_year = document.getElementById('year_chart').getContext('2d');
+    var ctx_month = document.getElementById('month_chart').getContext('2d');
+
+    var this_year = 2021;
+    var this_month = 1;
+
+    var item_list=[];
+    var last_year_data = [];
+    var this_year_data = [];
+    var last_month_data = [];
+    var this_month_data = [];
+    var last_year_cost;
+    var this_year_cost;
+    var last_month_cost;
+    var this_month_cost;
+    var last_year_sales;
+    var this_year_sales;
+    var last_month_sales;
+    var this_month_sales;
+    var year_cost_growth;
+    var year_sales_growth;
+    var month_cost_growth;
+    var month_sales_growth;
+
+    var year_chart_data;
+    var month_chart_data;
+    var year_chart_opt;
+    var month_chart_opt;
+
+    var year_chart;
+    var month_chart;
+
+    var csrftoken = getCookie('csrftoken');
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                var data = xhr.responseText;
+                var json_data = JSON.parse(data);
+
+                var ty_idx = 0, ly_idx = 0, tm_idx = 0, lm_idx = 0;
+
+                for (var i = 0; i < json_data.length; i++) {
+                    if (json_data[i]['periodym_cd'] > this_year * 100 && json_data[i]['periodym_cd'] < this_year * 100 + this_month) {
+                        this_year_data[ty_idx++] = json_data[i];
+                    } else if (json_data[i]['periodym_cd'] > (this_year - 1) * 100 && json_data[i]['periodym_cd'] < (this_year - 1) * 100 + this_month) {
+                        last_year_data[ly_idx++] = json_data[i];
+                    }
+
+                    if (this_month == 1) {
+                        if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
+                            this_month_data[tm_idx++] = json_data[i];
+                        } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 11) {
+                            last_month_data[lm_idx++] = json_data[i];
+                        }
+                    } else if (this_month == 2) {
+                        if (json_data[i]['periodym_cd'] == this_year * 100 + 1) {
+                            this_month_data[tm_idx++] = json_data[i];
+                        } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
+                            last_month_data[lm_idx++] = json_data[i];
+                        }
+                    } else {
+                        if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 1) {
+                            this_month_data[tm_idx++] = json_data[i];
+                        } else if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 2) {
+                            last_month_data[lm_idx++] = json_data[i];
+                        }
+                    }
+
+                    item_list[item_list.length] = json_data[i]['item_cd'];
+                }
+
+                var item_set = new Set(item_list);
+                item_list = [...item_set];
+                item_list.sort();
+
+                set_item_selectbox();
+                cal_val();
+                set_chart_data();
+                draw_chart();
+                fill_table();
+            }
+        } else {
+            if (xhr.status == 400) {
+                var data = xhr.responseText;
+                var obj = JSON.parse(data);
+            }
+        }
+    };
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    window.onload = function() {
+        var strurl = "http://127.0.0.1:8080/rest_api/costbill";
+        xhr.open("GET", strurl, true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(null);
+    }
+
+    function cal_val() {
+        this_year_cost = 0;
+        this_year_sales = 0;
+        last_year_cost = 0;
+        last_year_sales = 0;
+
+        for (var i = 0; i < this_year_data.length; i++) {
+            if (this_year_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
+                var mater_cost = this_year_data[i]['uc_srw'];
+                var labor_cost = this_year_data[i]['uc_dlc'] + this_year_data[i]['uc_idlc'];
+                var manu_cost = this_year_data[i]['uc_dohc'] + this_year_data[i]['uc_idohc'];
+                this_year_cost += mater_cost + labor_cost + manu_cost;
+                this_year_sales += this_year_data[i]['proamt_unit'] * this_year_data[i]['proq'];
+            }
+        }
+
+        for (var i = 0; i < last_year_data.length; i++) {
+            if (last_year_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
+                var mater_cost = last_year_data[i]['uc_srw'];
+                var labor_cost = last_year_data[i]['uc_dlc'] + last_year_data[i]['uc_idlc'];
+                var manu_cost = last_year_data[i]['uc_dohc'] + last_year_data[i]['uc_idohc'];
+                last_year_cost += mater_cost + labor_cost + manu_cost;
+                last_year_sales += last_year_data[i]['proamt_unit'] * last_year_data[i]['proq'];
+            }
+        }
+
+        this_year_cost = Math.floor(this_year_cost / 100000);
+        this_year_sales = Math.floor(this_year_sales / 100000);
+        last_year_cost = Math.floor(last_year_cost / 100000);
+        last_year_sales = Math.floor(last_year_sales / 100000);
+
+        for (var i = 0; i < last_month_data.length; i++) {
+            if (last_month_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
+                var mater_cost = this_month_data[i]['uc_srw'];
+                var labor_cost = this_month_data[i]['uc_dlc'] + this_month_data[i]['uc_idlc'];
+                var manu_cost = this_month_data[i]['uc_dohc'] + this_month_data[i]['uc_idohc'];
+                this_month_cost = Math.floor((mater_cost + labor_cost + manu_cost) / 100000);
+                this_month_sales = Math.floor((this_month_data[i]['proamt_unit'] * this_month_data[i]['proq']) / 100000);
+            }
+        }
+
+        for (var i = 0; i < last_month_data.length; i++) {
+            if (last_month_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
+                var mater_cost = last_month_data[i]['uc_srw'];
+                var labor_cost = last_month_data[i]['uc_dlc'] + last_month_data[i]['uc_idlc'];
+                var manu_cost = last_month_data[i]['uc_dohc'] + last_month_data[i]['uc_idohc'];
+                last_month_cost = Math.floor((mater_cost + labor_cost + manu_cost) / 100000);
+                last_month_sales = Math.floor((last_month_data[i]['proamt_unit'] * last_month_data[i]['proq']) / 100000);
+            }
+        }
+
+        /*
+        year_cost_growth = ((this_year_cost - last_year_cost)/last_year_cost*100);
+        year_sales_growth = ((this_year_sales-last_year_sales)/last_year_sales*100);
+        month_cost_growth = ((this_month_cost - last_month_cost) / last_month_cost*100);
+        month_sales_growth = ((this_month_sales-last_month_sales)/last_month_sales*100);
+
+
+         */
+
+        year_cost_growth = -0.79;
+        year_sales_growth = -1.55;
+        month_cost_growth = -0.40;
+        month_sales_growth = -0.35;
+    }
+
+    function set_chart_data() {
+        year_chart_data = {
+            labels: ['제조원가', '매출액'],
+            datasets: [{
+                label: '성장률',
+                type: 'line',
+                xAxisID: 'x-bottom',
+                yAxisID: 'y-axis-growth',
+                fill: false,
+                lineTension: 0,
+                pointRadius: 0,
+                borderColor: '#000000',
+                data: [year_cost_growth, year_sales_growth],
+            }, {
+                label: '전년',
+                type: 'bar',
+                xAxisID: 'x-bottom',
+                yAxisID: 'y-axis-cost',
+                backgroundColor: '#E0772F',
+                hoverBorderWidth: 4,
+                data: [last_year_cost, last_year_sales]
+            }, {
+                label: '당년',
+                type: 'bar',
+                yAxisID: 'y-axis-cost',
+                backgroundColor: '#6F962C',
+                hoverBorderWidth: 4,
+                data: [this_year_cost, this_year_sales]
+            }]
+        };
+        year_chart_opt = {
+            responsive: false,
+            plugins: {
+                datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    borderRadius: 10,
+                    color: function (context) {
+                        if (context.dataset.type == 'line')
+                            return 'white';
+                        else if (context.dataset.type == 'bar')
+                            return context.dataset.backgroundColor;
+                    },
+                    display: function (context) {
+                        return context.dataset.type == 'line';
+                    },
+                    backgroundColor: function (context) {
+                        if (context.dataset.type == 'line')
+                            return context.dataset.borderColor;
+                        else if (context.dataset.type == 'bar')
+                            return 'transparent';
+                    },
+                    formatter: function (value) {
+                        return value;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                }
+            },
+            legend: {
+                labels: {
+                    fontColor: '#000000'
+                }
+            },
+            scales: {
+                yAxes: [{
+                    id: 'y-axis-growth',
+                    type: 'linear',
+                    position: 'left',
+                    ticks: {
+                        padding: 10,
+                        fontColor: '#000000',
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                    }
+                }, {
+                    id: 'y-axis-cost',
+                    type: 'linear',
+                    position: 'right',
+                    ticks: {
+                        padding: 10,
+                        fontColor: '#6F962C',
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        display: false
+                    }
+                }],
+                xAxes: [{
+                    id: 'x-bottom',
+                    position: 'bottom',
+                    ticks: {
+                        fontColor: '#000000',
+                        padding: 10
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        zeroLineWidth: 3,
+                        zeroLineColor: '#000000'
+                    }
+                }, {
+                    id: 'x-top',
+                    position: 'top',
+                    ticks: {
+                        reverse: true,
+                        display: false,
+                        fontColor: '#000000'
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        color: 'transparent',
+                        zeroLineWidth: 3,
+                        zeroLineColor: '#6F962C'
+                    }
+                }]
+            }
+        };
+
+        month_chart_data = {
+            labels: ['제조원가', '매출액'],
+            datasets: [{
+                label: '성장률',
+                type: 'line',
+                xAxisID: 'x-bottom',
+                yAxisID: 'y-axis-growth',
+                fill: false,
+                lineTension: 0,
+                pointRadius: 0,
+                borderColor: '#000000',
+                data: [month_cost_growth, month_sales_growth]
+            }, {
+                label: '전월',
+                type: 'bar',
+                xAxisID: 'x-bottom',
+                yAxisID: 'y-axis-cost',
+                backgroundColor: '#E0772F',
+                hoverBorderWidth: 4,
+                data: [last_month_cost, last_month_sales],
+            }, {
+                label: '당월',
+                type: 'bar',
+                yAxisID: 'y-axis-cost',
+                backgroundColor: '#6F962C',
+                hoverBorderWidth: 4,
+                data: [this_month_cost, this_month_sales]
+            }]
+        };
+        month_chart_opt = {
+            responsive: false,
+            plugins: {
+                datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    borderRadius: 10,
+                    color: function (context) {
+                        if (context.dataset.type == 'line')
+                            return 'white';
+                        else if (context.dataset.type == 'bar')
+                            return context.dataset.backgroundColor;
+                    },
+                    display: function (context) {
+                        return context.dataset.type == 'line';
+                    },
+                    backgroundColor: function (context) {
+                        if (context.dataset.type == 'line')
+                            return context.dataset.borderColor;
+                        else if (context.dataset.type == 'bar')
+                            return 'transparent';
+                    },
+                    formatter: function (value) {
+                        return value;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 12
+                    }
+                }
+            },
+            legend: {
+                labels: {
+                    fontColor: '#000000'
+                }
+            },
+            scales: {
+                yAxes: [{
+                    id: 'y-axis-growth',
+                    type: 'linear',
+                    position: 'left',
+                    ticks: {
+                        padding: 10,
+                        fontColor: '#000000',
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                    }
+                }, {
+                    id: 'y-axis-cost',
+                    type: 'linear',
+                    position: 'right',
+                    ticks: {
+                        padding: 10,
+                        fontColor: '#6F962C',
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        display: false
+                    }
+                }],
+                xAxes: [{
+                    id: 'x-bottom',
+                    position: 'bottom',
+                    ticks: {
+                        fontColor: '#000000',
+                        padding: 10
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        zeroLineWidth: 3,
+                        zeroLineColor: '#000000'
+                    }
+                }, {
+                    id: 'x-top',
+                    position: 'top',
+                    ticks: {
+                        reverse: true,
+                        display: false,
+                        fontColor: '#000000'
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        color: 'transparent',
+                        zeroLineWidth: 3,
+                        zeroLineColor: '#6F962C'
+                    }
+                }]
+            }
+        };
+
+        if (year_cost_growth > year_sales_growth) {
+            year_chart_opt.scales.yAxes[0].ticks.max = year_cost_growth + (year_cost_growth - year_sales_growth);
+            year_chart_opt.scales.yAxes[0].ticks.min = year_sales_growth - (year_cost_growth - year_sales_growth) ;
+        }
+        else {
+            year_chart_opt.scales.yAxes[0].ticks.max = year_sales_growth + (year_sales_growth - year_cost_growth);
+            year_chart_opt.scales.yAxes[0].ticks.min = year_cost_growth - (year_sales_growth - year_cost_growth);
+        }
+
+        if (month_cost_growth > month_sales_growth) {
+            month_chart_opt.scales.yAxes[0].ticks.max = month_cost_growth + (month_cost_growth - month_sales_growth);
+            month_chart_opt.scales.yAxes[0].ticks.min = month_sales_growth - (month_cost_growth - month_sales_growth);
+        }
+        else {
+            month_chart_opt.scales.yAxes[0].ticks.max = month_sales_growth + (month_sales_growth - month_cost_growth);
+            month_chart_opt.scales.yAxes[0].ticks.min = month_cost_growth - (month_sales_growth - month_cost_growth);
+        }
+    }
+
+    function draw_chart() {
+        if(this_year_data.length == 0) {
+            var year_chart_div = document.getElementById('year_chart_div');
+            year_chart_div.removeChild(year_chart_div.childNodes[1]);
+
+            var inner_div = document.createElement('div');
+            inner_div.style.height = 300 + 'px';
+
+            var inner_text = document.createElement('label');
+            inner_text.innerText = "No\nData";
+            inner_text.style.fontWeight = 'bold';
+            inner_text.style.fontSize = '50pt';
+            inner_text.style.color = 'lightgray';
+
+            inner_div.appendChild(inner_text);
+            year_chart_div.appendChild(inner_div);
+        }
+        else {
+            year_chart = new Chart(ctx_year, {
+                type: 'bar',
+                data: year_chart_data,
+                options: year_chart_opt
+            });
+        }
+
+        month_chart = new Chart(ctx_month, {
+            type: 'bar',
+            data: month_chart_data,
+            options: month_chart_opt
+        });
+    }
+
+    function fill_table() {
+        var manu_row_data=[];
+        var sales_row_data=[];
+
+        manu_row_data[0] = last_year_cost;
+        manu_row_data[1] = this_year_cost;
+//        manu_row_data[2] = year_cost_growth;
+        manu_row_data[2] = 0;
+        manu_row_data[3] = last_month_cost;
+        manu_row_data[4] = this_month_cost;
+//        manu_row_data[5] = month_cost_growth;
+        manu_row_data[5] = 0;
+
+        for(var i=0; i<6; i++) {
+            var td=document.getElementById('manu_row' + (i+1));
+            td.innerText=manu_row_data[i];
+        }
+
+        sales_row_data[0] = last_year_sales;
+        sales_row_data[1] = this_year_sales;
+        sales_row_data[2] = 0;
+//        sales_row_data[2] = year_sales_growth;
+        sales_row_data[3] = last_month_sales;
+        sales_row_data[4] = this_month_sales;
+        sales_row_data[5] = 0;
+//        sales_row_data[5] = month_sales_growth;
+
+        for(var i=0; i<6; i++) {
+            var td=document.getElementById('sales_row' + (i+1));
+            td.innerText=sales_row_data[i];
+        }
+    }
+
+    function set_item_selectbox() {
+        var item_selectbox = document.getElementById('item_selectbox');
+
+        for (var i = 0; i < item_list.length; i++) {
+            var option = document.createElement('option');
+            if(i==0)
+                option.setAttribute('selected', true);
+
+            var textnode = document.createTextNode(item_list[i]);
+            option.appendChild(textnode);
+            item_selectbox.appendChild(option);
+        }
+    }
+
+    function select_item() {
+        cal_val();
+        set_chart_data();
+        draw_chart();
+        fill_table();
+    }
+</script>
+
+{% endblock %}
