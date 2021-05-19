@@ -2,6 +2,8 @@ import os
 from urllib.error import HTTPError
 
 import openpyxl
+import shap
+import xgboost
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -17,6 +19,9 @@ import urllib.request as req
 
 import pymysql
 from django.conf import settings
+
+import matplotlib.pyplot as plt
+import pandas as pd
 
 MYDB = getattr(settings, "DATABASES", None)
 MYDB_NAME = MYDB["default"]["NAME"]
@@ -1403,6 +1408,104 @@ def simulate(request):
     context['price'] = price
     context['interestRate'] = interestRate
 
-
-
     return render(request, 'board3/simulate.html', context)
+
+
+def dataLoader():
+    dbCon = pymysql.connect(host='223.194.46.212', user='root', password='12345!', database='knowhow',
+                            charset='utf8', autocommit=True,
+                            cursorclass=pymysql.cursors.DictCursor)
+
+    # Sales, variable cost, fixed cost , material cost(매출액, 변동비, 고정비, 재료비)
+    y1 = '''SELECT cc_costbill.periodym_cd  AS periodym_cd,
+        cc_costbill.proamt_unit*cc_costbill.proq AS y
+        ,cc_costbill.ic_dlvc+ cc_costbill.ic_ohdvc +cc_costbill.ic_idlc+cc_costbill.ic_idohc AS x1,
+        cc_costbill.ic_dlfc + cc_costbill.ic_ohdfe +cc_costbill.ic_ohdfd AS x2,
+        cc_costbill.uc_srw AS x3, cc_costbill.currency_usd AS x4, cc_costbill.interest_rate AS x5 
+
+        FROM cc_costbill;'''
+
+    curs = dbCon.cursor()
+    curs.execute(y1)
+    result = curs.fetchall()
+
+    # make DB table into pandas dataframe
+    df = pd.DataFrame(result)
+
+    df_new = df.groupby(['periodym_cd'], as_index=False)['x1', 'x2', 'x3', 'x4', 'x5', 'y'].agg('sum')
+    date = df_new['periodym_cd'].astype(str)
+    kdate = [datetime.strptime(d, '%Y%m') for d in date]
+    df_new['periodym_cd'] = kdate
+
+    df_new = df_new.set_index(['periodym_cd'])
+    curs.close()
+
+    return df_new
+
+@csrf_exempt
+def explainer(request):
+    context={}
+
+    df_new = dataLoader()
+
+    gradY_df = [0]
+    count = 0
+    i = 0
+    while (1):
+        if count == 250:
+            break
+        temp = df_new['y'][i]
+        t2 = df_new['y'][i + 1]
+        if df_new['y'][i + 1] > temp:
+            gradY_df.append(1)
+        else:
+            gradY_df.append(0)
+        i = i + 1
+        count += 1
+    gradY_df.append(0)
+    df_new.insert(6, 'gradY_df', gradY_df)
+    shap_df = df_new[['x1', 'x2', 'x3', 'x4', 'x5', 'gradY_df']]
+
+    n_train_time = int(len(shap_df) * 0.90)
+    train = shap_df[:n_train_time]
+    test = shap_df[n_train_time:]
+    train_x, train_y = train[['x1', 'x2', 'x3', 'x4', 'x5']], train[['gradY_df']]
+    test_x, test_y = test[['x1', 'x2', 'x3', 'x4', 'x5']], test[['gradY_df']]
+
+    yrr = shap_df[['gradY_df']].values.reshape(252, )
+
+    # train an XGBoost model
+    X = shap_df[['x1', 'x2', 'x3', 'x4', 'x5']]
+    y = yrr
+    model = xgboost.XGBRegressor().fit(X, y)
+
+    # explain the model's predictions using SHAP
+    # (same syntax works for LightGBM, CatBoost, scikit-learn, transformers, Spark, etc.)
+    explainer = shap.Explainer(model)
+    shap_values = explainer(X)
+
+    # visualize the first prediction's explanation
+    shap.plots.waterfall(shap_values[0], show=False)
+    plt.savefig("static/predict/img1.png")
+    plt.close()
+
+    shap.summary_plot(shap_values, X, show=False)
+    plt.savefig("static/predict/img2.png")
+    plt.close()
+
+    shap.summary_plot(shap_values, X, plot_type="bar", show=False)
+    plt.savefig('static/predict/img3.png')
+    plt.close()
+
+    shap.plots.bar(shap_values, show=False)
+    plt.savefig('static/predict/img4.png')
+    plt.close()
+
+    context['img1'] = 'static/predict/img1.png'
+    context['img2'] = 'static/predict/img2.png'
+    context['img3'] = 'static/predict/img3.png'
+    context['img4'] = 'static/predict/img4.png'
+
+    context['success'] = True
+
+    return JsonResponse(context, content_type='application/json')
