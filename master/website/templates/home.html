@@ -18,6 +18,8 @@ home
             </div>
             <div class="modal-body" align="center">
                 <div class="row">
+                    <h2><strong>SHAP&nbsp:&nbsp예측에 &nbsp 대한 &nbsp 각 &nbsp 특성의 &nbsp 기여도를 &nbsp 계산하여<br>
+                        인스턴스(instance)&nbsp x의&nbsp 예측을&nbsp 설명합니다.</strong></h2>
                     <div class="col-lg-12">
                         <div class="col-lg-6">
                             <h3><strong id="title1"></strong></h3>
@@ -98,7 +100,7 @@ home
                     <div class="panel-heading">
                         <h2><strong>Explanation</strong></h2>
                     </div>
-                    <div class="info-box dark-bg" onclick="explanation();">
+                    <div class="info-box dark-bg" onclick="popup();">
                         <i class="fa fa-money"></i>
                         <div class="count">Explanation</div>
                         <div class="title">의사결정지원</div>
@@ -274,26 +276,30 @@ home
 
 <script>
 
-<!--    $(document).ready(function() {-->
-
-<!--        $("#myModal").modal("show");-->
-<!--    });-->
+    function popup(){
+         $("#myModal").modal("show");
+         explanation();
+    }
 
     function explanation(){
 
         var strurl = 'explainer';
 
         xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
 
+
+        xhr.onreadystatechange = function() {
+        if (xhr.readyState == 1){
+            $('html').css("cursor","wait");
+        }
+        if (xhr.readyState == 4) {
+            $('html').css("cursor","auto");
             var data = xhr.responseText;
             var obj = JSON.parse(data);
             if (obj.success == false) {
               alert(obj.message);
             }
             else {
-                alert('성공');
                 document.getElementById("title1").innerText = obj.title1
                 document.getElementById("title2").innerText = obj.title2
                 document.getElementById("title3").innerText = obj.title3
@@ -306,7 +312,6 @@ home
                 document.getElementById("text2").innerText = obj.text2
                 document.getElementById("text3").innerText = obj.text3
                 document.getElementById("text4").innerText = obj.text4
-                $("#myModal").modal("show");
             }
 
         }
