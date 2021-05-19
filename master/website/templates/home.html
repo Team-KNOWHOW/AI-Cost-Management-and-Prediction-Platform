@@ -369,13 +369,9 @@ home
             if(idx == -1)
                 continue;
 
-            var mater_cost = data[i]['uc_srw'];
-            var labor_cost = data[i]['uc_dlc'] + data[i]['uc_idlc'];
-            var manu_cost = data[i]['uc_dohc'] + data[i]['uc_idohc'];
-
-            cost_list[idx] += (mater_cost + labor_cost + manu_cost);
-            predict_max[idx] = NaN;
-            predict_min[idx] = NaN;
+            cost_list[idx] += (data[i]['proq'] * data[i]['proamt_unit']);
+            predict_max[idx] = cost_list[idx];
+            predict_min[idx] = cost_list[idx];
         }
     }
 
@@ -383,26 +379,27 @@ home
         chart_data = {
             labels: period_list,
             datasets: [{
-                label: "원가",
-                fill: 'origin',
-                backgroundColor: 'rgba(221, 255, 255, 0.3)',
+                label: "매출액",
+                fill: '+2',
+                backgroundColor: '#D8ABF1',
                 borderColor: '#62879A',
                 lineTension: 0,
                 borderWidth: 2,
                 pointRadius: 0,
                 data: cost_list
             }, {
-                label: "불확실도 최대값",
-                fill: false,
+                label: "매출액 예측 최대",
+                fill: '-1',
+                backgroundColor: '#D8ABF1',
                 borderColor: 'transparent',
                 pointRadius: 0,
                 data: predict_max
             }, {
-                label: "불확실도 최소값",
-                backgroundColor: '#62879A',
+                label: "매출액 예측 최소",
+                backgroundColor: 'rgba(221, 255, 255, 0.3)',
                 borderColor: 'transparent',
                 pointRadius: 0,
-                fill: '-1',
+                fill: 'origin',
                 data: predict_min
             }]
         };
@@ -420,6 +417,7 @@ home
                 xAxes: [{
                     ticks: {
                         autoSkip: false,
+                        padding: 10,
                         callback: function (value, index, values) {
                             if (is_predict_data_given) {
                                 if (index % 12 == 0 || index >= values.length - 4)
@@ -435,12 +433,17 @@ home
                         },
                     },
                     gridLines: {
+                        drawTicks: false,
                         zeroLineColor: 'black',
                         zeroLineWidth: 2
                     }
                 }],
                 yAxes: [{
+                    ticks: {
+                        padding: 10
+                    },
                     gridLines: {
+                        drawTicks: false,
                         zeroLineColor: 'black',
                         zeroLineWidth: 2
                     }
@@ -508,7 +511,7 @@ home
     }
 
     function get_predict() {
-        var prediction_url = "http://127.0.0.1:8080/rest_api/ca-prediction";
+        var prediction_url = "http://127.0.0.1:8080/rest_api/ca-prediction-main";
         xhr_prediction.open("GET", prediction_url, true);
         xhr_prediction.setRequestHeader("X-CSRFToken", csrftoken);
         xhr_prediction.setRequestHeader("Content-Type", "application/json");
