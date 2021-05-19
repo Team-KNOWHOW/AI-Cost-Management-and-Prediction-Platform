@@ -74,7 +74,9 @@ ul.tabs li.current{
 
                                 </div>
                                 <div class="col-lg-2">
-                                    <select size="3" id="item_selectbox" onchange="select_item()"></select>
+                                    <div>
+                                        <select size="3" id="item_selectbox" onchange="select_item()"></select>
+                                    </div>
                                 </div>
                             </div>
 
@@ -345,7 +347,7 @@ ul.tabs li.current{
             }]
         };
         inj_opt = {
-            responsive: true,
+            responsive: false,
             plugins: {
                 datalabels: {
                     anchor: 'end',
@@ -358,7 +360,7 @@ ul.tabs li.current{
                             return context.dataset.backgroundColor;
                     },
                     display: function (context) {
-                        return context.dataset.type == 'line' || context.dataset.id == 'f_cost';
+                        return context.dataset.type == 'line';
                     },
                     backgroundColor: function (context) {
                         if (context.dataset.type == 'line')
@@ -368,11 +370,6 @@ ul.tabs li.current{
                     },
                     formatter: function (value) {
                         return value;
-                        // 데리터 더한겂 출력
-                        // 당기 사용 틱 늘리기
-                        // 숫자 안잘리게 높이 늘리기
-                        // 막대 끝 둥글게
-                        // 색상 변경
                     },
                     font: {
                         weight: 'bold',
@@ -399,7 +396,6 @@ ul.tabs li.current{
                         startAtZero: false
                     },
                     gridLines: {
-                        color: 'transparent'
                     },
                     scaleLabel: {
                         display: true,
@@ -434,10 +430,9 @@ ul.tabs li.current{
                         labelString: '기간(월)'
                     },
                     gridLines: {
-                        color: 'transparent',
                         drawTicks: false,
                         zeroLineColor: '#F76F69',
-                        zeroLineWidth: 5
+                        zeroLineWidth: 3
                     }
                 }, {
                     // 이 x축은 우측 y축의 색상을 변경하기 위해 넣은 축 (기능 X)
@@ -454,7 +449,7 @@ ul.tabs li.current{
                         drawTicks: false,
                         color: 'transparent',
                         zeroLineColor: '#396C70',
-                        zeroLineWidth: 5
+                        zeroLineWidth: 3
                     }
                 }]
             }
@@ -516,7 +511,7 @@ ul.tabs li.current{
                             return context.dataset.backgroundColor;
                     },
                     display: function (context) {
-                        return context.dataset.type == 'line' || context.dataset.id == 'mn_cost';
+                        return context.dataset.type == 'line';
                     },
                     backgroundColor: function (context) {
                         if (context.dataset.type == 'line')
@@ -551,7 +546,6 @@ ul.tabs li.current{
                         fontColor: '#000000'
                     },
                     gridLines: {
-                        color: 'transparent'
                     },
                     scaleLabel: {
                         display: true,
@@ -586,9 +580,8 @@ ul.tabs li.current{
                         labelString: '기간(월)'
                     },
                     gridLines: {
-                        color: 'transparent',
                         drawTicks: false,
-                        zeroLineColor: '#808080',
+                        zeroLineColor: '#F76F69',
                         zeroLineWidth: 3
                     }
                 }, {
@@ -605,7 +598,7 @@ ul.tabs li.current{
                     gridLines: {
                         drawTicks: false,
                         color: 'transparent',
-                        zeroLineColor: 'rgba(0, 0, 255, 0.6)',
+                        zeroLineColor: '#396C70',
                         zeroLineWidth: 3
                     }
                 }]
@@ -618,12 +611,12 @@ ul.tabs li.current{
         inj_opt.scales.yAxes[0].ticks.max = Math.floor((sales_max + (sales_max - sales_min)) / 10) * 10;
         inj_opt.scales.yAxes[0].ticks.min = Math.floor((sales_min - (sales_max - sales_min)) / 10) * 10;
         inj_opt.scales.yAxes[1].ticks.max =
-            Math.ceil((variable_max + fixed_max) / 10 + (fixed_min + fixed_max) / 100) * 10;
+            Math.ceil((variable_max + fixed_max) / 10 + (fixed_min + fixed_max) / 200) * 10;
         inj_opt.scales.yAxes[1].ticks.min = Math.ceil((variable_max - fixed_min) / 10) * 10;
         usa_opt.scales.yAxes[0].ticks.max = Math.floor((sales_max + (sales_max - sales_min)) / 10) * 10;
         usa_opt.scales.yAxes[0].ticks.min = Math.floor((sales_min - (sales_max - sales_min)) / 10) * 10;
         usa_opt.scales.yAxes[1].ticks.max =
-            Math.ceil((mater_max + labor_max + manu_max) / 10 + (labor_max + labor_min + manu_max) / 100) * 10;
+            Math.ceil((mater_max + labor_max + manu_max) / 10 + (labor_max + labor_min + manu_max) / 200) * 10;
         usa_opt.scales.yAxes[1].ticks.min = Math.ceil((mater_min - labor_min) / 10) * 10;
     }
 

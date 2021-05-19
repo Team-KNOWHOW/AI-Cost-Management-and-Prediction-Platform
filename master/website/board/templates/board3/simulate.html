@@ -159,13 +159,9 @@ simulate
                     if (idx == -1)
                         continue;
 
-                    var mater_cost = json_data[i]['uc_srw'];
-                    var labor_cost = json_data[i]['uc_dlc'] + json_data[i]['uc_idlc'];
-                    var manu_cost = json_data[i]['uc_dohc'] + json_data[i]['uc_idohc'];
-
-                    cost_list[idx] += (mater_cost + labor_cost + manu_cost);
-                    predict_max[idx] = NaN;
-                    predict_min[idx] = NaN;
+                    cost_list[idx] += (json_data[i]['proq'] * json_data[i]['proamt_unit']);
+                    predict_max[idx] = cost_list[idx];
+                    predict_min[idx] = cost_list[idx];
                 }
 
                 for (var i = 0; i <= period_list.length - 1; i++) {
@@ -265,24 +261,27 @@ simulate
         simul_data = {
             labels: period_list,
             datasets: [{
-                label: "원가값",
-                fill: false,
-                borderColor: 'black',
-                borderWidth: 1,
+                label: "매출액",
+                fill: '+2',
+                backgroundColor: 'rgba(202, 171, 241, 0.3)',
+                borderColor: '#62879A',
+                lineTension: 0,
+                borderWidth: 2,
                 pointRadius: 0,
                 data: cost_list
             }, {
-                label: "불확실도 최대값",
-                fill: false,
-                borderColor: 'rgba(55, 173, 221, 0.3)',
+                label: "매출액 예측 최대",
+                fill: '-1',
+                backgroundColor: 'rgba(202, 171, 241, 0.3)',
+                borderColor: 'transparent',
                 pointRadius: 0,
                 data: predict_max
             }, {
-                label: "불확실도 최소값",
-                backgroundColor: 'rgba(55, 173, 221, 0.3)',
-                borderColor: 'rgba(55, 173, 221, 0.3)',
+                label: "매출액 예측 최소",
+                backgroundColor: 'rgba(221, 255, 255, 0.3)',
+                borderColor: 'transparent',
                 pointRadius: 0,
-                fill: '-1',
+                fill: 'origin',
                 data: predict_min
             }]
         };
@@ -305,19 +304,25 @@ simulate
                 xAxes: [{
                     ticks: {
                         autoSkip: false,
+                        padding: 10
                     },
                     gridLines: {
-                        zeroLineColor: 'black',
+                        drawTicks: false,
                         borderDash: [5, 4]
                     }
                 }],
                 yAxes: [{
+                    ticks: {
+                        padding: 10
+                    },
                     gridLines: {
-                        zeroLineColor: 'black',
-                        zeroLineWidth: 2,
-                        color: 'transparent'
+                        drawTicks: false,
                     }
                 }]
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
             }
         };
 
@@ -327,7 +332,7 @@ simulate
                 gridLinesColor[gridLinesColor.length - i] = 'red';
             }
             else
-                gridLinesColor[gridLinesColor.length - i] = 'transparent';
+                gridLinesColor[gridLinesColor.length - i] = '#E0E0E0';
         }
 
         simul_opt.scales.xAxes[0].gridLines.color = gridLinesColor;
