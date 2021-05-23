@@ -168,7 +168,7 @@ simulate
                     period_list[i] = Math.floor(period_list[i]/100) + "." + period_list[i]%100;
                 }
 
-                strurl = "http://127.0.0.1:8080/rest_api/ca-prediction_simulation";
+                strurl = "http://223.194.46.212:8757/rest_api/ca-prediction_simulation";
                 xhr_prediction.open("GET", strurl, true);
                 xhr_prediction.setRequestHeader("X-CSRFToken", csrftoken);
                 xhr_prediction.setRequestHeader("Content-Type", "application/json");
@@ -216,7 +216,7 @@ simulate
     };
 
     window.onload = function () {
-        strurl = "http://127.0.0.1:8080/rest_api/costbill";
+        strurl = "http://223.194.46.212:8757/rest_api/costbill";
         xhr_costbill.open("GET", strurl, true);
         xhr_costbill.setRequestHeader("X-CSRFToken", csrftoken);
         xhr_costbill.setRequestHeader("Content-Type", "application/json");
@@ -250,7 +250,7 @@ simulate
             "prediction4_min": 0
         };
 
-        var strurl = "http://127.0.0.1:8080/rest_api/ca-prediction_simulation";
+        var strurl = "http://223.194.46.212:8757/rest_api/ca-prediction_simulation";
         xhr_prediction.open("POST", strurl, true);
         xhr_prediction.setRequestHeader("X-CSRFToken", csrftoken);
         xhr_prediction.setRequestHeader("Content-Type", "application/json");

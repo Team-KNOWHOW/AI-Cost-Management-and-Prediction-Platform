@@ -26,7 +26,7 @@
 
     function downloadTemplate()
     {
-        var strurl = "http://127.0.0.1:8080/rest_api/cc-product-cost-payment-if"
+        var strurl = "http://223.194.46.212:8757/rest_api/cc-product-cost-payment-if"
 
         xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -77,11 +77,56 @@
               }
           };
 
-          var strurl = "http://127.0.0.1:8080/rest_api/cc-product-cost-payment-if";
+          var strurl = "http://223.194.46.212:8757/rest_api/cc-product-cost-payment-if";
           xhr.open("POST", strurl, true);
           xhr.setRequestHeader("X-CSRFToken", csrftoken);
           //xhr.setRequestHeader("Content-Type", "multipart/form-data");
           xhr.send(formData);
+      }
+
+
+      function verifyDB()
+      {
+          var strurl = "http://223.194.46.212:8757/rest_api/db-name"
+
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState == 4) {
+                  if(xhr.status==200)
+                      alert("현재 연결된 DB : " + xhr.response);
+              }
+              else {
+                  if(xhr.status==400) {
+                      alert("400 Bad Request");
+                  }
+              }
+          };
+          xhr.open("GET", strurl);
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          xhr.send(null);
+      }
+
+      function uploadDB()
+      {
+
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState == 4) {
+                  if(xhr.status==201)
+                      alert("DB 업로드가 완료되었습니다.");
+                      location.reload();
+              }
+              else {
+                  if(xhr.status==400) {
+                      alert("400 Bad Request");
+                  }
+              }
+          };
+
+          var strurl = "http://223.194.46.212:8757/rest_api/cc-product-cost-payment-if-db";
+          xhr.open("POST", strurl, true);
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          xhr.send(null);
       }
 
 
@@ -108,7 +153,7 @@
                             <button type="button" class="btn btn-primary btn-sm" onclick="verifyDB()">현재 연결된 DB 확인</button>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-primary btn-sm" onclick="uploadDB()">연결된 DB를 통한 데이터 업로드</button>
+                            <button type="button" class="btn btn-primary btn-sm" disabled onclick="uploadDB()">연결된 DB를 통한 데이터 업로드</button>
                         </td>
                     </tr>
                 </table>

@@ -26,7 +26,7 @@
 
     function downloadTemplate()
     {
-        var strurl = "http://127.0.0.1:8080/rest_api/cc-manu-cost-if"
+        var strurl = "http://223.194.46.212:8757/rest_api/cc-manu-cost-if"
 
         xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -77,7 +77,7 @@
               }
           };
 
-          var strurl = "http://127.0.0.1:8080/rest_api/cc-manu-cost-if";
+          var strurl = "http://223.194.46.212:8757/rest_api/cc-manu-cost-if";
           xhr.open("POST", strurl, true);
           xhr.setRequestHeader("X-CSRFToken", csrftoken);
           //xhr.setRequestHeader("Content-Type", "multipart/form-data");
@@ -86,7 +86,7 @@
 
       function verifyDB()
       {
-          var strurl = "http://127.0.0.1:8080/rest_api/db-name"
+          var strurl = "http://223.194.46.212:8757/rest_api/db-name"
 
           xhr = new XMLHttpRequest();
           xhr.onreadystatechange = function() {
@@ -122,7 +122,7 @@
               }
           };
 
-          var strurl = "http://127.0.0.1:8080/rest_api/cc-manu-cost-if-db";
+          var strurl = "http://223.194.46.212:8757/rest_api/cc-manu-cost-if-db";
           xhr.open("POST", strurl, true);
           xhr.setRequestHeader("X-CSRFToken", csrftoken);
           xhr.send(null);
