@@ -441,7 +441,7 @@ home
     }
 
     window.onload = function() {
-        var costbill_url = "http://127.0.0.1:8080/rest_api/costbill";
+        var costbill_url = "http://223.194.46.212:8757/rest_api/costbill";
         xhr_costbill.open("GET", costbill_url, true);
         xhr_costbill.setRequestHeader("X-CSRFToken", csrftoken);
         xhr_costbill.setRequestHeader("Content-Type", "application/json");
@@ -601,7 +601,7 @@ home
     }
 
     function get_predict() {
-        var prediction_url = "http://127.0.0.1:8080/rest_api/ca-prediction_main";
+        var prediction_url = "http://223.194.46.212:8757/rest_api/ca-prediction_main";
         xhr_prediction.open("GET", prediction_url, true);
         xhr_prediction.setRequestHeader("X-CSRFToken", csrftoken);
         xhr_prediction.setRequestHeader("Content-Type", "application/json");
@@ -660,7 +660,7 @@ home
             }
         };
 
-        var strurl = "http://127.0.0.1:8080/rest_api/trained-data";
+        var strurl = "http://223.194.46.212:8757/rest_api/trained-data";
         xhr.open("POST", strurl, true);
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.setRequestHeader("Content-Type", "application/json");
@@ -685,7 +685,7 @@ home
             }
         };
 
-        var strurl = "http://127.0.0.1:8080/rest_api/predicted-data";
+        var strurl = "http://223.194.46.212:8757/rest_api/predicted-data";
         xhr.open("POST", strurl, true);
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.setRequestHeader("Content-Type", "application/json");
