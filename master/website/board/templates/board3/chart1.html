@@ -184,6 +184,7 @@ ul.tabs li.current{
 
     var inj_canvas = document.getElementById('chart_injection').getContext('2d');
     var usa_canvas = document.getElementById('chart_usage').getContext('2d');
+    var item_selectbox = document.getElementById('item_selectbox');
 
     $(document).ready(function() {
         $('ul.tabs li').click(function () {
@@ -316,9 +317,15 @@ ul.tabs li.current{
 
     // 차트 데이터, 옵션 설정
     function set_chart_data() {
+        var fx_sum = 0;
+        var fx_sum_copy = 0;
+        var mn_sum = 0;
+        var mn_sum_copy = 0;
+
         inj_data = {
             labels: period_list,
             datasets: [{
+                id: 's_cost',
                 label: '매출액',
                 type: 'line',
                 xAxisID: 'x_bottom',
@@ -352,6 +359,7 @@ ul.tabs li.current{
                 data: fixed_cost[cur_item_idx]
             }]
         };
+
         inj_opt = {
             responsive: false,
             plugins: {
@@ -366,7 +374,7 @@ ul.tabs li.current{
                             return context.dataset.backgroundColor;
                     },
                     display: function (context) {
-                        return context.dataset.type == 'line';
+                        return context.dataset.type == 'line' || context.dataset.id == 'f_cost';
                     },
                     backgroundColor: function (context) {
                         if (context.dataset.type == 'line')
@@ -374,8 +382,29 @@ ul.tabs li.current{
                         else if (context.dataset.type == 'bar')
                             return 'transparent';
                     },
-                    formatter: function (value) {
-                        return value;
+                    formatter: function (value, context) {
+                        var this_id = context.dataset.id;
+                        var idx = 0;
+
+                        if(this_id == 'f_cost') {
+                            fx_sum += value;
+                            fx_sum_copy = fx_sum;
+
+                            for(var i=0; i<fixed_cost[cur_item_idx].length; i++) {
+                                fx_sum_copy -= parseInt(fixed_cost[cur_item_idx][i]);
+                                if(fx_sum_copy == 0) {
+                                    idx = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(this_id == 's_cost') {
+                            return value;
+                        }
+                        else if(this_id == 'f_cost') {
+                            return value + variable_cost[cur_item_idx][idx];
+                        }
                     },
                     font: {
                         weight: 'bold',
@@ -464,6 +493,7 @@ ul.tabs li.current{
         usa_data = {
             labels: period_list,
             datasets: [{
+                id: 'sl_cost',
                 label: '매출액',
                 type: 'line',
                 xAxisID: 'x_bottom',
@@ -517,7 +547,7 @@ ul.tabs li.current{
                             return context.dataset.backgroundColor;
                     },
                     display: function (context) {
-                        return context.dataset.type == 'line';
+                        return context.dataset.type == 'line' || context.dataset.id == 'mn_cost';
                     },
                     backgroundColor: function (context) {
                         if (context.dataset.type == 'line')
@@ -525,8 +555,29 @@ ul.tabs li.current{
                         else if (context.dataset.type == 'bar')
                             return 'transparent';
                     },
-                    formatter: function (value) {
-                        return value;
+                    formatter: function (value, context) {
+                        var this_id = context.dataset.id;
+                        var idx = 0;
+
+                        if(this_id == 'mn_cost') {
+                            mn_sum += value;
+                            mn_sum_copy = mn_sum;
+
+                            for(var i=0; i<manu_cost[cur_item_idx].length; i++) {
+                                mn_sum_copy -= parseInt(manu_cost[cur_item_idx][i]);
+                                if(mn_sum_copy == 0) {
+                                    idx = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(this_id == 'sl_cost') {
+                            return value;
+                        }
+                        else if(this_id == 'mn_cost') {
+                            return value + mater_cost[cur_item_idx][idx] + labor_cost[cur_item_idx][idx];
+                        }
                     },
                     font: {
                         weight: 'bold',
@@ -617,12 +668,12 @@ ul.tabs li.current{
         inj_opt.scales.yAxes[0].ticks.max = Math.floor((sales_max + (sales_max - sales_min)) / 10) * 10;
         inj_opt.scales.yAxes[0].ticks.min = Math.floor((sales_min - (sales_max - sales_min)) / 10) * 10;
         inj_opt.scales.yAxes[1].ticks.max =
-            Math.ceil((variable_max + fixed_max) / 10 + (fixed_min + fixed_max) / 200) * 10;
+            Math.ceil((variable_max + fixed_max) / 10 + (fixed_min + fixed_max) / 100) * 10;
         inj_opt.scales.yAxes[1].ticks.min = Math.ceil((variable_max - fixed_min) / 10) * 10;
         usa_opt.scales.yAxes[0].ticks.max = Math.floor((sales_max + (sales_max - sales_min)) / 10) * 10;
         usa_opt.scales.yAxes[0].ticks.min = Math.floor((sales_min - (sales_max - sales_min)) / 10) * 10;
         usa_opt.scales.yAxes[1].ticks.max =
-            Math.ceil((mater_max + labor_max + manu_max) / 10 + (labor_max + labor_min + manu_max) / 200) * 10;
+            Math.ceil((mater_max + labor_max + manu_max) / 10 + (labor_max + labor_min + manu_max) / 100) * 10;
         usa_opt.scales.yAxes[1].ticks.min = Math.ceil((mater_min - labor_min) / 10) * 10;
     }
 
@@ -745,8 +796,6 @@ ul.tabs li.current{
 
     // 품목 리스트박스 생성
     function set_item_selectbox() {
-        var item_selectbox = document.getElementById('item_selectbox');
-
         for (var i = 0; i < item_list.length; i++) {
             var option = document.createElement('option');
             if (i == 0)
@@ -762,7 +811,6 @@ ul.tabs li.current{
 
     // 리스트박스 클릭 이벤트리스너
     function select_item() {
-        var item_selectbox = document.getElementById('item_selectbox');
         cur_item_idx = item_list.indexOf(item_selectbox.options[item_selectbox.selectedIndex].value);
 
         mater_max = 0;
