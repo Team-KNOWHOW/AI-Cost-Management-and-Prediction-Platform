@@ -281,44 +281,40 @@ home
          explanation();
     }
 
-    function explanation(){
-
+    function explanation() {
         var strurl = 'explainer';
-
         xhr = new XMLHttpRequest();
 
-
-        xhr.onreadystatechange = function() {
-        if (xhr.readyState == 1){
-            $('html').css("cursor","wait");
-        }
-        if (xhr.readyState == 4) {
-            $('html').css("cursor","auto");
-            var data = xhr.responseText;
-            var obj = JSON.parse(data);
-            if (obj.success == false) {
-              alert(obj.message);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 1) {
+                $('html').css("cursor", "wait");
             }
-            else {
-                document.getElementById("title1").innerText = obj.title1
-                document.getElementById("title2").innerText = obj.title2
-                document.getElementById("title3").innerText = obj.title3
-                document.getElementById("title4").innerText = obj.title4
-                document.getElementById("img1").src ='/' + obj.img1;
-                document.getElementById("img2").src ='/' + obj.img2;
-                document.getElementById("img3").src ='/' + obj.img3;
-                document.getElementById("img4").src ='/' + obj.img4;
-                document.getElementById("text1").innerText = obj.text1
-                document.getElementById("text2").innerText = obj.text2
-                document.getElementById("text3").innerText = obj.text3
-                document.getElementById("text4").innerText = obj.text4
+            if (xhr.readyState == 4) {
+                $('html').css("cursor", "auto");
+                var data = xhr.responseText;
+                var obj = JSON.parse(data);
+                if (obj.success == false) {
+                    alert(obj.message);
+                } else {
+                    document.getElementById("title1").innerText = obj.title1
+                    document.getElementById("title2").innerText = obj.title2
+                    document.getElementById("title3").innerText = obj.title3
+                    document.getElementById("title4").innerText = obj.title4
+                    document.getElementById("img1").src = '/' + obj.img1;
+                    document.getElementById("img2").src = '/' + obj.img2;
+                    document.getElementById("img3").src = '/' + obj.img3;
+                    document.getElementById("img4").src = '/' + obj.img4;
+                    document.getElementById("text1").innerText = obj.text1
+                    document.getElementById("text2").innerText = obj.text2
+                    document.getElementById("text3").innerText = obj.text3
+                    document.getElementById("text4").innerText = obj.text4
+                }
             }
+        };
 
-        }
-    };
-    xhr.open('GET', strurl);
-    xhr.setRequestHeader('X-CSRFToken', csrftoken);
-    xhr.send(null);
+        xhr.open('GET', strurl);
+        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        xhr.send(null);
     }
 
 </script>
@@ -526,6 +522,10 @@ home
                         drawTicks: false,
                         zeroLineColor: 'black',
                         zeroLineWidth: 2
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '기간(월)'
                     }
                 }],
                 yAxes: [{
@@ -536,6 +536,10 @@ home
                         drawTicks: false,
                         zeroLineColor: 'black',
                         zeroLineWidth: 2
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: '매출액(원)'
                     }
                 }]
             },

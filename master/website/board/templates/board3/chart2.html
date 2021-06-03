@@ -110,24 +110,15 @@
 
     var this_year = 2021;
     var this_month = 1;
+    var cur_item_idx = 0;
 
     var item_list=[];
     var last_year_data = [];
     var this_year_data = [];
     var last_month_data = [];
     var this_month_data = [];
-    var last_year_cost;
-    var this_year_cost;
-    var last_month_cost;
-    var this_month_cost;
-    var last_year_sales;
-    var this_year_sales;
-    var last_month_sales;
-    var this_month_sales;
-    var year_cost_growth;
-    var year_sales_growth;
-    var month_cost_growth;
-    var month_sales_growth;
+    var year_growth = [];
+    var month_growth = [];
 
     var year_chart_data;
     var month_chart_data;
@@ -137,6 +128,8 @@
     var year_chart;
     var month_chart;
 
+    var item_selectbox = document.getElementById('item_selectbox');
+
     var csrftoken = getCookie('csrftoken');
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
@@ -145,40 +138,42 @@
                 var data = xhr.responseText;
                 var json_data = JSON.parse(data);
 
-                var ty_idx = 0, ly_idx = 0, tm_idx = 0, lm_idx = 0;
+                var ty_temp = [];
+                var ly_temp = [];
+                var tm_temp = [];
+                var lm_temp = [];
 
                 for (var i = 0; i < json_data.length; i++) {
                     if (this_month == 1) {
                         if (json_data[i]['periodym_cd'] > (this_year - 1) * 100 && json_data[i]['periodym_cd'] < this_year * 100) {
-                            this_year_data[ty_idx++] = json_data[i];
+                            ty_temp.push(json_data[i]);
                         } else if (json_data[i]['periodym_cd'] > (this_year - 2) * 100 && json_data[i]['periodym_cd'] < (this_year - 1) * 100) {
-                            last_year_data[ly_idx++] = json_data[i];
+                            ly_temp.push(json_data[i]);
                         }
 
                         if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
-                            this_month_data[tm_idx++] = json_data[i];
+                            tm_temp.push(json_data[i]);
                         } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 11) {
-                            last_month_data[lm_idx++] = json_data[i];
+                            lm_temp.push(json_data[i]);
                         }
-                    }
-                    else {
+                    } else {
                         if (json_data[i]['periodym_cd'] > this_year * 100 && json_data[i]['periodym_cd'] < this_year * 100 + this_month) {
-                            this_year_data[ty_idx++] = json_data[i];
+                            ty_temp.push(json_data[i]);
                         } else if (json_data[i]['periodym_cd'] > (this_year - 1) * 100 && json_data[i]['periodym_cd'] < (this_year - 1) * 100 + this_month) {
-                            last_year_data[ly_idx++] = json_data[i];
+                            ly_temp.push(json_data[i]);
                         }
 
                         if (this_month == 2) {
                             if (json_data[i]['periodym_cd'] == this_year * 100 + 1) {
-                                this_month_data[tm_idx++] = json_data[i];
+                                tm_temp.push(json_data[i]);
                             } else if (json_data[i]['periodym_cd'] == (this_year - 1) * 100 + 12) {
-                                last_month_data[lm_idx++] = json_data[i];
+                                lm_temp.push(json_data[i]);
                             }
                         } else {
                             if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 1) {
-                                this_month_data[tm_idx++] = json_data[i];
+                                tm_temp.push(json_data[i]);
                             } else if (json_data[i]['periodym_cd'] == this_year * 100 + this_month - 2) {
-                                last_month_data[lm_idx++] = json_data[i];
+                                lm_temp.push(json_data[i]);
                             }
                         }
                     }
@@ -189,9 +184,89 @@
                 var item_set = new Set(item_list);
                 item_list = [...item_set];
                 item_list.sort();
+                item_list.push('모든 항목');
+
+                for (var i = 0; i < item_list.length; i++) {
+                    this_year_data[i] = [0, 0];
+                    last_year_data[i] = [0, 0];
+                    this_month_data[i] = [0, 0];
+                    last_month_data[i] = [0, 0];
+                }
+
+                for (var i = 0; i < ty_temp.length; i++) {
+                    var idx = item_list.indexOf(ty_temp[i]['item_cd']);
+
+                    var mater_cost = ty_temp[i]['uc_srw'];
+                    var labor_cost = ty_temp[i]['uc_dlc'] + ty_temp[i]['uc_idlc'];
+                    var manu_cost = ty_temp[i]['uc_dohc'] + ty_temp[i]['uc_idohc'];
+
+                    this_year_data[idx][0] += mater_cost + labor_cost + manu_cost;
+                    this_year_data[idx][1] += ty_temp[i]['proamt_unit'] * ty_temp[i]['proq'];
+                    this_year_data[item_list.length - 1][0] += mater_cost + labor_cost + manu_cost;
+                    this_year_data[item_list.length - 1][1] += ty_temp[i]['proamt_unit'] * ty_temp[i]['proq'];
+                }
+
+                for (var i = 0; i < ly_temp.length; i++) {
+                    var idx = item_list.indexOf(ly_temp[i]['item_cd']);
+
+                    var mater_cost = ly_temp[i]['uc_srw'];
+                    var labor_cost = ly_temp[i]['uc_dlc'] + ly_temp[i]['uc_idlc'];
+                    var manu_cost = ly_temp[i]['uc_dohc'] + ly_temp[i]['uc_idohc'];
+
+                    last_year_data[idx][0] += mater_cost + labor_cost + manu_cost;
+                    last_year_data[idx][1] += ly_temp[i]['proamt_unit'] * ly_temp[i]['proq'];
+                    last_year_data[item_list.length - 1][0] += mater_cost + labor_cost + manu_cost;
+                    last_year_data[item_list.length - 1][1] += ly_temp[i]['proamt_unit'] * ly_temp[i]['proq'];
+                }
+
+                for (var i = 0; i < tm_temp.length; i++) {
+                    var idx = item_list.indexOf(tm_temp[i]['item_cd']);
+
+                    var mater_cost = tm_temp[i]['uc_srw'];
+                    var labor_cost = tm_temp[i]['uc_dlc'] + tm_temp[i]['uc_idlc'];
+                    var manu_cost = tm_temp[i]['uc_dohc'] + tm_temp[i]['uc_idohc'];
+
+                    this_month_data[idx][0] = mater_cost + labor_cost + manu_cost;
+                    this_month_data[idx][1] = tm_temp[i]['proamt_unit'] * tm_temp[i]['proq'];
+                    this_month_data[item_list.length - 1][0] += mater_cost + labor_cost + manu_cost;
+                    this_month_data[item_list.length - 1][1] += tm_temp[i]['proamt_unit'] * tm_temp[i]['proq'];
+                }
+
+                for (var i = 0; i < lm_temp.length; i++) {
+                    var idx = item_list.indexOf(lm_temp[i]['item_cd']);
+
+                    var mater_cost = lm_temp[i]['uc_srw'];
+                    var labor_cost = lm_temp[i]['uc_dlc'] + lm_temp[i]['uc_idlc'];
+                    var manu_cost = lm_temp[i]['uc_dohc'] + lm_temp[i]['uc_idohc'];
+
+                    last_month_data[idx][0] = mater_cost + labor_cost + manu_cost;
+                    last_month_data[idx][1] = lm_temp[i]['proamt_unit'] * lm_temp[i]['proq'];
+                    last_month_data[item_list.length - 1][0] += mater_cost + labor_cost + manu_cost;
+                    last_month_data[item_list.length - 1][1] += lm_temp[i]['proamt_unit'] * lm_temp[i]['proq'];
+                }
+
+                for(var i=0; i<item_list.length; i++) {
+                    year_growth[i] = [];
+                    month_growth[i] = [];
+
+                    for(var j=0; j<2; j++) {
+                        this_year_data[i][j] = Math.floor(this_year_data[i][j] / 100000);
+                        last_year_data[i][j] = Math.floor(last_year_data[i][j] / 100000);
+                        this_month_data[i][j] = Math.floor(this_month_data[i][j] / 100000);
+                        last_month_data[i][j] = Math.floor(last_month_data[i][j] / 100000);
+                    }
+
+                    year_growth[i]['cost'] =
+                        Math.round((this_year_data[i][0] - last_year_data[i][0]) / last_year_data[i][0] * 10000) / 100;
+                    year_growth[i]['sales'] =
+                        Math.round((this_year_data[i][1] - last_year_data[i][1]) / last_year_data[i][1] * 10000) / 100;
+                    month_growth[i]['cost'] =
+                        Math.round((this_month_data[i][0] - last_month_data[i][0]) / last_month_data[i][0] * 10000) / 100;
+                    month_growth[i]['sales'] =
+                        Math.round((this_month_data[i][1] - last_month_data[i][1]) / last_month_data[i][1] * 10000) / 100;
+                }
 
                 set_item_selectbox();
-                cal_val();
                 set_chart_data();
                 draw_chart();
                 fill_table();
@@ -228,70 +303,6 @@
         xhr.send(null);
     }
 
-    function cal_val() {
-        this_year_cost = 0;
-        this_year_sales = 0;
-        last_year_cost = 0;
-        last_year_sales = 0;
-
-        for (var i = 0; i < this_year_data.length; i++) {
-            if (this_year_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
-                var mater_cost = this_year_data[i]['uc_srw'];
-                var labor_cost = this_year_data[i]['uc_dlc'] + this_year_data[i]['uc_idlc'];
-                var manu_cost = this_year_data[i]['uc_dohc'] + this_year_data[i]['uc_idohc'];
-                this_year_cost += mater_cost + labor_cost + manu_cost;
-                this_year_sales += this_year_data[i]['proamt_unit'] * this_year_data[i]['proq'];
-            }
-        }
-
-        for (var i = 0; i < last_year_data.length; i++) {
-            if (last_year_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
-                var mater_cost = last_year_data[i]['uc_srw'];
-                var labor_cost = last_year_data[i]['uc_dlc'] + last_year_data[i]['uc_idlc'];
-                var manu_cost = last_year_data[i]['uc_dohc'] + last_year_data[i]['uc_idohc'];
-                last_year_cost += mater_cost + labor_cost + manu_cost;
-                last_year_sales += last_year_data[i]['proamt_unit'] * last_year_data[i]['proq'];
-            }
-        }
-
-        this_year_cost = Math.floor(this_year_cost / 100000);
-        this_year_sales = Math.floor(this_year_sales / 100000);
-        last_year_cost = Math.floor(last_year_cost / 100000);
-        last_year_sales = Math.floor(last_year_sales / 100000);
-
-        for (var i = 0; i < last_month_data.length; i++) {
-            if (last_month_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
-                var mater_cost = this_month_data[i]['uc_srw'];
-                var labor_cost = this_month_data[i]['uc_dlc'] + this_month_data[i]['uc_idlc'];
-                var manu_cost = this_month_data[i]['uc_dohc'] + this_month_data[i]['uc_idohc'];
-                this_month_cost = Math.floor((mater_cost + labor_cost + manu_cost) / 100000);
-                this_month_sales = Math.floor((this_month_data[i]['proamt_unit'] * this_month_data[i]['proq']) / 100000);
-            }
-        }
-
-        for (var i = 0; i < last_month_data.length; i++) {
-            if (last_month_data[i]['item_cd'] == item_selectbox[item_selectbox.selectedIndex].value) {
-                var mater_cost = last_month_data[i]['uc_srw'];
-                var labor_cost = last_month_data[i]['uc_dlc'] + last_month_data[i]['uc_idlc'];
-                var manu_cost = last_month_data[i]['uc_dohc'] + last_month_data[i]['uc_idohc'];
-                last_month_cost = Math.floor((mater_cost + labor_cost + manu_cost) / 100000);
-                last_month_sales = Math.floor((last_month_data[i]['proamt_unit'] * last_month_data[i]['proq']) / 100000);
-            }
-        }
-
-        /*
-        year_cost_growth = ((this_year_cost - last_year_cost)/last_year_cost*100);
-        year_sales_growth = ((this_year_sales-last_year_sales)/last_year_sales*100);
-        month_cost_growth = ((this_month_cost - last_month_cost) / last_month_cost*100);
-        month_sales_growth = ((this_month_sales-last_month_sales)/last_month_sales*100);
-         */
-
-        year_cost_growth = -0.79;
-        year_sales_growth = -1.55;
-        month_cost_growth = -0.40;
-        month_sales_growth = -0.35;
-    }
-
     function set_chart_data() {
         year_chart_data = {
             labels: ['제조원가', '매출액'],
@@ -304,7 +315,7 @@
                 lineTension: 0,
                 pointRadius: 0,
                 borderColor: '#000000',
-                data: [year_cost_growth, year_sales_growth],
+                data: [year_growth[cur_item_idx]['cost'], year_growth[cur_item_idx]['sales']],
             }, {
                 label: '전년',
                 type: 'bar',
@@ -312,14 +323,14 @@
                 yAxisID: 'y-axis-cost',
                 backgroundColor: '#E0772F',
                 hoverBorderWidth: 4,
-                data: [last_year_cost, last_year_sales]
+                data: [last_year_data[cur_item_idx][0], last_year_data[cur_item_idx][1]]
             }, {
                 label: '당년',
                 type: 'bar',
                 yAxisID: 'y-axis-cost',
                 backgroundColor: '#6F962C',
                 hoverBorderWidth: 4,
-                data: [this_year_cost, this_year_sales]
+                data: [this_year_data[cur_item_idx][0], this_year_data[cur_item_idx][1]]
             }]
         };
         year_chart_opt = {
@@ -434,7 +445,7 @@
                 lineTension: 0,
                 pointRadius: 0,
                 borderColor: '#000000',
-                data: [month_cost_growth, month_sales_growth]
+                data: [month_growth[cur_item_idx]['cost'], month_growth[cur_item_idx]['sales']]
             }, {
                 label: '전월',
                 type: 'bar',
@@ -442,14 +453,14 @@
                 yAxisID: 'y-axis-cost',
                 backgroundColor: '#E0772F',
                 hoverBorderWidth: 4,
-                data: [last_month_cost, last_month_sales],
+                data: [last_month_data[cur_item_idx][0], last_month_data[cur_item_idx][1]],
             }, {
                 label: '당월',
                 type: 'bar',
                 yAxisID: 'y-axis-cost',
                 backgroundColor: '#6F962C',
                 hoverBorderWidth: 4,
-                data: [this_month_cost, this_month_sales]
+                data: [this_month_data[cur_item_idx][0], this_month_data[cur_item_idx][1]]
             }]
         };
         month_chart_opt = {
@@ -553,22 +564,30 @@
             }
         };
 
-        if (year_cost_growth > year_sales_growth) {
-            year_chart_opt.scales.yAxes[0].ticks.max = year_cost_growth + (year_cost_growth - year_sales_growth);
-            year_chart_opt.scales.yAxes[0].ticks.min = year_sales_growth - (year_cost_growth - year_sales_growth) ;
+        if (year_growth[cur_item_idx]['cost'] > year_growth[cur_item_idx]['sales']) {
+            year_chart_opt.scales.yAxes[0].ticks.max =
+                year_growth[cur_item_idx]['cost'] + (year_growth[cur_item_idx]['cost'] - year_growth[cur_item_idx]['sales']);
+            year_chart_opt.scales.yAxes[0].ticks.min =
+                year_growth[cur_item_idx]['sales'] - (year_growth[cur_item_idx]['cost'] - year_growth[cur_item_idx]['sales']) ;
         }
         else {
-            year_chart_opt.scales.yAxes[0].ticks.max = year_sales_growth + (year_sales_growth - year_cost_growth);
-            year_chart_opt.scales.yAxes[0].ticks.min = year_cost_growth - (year_sales_growth - year_cost_growth);
+            year_chart_opt.scales.yAxes[0].ticks.max =
+                year_growth[cur_item_idx]['sales'] + (year_growth[cur_item_idx]['sales'] - year_growth[cur_item_idx]['cost']);
+            year_chart_opt.scales.yAxes[0].ticks.min =
+                year_growth[cur_item_idx]['cost'] - (year_growth[cur_item_idx]['sales'] - year_growth[cur_item_idx]['cost']);
         }
 
-        if (month_cost_growth > month_sales_growth) {
-            month_chart_opt.scales.yAxes[0].ticks.max = month_cost_growth + (month_cost_growth - month_sales_growth);
-            month_chart_opt.scales.yAxes[0].ticks.min = month_sales_growth - (month_cost_growth - month_sales_growth);
+        if (month_growth[cur_item_idx]['cost'] > month_growth[cur_item_idx]['sales']) {
+            month_chart_opt.scales.yAxes[0].ticks.max =
+                month_growth[cur_item_idx]['cost'] + (month_growth[cur_item_idx]['cost'] - month_growth[cur_item_idx]['sales']);
+            month_chart_opt.scales.yAxes[0].ticks.min =
+                month_growth[cur_item_idx]['sales'] - (month_growth[cur_item_idx]['cost'] - month_growth[cur_item_idx]['sales']);
         }
         else {
-            month_chart_opt.scales.yAxes[0].ticks.max = month_sales_growth + (month_sales_growth - month_cost_growth);
-            month_chart_opt.scales.yAxes[0].ticks.min = month_cost_growth - (month_sales_growth - month_cost_growth);
+            month_chart_opt.scales.yAxes[0].ticks.max =
+                month_growth[cur_item_idx]['sales'] + (month_growth[cur_item_idx]['sales'] - month_growth[cur_item_idx]['cost']);
+            month_chart_opt.scales.yAxes[0].ticks.min =
+                month_growth[cur_item_idx]['cost'] - (month_growth[cur_item_idx]['sales'] - month_growth[cur_item_idx]['cost']);
         }
     }
 
@@ -590,28 +609,23 @@
         var manu_row_data=[];
         var sales_row_data=[];
 
-        manu_row_data[0] = last_year_cost;
-        manu_row_data[1] = this_year_cost;
-//        manu_row_data[2] = year_cost_growth;
-        manu_row_data[2] = -0.879+'%';
-        manu_row_data[3] = last_month_cost;
-        manu_row_data[4] = this_month_cost;
-//        manu_row_data[5] = month_cost_growth;
-        manu_row_data[5] = 0+'%';
+        manu_row_data[0] = last_year_data[cur_item_idx][0];
+        manu_row_data[1] = this_year_data[cur_item_idx][0];
+        manu_row_data[2] = year_growth[cur_item_idx]['cost'];
+        manu_row_data[3] = last_month_data[cur_item_idx][0];
+        manu_row_data[4] = this_month_data[cur_item_idx][0];;
+        manu_row_data[5] = month_growth[cur_item_idx]['cost'];;
 
         for(var i=0; i<6; i++) {
             var td=document.getElementById('manu_row' + (i+1));
             td.innerText=manu_row_data[i];
         }
-
-        sales_row_data[0] = last_year_sales;
-        sales_row_data[1] = this_year_sales;
-        sales_row_data[2] = -0.5+'%';
-//        sales_row_data[2] = year_sales_growth;
-        sales_row_data[3] = last_month_sales;
-        sales_row_data[4] = this_month_sales;
-        sales_row_data[5] = -0.4+'%';
-//        sales_row_data[5] = month_sales_growth;
+        sales_row_data[0] = last_year_data[cur_item_idx][1];
+        sales_row_data[1] = this_year_data[cur_item_idx][1];
+        sales_row_data[2] = year_growth[cur_item_idx]['sales'];
+        sales_row_data[3] = last_month_data[cur_item_idx][1];
+        sales_row_data[4] = this_month_data[cur_item_idx][1];;
+        sales_row_data[5] = month_growth[cur_item_idx]['sales'];
 
         for(var i=0; i<6; i++) {
             var td=document.getElementById('sales_row' + (i+1));
@@ -620,8 +634,6 @@
     }
 
     function set_item_selectbox() {
-        var item_selectbox = document.getElementById('item_selectbox');
-
         for (var i = 0; i < item_list.length; i++) {
             var option = document.createElement('option');
             if(i==0)
@@ -634,7 +646,11 @@
     }
 
     function select_item() {
-        cal_val();
+        var selected_item = item_selectbox.options[item_selectbox.selectedIndex].value;
+        cur_item_idx = item_list.indexOf(selected_item);
+
+        year_chart.destroy();
+        month_chart.destroy();
         set_chart_data();
         draw_chart();
         fill_table();

@@ -1311,25 +1311,6 @@ def cc_costbill1_if(request): #분석용
 # 차트 코드 시작
 # *********************************************************************************************************************
 
-def chart_if(request):
-    context = {}
-
-    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
-        member_no = request.session['id']
-        member_id = request.session['user_id']
-    else:
-        member_no = None
-        member_id = None
-
-        return redirect('board:home')
-
-    context["id"] = member_no
-    context["user_id"] = member_id
-
-
-    return render(request, 'board3/chart_if.html', context)
-
-
 def chart1(request):
     context = {}
 
@@ -1365,24 +1346,6 @@ def chart2(request):
 
 
     return render(request, 'board3/chart2.html', context)
-
-def chart3(request):
-    context = {}
-
-    if request.session.has_key('id'):  # 로그인 되어있는 상태인지 체크.
-        member_no = request.session['id']
-        member_id = request.session['user_id']
-    else:
-        member_no = None
-        member_id = None
-
-        return redirect('board:home')
-
-    context["id"] = member_no
-    context["user_id"] = member_id
-
-
-    return render(request, 'board3/chart3.html', context)
 
 def simulate(request):
     context = {}
