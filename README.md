@@ -1,10 +1,26 @@
-# AI-Cost-Management-and-Prediction-Platform
+# AI Cost Management and Prediction Platform
 
-Purpose of project
-=데이터를 통한 제조, 마케팅 혁신 기반 조성을 위해 내‧외부 제조 마케팅 데이터를 체계적으로 수집‧저장‧분석‧공유할 수 있는 개방형 ‘제조,마케팅 빅데이터 플랫폼‘ 구축 및 ’인공지능을 활용한 원가 관리 및 예측 시스템‘개발 후 적용을 최종 목표로 한다.
+<br>
+의사 결정 지원(DSS)을 위한 '인공지능 원가(손익/예산) 관리 및 예측 플랫폼'
+<br><br>
 
+## 다음과 같은 핵심 기능들을 제공합니다!
+ 
+#### :heavy_check_mark: 원가 통합 관리
+#### :heavy_check_mark: 전년/전월 , 당기사용/당기 투입 정보 차트 시각화
+#### :heavy_check_mark: 외부요인(환율,유가 등) 자동 크롤링
+#### :heavy_check_mark: 3개월 후 매출액 예측(Prediction)
+#### :heavy_check_mark: 내부 요인 변경을 통한 예측 시뮬레이션(Simulation)
+#### :heavy_check_mark: 예측에 대한 해석정보(Explainer)
 
+<br><br>
+## 시연 영상 🔽🔽
+### [![AI Cost Management and Prediction Platform](http://img.youtube.com/vi/N9mTU6sIqak/0.jpg)](https://youtu.be/N9mTU6sIqak?t=0s)  
 
+#### Youtube: https://www.youtube.com/watch?v=N9mTU6sIqak
+
+***
+<br/>
 
 # How to execute _ For Screen works
 1. 깃허브 팀 원격저장소를 개인 원격저장소로 포크한다.
