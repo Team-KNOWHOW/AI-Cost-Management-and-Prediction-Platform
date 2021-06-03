@@ -4,8 +4,7 @@
 의사 결정 지원(DSS)을 위한 '인공지능 원가(손익/예산) 관리 및 예측 플랫폼'
 <br><br>
 
-## 다음과 같은 핵심 기능들을 제공합니다!
- 
+### :bulb: Main Services
 #### :heavy_check_mark: 원가 통합 관리
 #### :heavy_check_mark: 전년/전월 , 당기사용/당기 투입 정보 차트 시각화
 #### :heavy_check_mark: 외부요인(환율,유가 등) 자동 크롤링
