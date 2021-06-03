@@ -24,10 +24,8 @@ urlpatterns = [
     path('cc_productcostpayment_if', views.cc_productcostpayment_if, name='cc_productcostpayment_if'),
     path('cc_costbill_if', views.cc_costbill_if, name='cc_costbill_if'),
     path('cc_costbill1_if', views.cc_costbill1_if, name='cc_costbill1_if'),
-    path('chart_if', views.chart_if, name='chart_if'),
     path('chart1', views.chart1, name='chart1'),
     path('chart2', views.chart2, name='chart2'),
-    path('chart3', views.chart3, name='chart3'),
     path('simulate', views.simulate, name='simulate'),
     path('explainer', views.explainer, name='explainer'),
 
