@@ -67,8 +67,23 @@
  - tensorflow-base==2.3.0
  - torch==1.7.0
 ## 소스코드 실행 방법
- - 시스템 버전을 전부 다운 받은후 작업을 진행
- - rest-api를 이용하여 rest-api server 실행을 위해 /rest_framework/Restful_framework 레포지토리에 가서 python manage.py runserver 8080 실행
- - django server 실행을 위해 Terminal을 하나더 실행하여 /master/website 레포지토리에 가서 python manage.py runserver 실행후 로컬 ip에 접속
+### 1. 배포 버전 실행
+ - http://223.194.46.212:8756/ 접속
+ - 테스트 아이디 : pyh123
+ - 비밀번호 : 1234
+ - 로그인 후 왼쪽 탭에서 원하는 기능 실행
+### 2. 개발모드로 로컬에서 실행
+ - 시스템 버전을 전부 다운 받은후 작업을 진행 ( settings.py 요청 : pyhpyh0670@gmail.com)
+ - Pycharm 실행
+ - Anaconda 가상환경 구성(Python 3.7)
+ - 가상환경 실행
+ - 다운로드 받은 소스로 새 프로젝트 구성.
+ - AI-Cost-Management-and-Prediction-Platform/rest_framework 이동
+ - pip3 install -r requirements.txt 명령어을 통해 패키지 설치
+ - AI-Cost-Management-and-Prediction-Platform/rest_framework/Restful_framework 이동
+ - python manage.py runserver 8080 (8080 포트 번호로 API 서버 실행)
+ - Pycharm Open project로 동일한 프로젝트 New Window로 열기 (가상환경은 동일)
+ - AI-Cost-Management-and-Prediction-Platform/master/website 이동
+ - python manage.py runserver (template 화면 보여주는 django 서버 실행)
+ - http://127.0.0.1:8000/ 접속
 
- - ...
