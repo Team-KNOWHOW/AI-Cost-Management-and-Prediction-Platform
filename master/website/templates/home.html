@@ -613,6 +613,8 @@ home
 
         var btn_get_predict = document.getElementById('btn_get_predict');
         btn_get_predict.setAttribute('disabled', true);
+        $("#year_selectbox option:eq(20)").prop("selected", true);
+        change_data_year()
     }
 
     function change_data_year() {
@@ -669,6 +671,7 @@ home
         xhr.setRequestHeader("X-CSRFToken", csrftoken);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(JSON.stringify(payload));
+        alert("약 20초의 시간이 소요됩니다.");
     }
 
     function predict() {
