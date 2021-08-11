@@ -6,11 +6,10 @@
 *.pot
 *.pyc
 __pycache__/
-settings.py
 media
 
 ### PyCharm ###
 .idea/
-
+secrets.json
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,python,pycharm,django
