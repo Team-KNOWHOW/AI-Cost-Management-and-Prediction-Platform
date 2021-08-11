@@ -73,7 +73,7 @@
  - 비밀번호 : 1234
  - 로그인 후 왼쪽 탭에서 원하는 기능 실행
 ### 2. 개발모드로 로컬에서 실행
- - 시스템 버전을 전부 다운 받은후 작업을 진행 ( settings.py 요청 : pyhpyh0670@gmail.com)
+ - 시스템 버전을 전부 다운 받은후 작업을 진행 ( secrets.json 요청 : pyhpyh0670@gmail.com)
  - Pycharm 실행
  - Anaconda 가상환경 구성(Python 3.7)
  - 가상환경 실행
