@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    #'account',
+    'account',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'dj_rest_auth',
@@ -70,8 +70,8 @@ INSTALLED_APPS = [
     'rest_api',
 ]
 
-#AUTH_USER_MODEL = 'account.User'
-#SITE_ID = 1
+AUTH_USER_MODEL = 'account.User'
+SITE_ID = 1
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
